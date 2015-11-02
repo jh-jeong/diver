@@ -18,3 +18,31 @@ class Customer(models.Model):
 
     def modify_score(recommendation):
         pass
+
+class Shop(models.Model):
+    name = models.CharField(max_length=30)
+    url = models.URLField()
+    items = models.ManyToManyField(Item)
+    matches = models.ManyToManyField(Match)
+
+class Match(models.Model):
+    items = models.ManyToManyField(Item)
+    images = models.ManyToManyField(Image)
+
+class Item(models.Model):
+    name = models.CharField(max_length=30)
+
+    # this is an example
+    category = (
+        (0,"shirt"),
+        (1,"pants"),
+        (2,"skirt"),
+    )
+    size = models.IntegerField()
+    price = models.IntegerField()
+    images = models.ManyToManyField(Image)
+    purchase_url = models.URLField()
+    shop = models.ForeignKey(Shop)
+
+class Image(models.Model):
+    image = models.ImageField(null=True)
