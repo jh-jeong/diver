@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Customer(models.Model):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=128)
@@ -19,15 +20,10 @@ class Customer(models.Model):
     def modify_score(recommendation):
         pass
 
-class Shop(models.Model):
-    name = models.CharField(max_length=30)
-    url = models.URLField()
-    items = models.ManyToManyField(Item)
-    matches = models.ManyToManyField(Match)
 
-class Match(models.Model):
-    items = models.ManyToManyField(Item)
-    images = models.ManyToManyField(Image)
+class Image(models.Model):
+    filename = models.CharField(max_length=30)
+    image = models.ImageField(null=True)
 
 class Item(models.Model):
     name = models.CharField(max_length=30)
@@ -42,7 +38,15 @@ class Item(models.Model):
     price = models.IntegerField()
     images = models.ManyToManyField(Image)
     purchase_url = models.URLField()
-    shop = models.ForeignKey(Shop)
+    #shop = models.ForeignKey(through = 'Shop')
 
-class Image(models.Model):
-    image = models.ImageField(null=True)
+
+class Match(models.Model):
+    items = models.ManyToManyField(Item)
+    images = models.ManyToManyField(Image)
+
+class Shop(models.Model):
+    name = models.CharField(max_length=30)
+    url = models.URLField()
+    items = models.ManyToManyField(Item)
+    matches = models.ManyToManyField(Match)
