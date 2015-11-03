@@ -19,6 +19,7 @@ from diver import views
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^$', views.main, name='main'),
     url(r'^upload/$', views.upload),
 
 ]
