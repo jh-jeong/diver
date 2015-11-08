@@ -16,10 +16,26 @@
 </head>
 
 <body>
-  <div id="logo">
-    <div class="inner">
-      <img src="../static/images/logo.png" alt="">
+  <header>
+    <div id="logo">
+      <img src="../static/images/logo.png" alt="Diver logo">
     </div>
-  </div>
+
+    <nav id="main_nav"><ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Top</a></li>
+      <li><a href="#">Bottom</a></li>
+      <li><a href="#">Accessories</a></li>
+      <li><a href="#">Shoes</a></li>
+      <li><a href="#">My Diver</a></li>
+    </ul></nav>
+  </header>
+
+  <section id="content">
+    {% block content %}
+  </section>
+
+  <footer>
+  </footer>
 </body>
 </html>
