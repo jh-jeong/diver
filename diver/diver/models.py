@@ -50,3 +50,7 @@ class Shop(models.Model):
     url = models.URLField()
     items = models.ManyToManyField(Item)
     matches = models.ManyToManyField(Match)
+
+class Like(models.Model):
+    customer_id = models.ImageField(null=False)
+    item_id = models.IntegerField(null=False)

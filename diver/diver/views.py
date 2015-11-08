@@ -1,7 +1,9 @@
 import os
+from django.core.files.storage import FileSystemStorage
 
 from django.shortcuts import render, redirect
 from django.core.files import File
+from django.core.files import storage
 
 from diver.models import Image
 from diver.settings import IMAGE_DIR
@@ -13,7 +15,6 @@ __author__ = 'un'
 
 def main(request):
     return render(request, 'main.html')
-
 
 def upload(request):
 
@@ -30,14 +31,19 @@ def upload(request):
             fp = open('%s' % (image_dir) , 'wb')
             for chunk in file.chunks():
                 fp.write(chunk)
+
+
             fp.close()
 
-            reopen = open('%s' % (image_dir) , 'rb')
-            django_file = File(reopen)
+            image = Image.objects.create(filename=filename)
 
-            image = Image(filename=filename, image=django_file)
-            image.save()
-            reopen.close()
+            #fs = FileSystemStorage(image_dir)
+
+           # reopen = open('%s' % (image_dir) , 'rb')
+           # django_file = File(reopen)
+
+            #image.save()
+            #reopen.close()
 
         return redirect('/upload/')
     return render(request, 'upload.html')
