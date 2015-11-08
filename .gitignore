@@ -57,7 +57,11 @@ docs/_build/
 target/
 
 #images
-.jpg
+*.jpg
+
+# Swap files
+.*.swp
+.*.swo
 
 venv/
 
