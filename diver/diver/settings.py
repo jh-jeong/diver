@@ -122,6 +122,6 @@ STATICFILES_DIRS = (
 )
 
 STATIC_URL = '/static/'
-STATIC_ROOT = "/var/www/example.com/static/"
-#STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
+#STATIC_ROOT = "/var/www/example.com/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
 IMAGE_DIR = os.path.join(BASE_DIR, 'diver/static/images/')
