@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
-
-
+{% extends 'base.html' %}
+{% block content %}
 <form method="post" action="/upload/" enctype="multipart/form-data">
   {% csrf_token %}
   <label>filename</label>
@@ -17,6 +10,4 @@
          value="이미지 선택"/>
   <p id="btnsubmit"><input type="submit" id="send" value="업로" class="btn btn-large"/></p>
 </form>
-
-</body>
-</html>
+{% endblock %}

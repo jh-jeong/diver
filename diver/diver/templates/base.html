@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Diver - Fashion Recommendation for You</title>
+  <meta name="description" content="Diver">
+  <meta name="author" content="FashionKing">
+
+  {% load staticfiles %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.min.css' %}">
+
+  <style type="text/css">
+    body {
+      padding-top: 20px;
+      padding-bottom: 20px;
+      }
+    img.logo {
+      width: 180px;
+    }
+  </style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <div class="container">
+    <div class="navbar-header">
+      <img src="{% static 'images/logo.png' %}" alt="logo" class="logo">
+    </div>
+     <div class="navbar-collapse collapse" id="navbar-main">
+        <ul class="nav navbar-nav">
+          <li><a href="#">추천 받기</a></li>
+          <li><a href="upload">사진 업로드</a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#">My Diver</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <section id="content">
+      {% block content %}{% endblock %}
+    </section>
+  </div>
+</body>
+</div>
+<hr />
+<footer>
+</footer>
+<script type="text/javascript" src="{% static 'javascript/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascript/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'javascript/jquery-ui.min.js' %}"></script>
+</html>
