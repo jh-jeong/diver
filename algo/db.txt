@@ -1,0 +1,181 @@
+
+CREATE TABLE bottom
+(
+	item_id              INTEGER NOT NULL PRIMARY KEY,
+	material             INTEGER NULL,
+	length_level         INTEGER NULL,
+	fit                  INTEGER NULL,
+	category             INTEGER NULL,
+	jean_washing         INTEGER NULL,
+	FOREIGN KEY (item_id) REFERENCES items (item_id)
+		ON DELETE CASCADE
+);
+
+CREATE TABLE bottom_size
+(
+	item_id              INTEGER NOT NULL,
+	length_cm            INTEGER NULL,
+	waist_cm             INTEGER NULL,
+	thigh_cm             INTEGER NULL,
+	crotch_cm            INTEGER NULL,
+	inseam_cm            INTEGER NULL,
+	letter               VARCHAR(5) NULL,
+	FOREIGN KEY (item_id) REFERENCES bottom (item_id)
+);
+
+CREATE TABLE images
+(
+	image_id             INTEGER NOT NULL PRIMARY KEY,
+	image                VARBINARY NULL
+);
+
+CREATE TABLE item_conf
+(
+	user_id              INTEGER NOT NULL,
+	item_id              INTEGER NOT NULL,
+	dib                  boolean NULL,
+	click_count          INTEGER NULL,
+	rating               INTEGER NULL,
+	FOREIGN KEY (user_id) REFERENCES users (user_id)
+	FOREIGN KEY (item_id) REFERENCES items (item_id)
+);
+
+CREATE TABLE items
+(
+	item_id              INTEGER NOT NULL PRIMARY KEY,
+	tag                  VARCHAR(60) NULL,
+	reg_date             DATE NULL,
+	price                INTEGER NULL,
+	shop_id              INTEGER NOT NULL,
+	url                  VARCHAR(200) NULL,
+	rate_count           INTEGER NULL,
+	image_id             INTEGER NULL,
+	comment              VARCHAR(200) NULL,
+	c_id1_ratio          FLOAT NULL,
+	c_id2_ratio          FLOAT NULL,
+	c_id3_ratio          FLOAT NULL,
+	c_id1                INTEGER NULL,
+	c_id2                INTEGER NULL,
+	c_id3                INTEGER NULL,
+	FOREIGN KEY (shop_id) REFERENCES shops (shop_id),
+	FOREIGN KEY (image_id) REFERENCES images (image_id)
+);
+
+CREATE TABLE matches
+(
+	shop_id              INTEGER NOT NULL,
+	match_id             INTEGER NOT NULL PRIMARY KEY,
+	rate_count           INTEGER NULL,
+	url                  VARCHAR(200) NULL,
+	image_id             INTEGER NULL,
+	outer_id1            INTEGER NULL,
+	top_id1              INTEGER NULL,
+	top_id2              INTEGER NULL,
+	bottom_id            INTEGER NULL,
+	outer_id2            INTEGER NULL,
+	shoes_id             INTEGER NULL,
+	FOREIGN KEY (shop_id) REFERENCES shops (shop_id),
+	FOREIGN KEY (image_id) REFERENCES images (image_id),
+	FOREIGN KEY (outer_id1) REFERENCES outer (item_id),
+	FOREIGN KEY (outer_id2) REFERENCES outer (item_id),
+	FOREIGN KEY (top_id1) REFERENCES top (item_id),
+	FOREIGN KEY (top_id2) REFERENCES top (item_id),
+	FOREIGN KEY (bottom_id) REFERENCES bottom (item_id),
+	FOREIGN KEY (shoes_id) REFERENCES shoes (item_id)
+);
+
+CREATE TABLE outer
+(
+	item_id              INTEGER NOT NULL PRIMARY KEY,
+	sleeve_level         INTEGER NULL,
+	zipper               boolean NULL,
+	material             INTEGER NULL,
+	length_level         INTEGER NULL,
+	collar               INTEGER NULL,
+	category             INTEGER NULL,
+	pattern              INTEGER NULL,
+	hat                  boolean NULL,
+	button               INTEGER NULL,
+	FOREIGN KEY (item_id) REFERENCES items (item_id)
+		ON DELETE CASCADE
+);
+
+CREATE TABLE ratings
+(
+	user_id              INTEGER NOT NULL,
+	match_id             INTEGER NOT NULL,
+	rating               INTEGER NULL,
+	FOREIGN KEY (user_id) REFERENCES users (user_id),
+	FOREIGN KEY (match_id) REFERENCES matches (match_id)
+);
+
+CREATE TABLE shoes
+(
+	item_id              INTEGER NOT NULL PRIMARY KEY,
+	category             INTEGER NULL,
+	weight_g             INTEGER NULL,
+	insoles              INTEGER NULL,
+	brand                VARCHAR(20) NULL,
+	material             INTEGER NULL,
+	FOREIGN KEY (item_id) REFERENCES items (item_id)
+		ON DELETE CASCADE
+);
+
+CREATE TABLE shoes_size
+(
+	item_id              INTEGER NOT NULL,
+	size                 INTEGER NULL,
+	correction           INTEGER NULL,
+	FOREIGN KEY (item_id) REFERENCES shoes (item_id)
+);
+
+CREATE TABLE shops
+(
+	shop_id              INTEGER NOT NULL PRIMARY KEY,
+	url                  VARCHAR(100) NULL,
+	name                 VARCHAR(20) NULL,
+	item_count           INTEGER NULL,
+	match_count          INTEGER NULL,
+	rate_count           INTEGER NULL
+);
+
+CREATE TABLE top
+(
+	item_id              INTEGER NOT NULL PRIMARY KEY,
+	sleeve_level         INTEGER NULL,
+	material             INTEGER NULL,
+	pattern              INTEGER NULL,
+	neck                 INTEGER NULL,
+	category             INTEGER NULL,
+	zipper               boolean NULL,
+	button               boolean NULL,
+	FOREIGN KEY (item_id) REFERENCES items (item_id)
+		ON DELETE CASCADE
+);
+
+CREATE TABLE top_size
+(
+	item_id              INTEGER NOT NULL,
+	length_cm            INTEGER NULL,
+	shoulder_cm          INTEGER NULL,
+	chest_cm             INTEGER NULL,
+	sleeve_cm            INTEGER NULL,
+	letter               VARCHAR(5) NULL,
+	FOREIGN KEY (item_id) REFERENCES top (item_id)
+	FOREIGN KEY (item_id) REFERENCES outer (item_id)
+);
+
+CREATE TABLE users
+(
+	user_id              INTEGER NOT NULL PRIMARY KEY,
+	username             VARCHAR(20) NULL,
+	password             VARCHAR(20) NULL,
+	height_cm            INTEGER NULL,
+	weight_kg            INTEGER NULL,
+	body_shape           INTEGER NULL,
+	size_chest           INTEGER NULL,
+	size_waist           INTEGER NULL,
+	like_count           INTEGER NULL,
+	sleeve_length        INTEGER NULL,
+	leg_length           INTEGER NULL
+);
