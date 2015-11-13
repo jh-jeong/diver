@@ -79,7 +79,7 @@ def handle_q():
                 ty, res = req[0]
                 if ty == 'u':
                     USER_NUM += [-1, 1][res=="+"]
-                else:       # ty == "i"
+                else:
                     ITEM_NUM += [-1, 1][res=="+"]
                 RATING.resize((USER_NUM, ITEM_NUM))
         Q.task_done()
