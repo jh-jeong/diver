@@ -12,12 +12,16 @@ from diver.settings import STATIC_ROOT
 
 __author__ = 'un'
 
+def auth(request):
+    return render(request, 'auth.html')
 
 def main(request):
     return render(request, 'main.html')
 
-def upload(request):
+def search(request):
+    return render(request, 'search.html')
 
+def upload(request):
     if request.method == 'POST':
         #filename = request.POST["filename"]
 
