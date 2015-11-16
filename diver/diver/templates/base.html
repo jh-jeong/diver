@@ -21,6 +21,7 @@
       width: 180px;
     }
   </style>
+  {% block head %}{% endblock %}
   <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
@@ -35,7 +36,7 @@
     </div>
      <div class="navbar-collapse collapse" id="navbar-main">
         <ul class="nav navbar-nav">
-          <li><a href="#">추천 받기</a></li>
+          <li><a href="/search">추천 받기</a></li>
           <li><a href="/upload">사진 업로드</a></li>
         </ul>
 
@@ -58,4 +59,5 @@
 <script type="text/javascript" src="{% static 'javascript/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascript/jquery.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascript/jquery-ui.min.js' %}"></script>
+{% block script %}{% endblock %}
 </html>

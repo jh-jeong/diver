@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>추천 받기</h1>
+<div class="row">
+  <div class="col-md-2">
+    <h3>검색 필터 설정</h3>
+    <form method="post" action="/upload/" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="category1">대분류</label>
+        <select class="form-control" id="category1">
+          <option value="1">Top</option>
+          <option value="2">Bottom</option>
+          <option value="3">Outer</option>
+          <option value="4">Shoes</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="category2">소분류</label>
+        <select class="form-control" id="category2" disabled>
+          <option value="1">Sleeveless</option>
+          <option value="1">Shirt</option>
+          <option value="1">T-shirt</option>
+          <option value="1">Hood</option>
+          <option value="1">Crew sweatshirt</option>
+          <option value="1">Knit</option>
+          <option value="2">Jogger pants</option>
+          <option value="2">Jean</option>
+          <option value="2">Leather</option>
+          <option value="2">Cotton</option>
+          <option value="2">Chino</option>
+          <option value="3">Vest</option>
+          <option value="3">Coat</option>
+          <option value="3">Jersey</option>
+          <option value="3">Jumper</option>
+          <option value="3">Jacket</option>
+          <option value="3">Cardigan</option>
+          <option value="4">Sneakers</option>
+          <option value="4">Loafers</option>
+          <option value="4">Canvas</option>
+          <option value="4">Sandles</option>
+          <option value="4">Slip-on</option>
+          <option value="4">Oxfords</option>
+          <option value="4">Boots</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="lower">가격 하한선</label>
+        <input class="form-control" type="number" id="lower">
+      </div>
+      <div class="form-group">
+        <label for="upper">가격 상한선 (상한 없음: 0)</label>
+        <input class="form-control" type="number" id="upper">
+      </div>
+      <input type="submit" id="send" value="검색!" class="btn btn-primary"/>
+    </form>
+  </div>
+  <div class="col-md-10">
+    <h3>옷들 갤러리 뷰가 들어감</h3>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+$(document).ready(function()  {
+  $("#category1").change(function() {
+    $("#category2").attr("disabled", false);
+    if ($(this).data('options') == undefined) {
+      /*Taking an array of all options-2 and kind of embedding it on the select1*/
+      $(this).data('options',$('#category2 option').clone());
+      }
+
+    var id = $(this).val();
+    var options = $(this).data('options').filter('[value=' + id + ']');
+    $("#category2").html(options);
+})});
+</script>
+{% endblock %}
