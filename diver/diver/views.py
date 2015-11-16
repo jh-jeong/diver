@@ -47,3 +47,4 @@ def upload(request):
 
         return redirect('/upload/')
     return render(request, 'upload.html')
+
