@@ -21,5 +21,9 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.main, name='main'),
     url(r'^upload/$', views.upload),
+    url(r'^search/$', views.search),
+    url(r'^auth/$', views.auth),
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url('', include('django.contrib.auth.urls', namespace='auth')),
 
 ]

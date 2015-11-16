@@ -6,7 +6,8 @@ Created on 2015. 11. 10.
 
 
 '''
-
+filter the list of items according to existance proper size
+for a given user_id
 '''
 def size_filter():
     pass
@@ -19,4 +20,11 @@ return the complete size configuration vector
 def complete_size():
     pass
 
-def 
+'''
+compare an item with user size configuration vector
+if an item has proper size that matches with given user,
+then output True with that size
+otherwise return False with null
+'''
+def _find_size():
+    pass
