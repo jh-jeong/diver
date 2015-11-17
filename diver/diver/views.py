@@ -1,5 +1,6 @@
 import os
 from django.core.files.storage import FileSystemStorage
+from django.http import HttpResponse
 
 
 from django.contrib.auth.decorators import user_passes_test
@@ -56,9 +57,10 @@ def main(request):
         #     print (item.images)
     return render(request, 'main.html', {'items':items})
 
-def like(request):
+def like(request, id):
     if request.method == 'GET':
-        print (request.GET.get('itemID', None))
+        print (id)
+    return HttpResponse("recieved" + id)
 
 @survey_required
 def search(request):
@@ -92,7 +94,7 @@ def search(request):
         for c,n in Item.CATEGORIES[i][1]:
             category2.append((i,c,n))
 
-    return render(request, 'search.html', 
+    return render(request, 'search.html',
         {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
          'category2': category2,
          'selected_category1': selected_category1,
