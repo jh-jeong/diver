@@ -15,12 +15,11 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/jquery-ui.min.css' %}">
 
   <style type="text/css">
-    body {
-      padding-top: 20px;
+    .main.container {
       padding-bottom: 20px;
       }
     img.logo {
-      width: 180px;
+      height: 4em;
     }
   </style>
   {% block head %}{% endblock %}
@@ -30,17 +29,25 @@
 </head>
 
 <body>
-  <div class="container">
-    <div class="navbar-header" href=>
-      <a href="/">
-      <img src="{% static 'images/logo.png' %}" alt="logo" class="logo">
-      </a>
-    </div>
-     <div class="navbar-collapse collapse" id="navbar-main">
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-main" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <div class="navbar-header">
+          <a href="/">
+          <img src="{% static 'images/logo.png' %}" alt="logo" class="logo">
+          </a>
+        </div>
+      </div>
+      <div class="navbar-collapse collapse" id="navbar-main">
         <ul class="nav navbar-nav">
           <li><a href="/search">추천 받기</a></li>
           <li><a href="/upload">사진 업로드</a></li>
-        </ul>
 
         <ul class="nav navbar-nav navbar-right">
           {% if user and not user.is_anonymous %}
@@ -51,8 +58,8 @@
         </ul>
       </div>
     </div>
-  </div>
-  <div class="container">
+  </nav>
+  <div class="main container">
     <section id="content">
       {% block content %}{% endblock %}
     </section>
@@ -62,9 +69,8 @@
 <hr />
 <footer>
 </footer>
-<script type="text/javascript" src="{% static 'javascript/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascript/jquery.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'javascript/jquery-ui.min.js' %}"></script>
-
+<script type="text/javascript" src="{% static 'javascript/bootstrap.min.js' %}"></script>
 {% block script %}{% endblock %}
 </html>
