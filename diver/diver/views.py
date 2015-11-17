@@ -36,6 +36,15 @@ def auth(request):
     return render(request, 'auth.html')
 
 def account(request):
+    if request.method == 'GET':
+        pass
+    elif request.method == 'POST':
+        customer = Customer(user_id=request.user, height_cm=180,weight_kg=73,
+                            chest_size_cm=50,waist_size_cm=30,sleeve_length_cm=40,
+                            leg_length_cm=30
+                            )
+        customer.save()
+
     return render(request, 'account.html')
 
 @survey_required
