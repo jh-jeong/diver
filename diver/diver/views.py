@@ -16,6 +16,10 @@ def auth(request):
     return render(request, 'auth.html')
 
 def main(request):
+
+    if request.method == 'GET':
+        pass
+
     return render(request, 'main.html')
 
 def search(request):
