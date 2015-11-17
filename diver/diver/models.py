@@ -61,6 +61,11 @@ class Item(models.Model):
             ('HOOD', "Hood"),
             ('CREW', "Crew sweatshirt"),
         )),
+        ("Bottom", (
+            ('DENIM', "Denim"),
+            ('SLACKS', "Slacks"),
+            ('JOGGER', "Jogger"),
+        )),
     )
     category = models.CharField(max_length=10, choices=CATEGORIES)
     get_category_code = lookup_code(CATEGORIES)
