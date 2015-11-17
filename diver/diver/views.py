@@ -32,13 +32,39 @@ def like(request):
         print (request.GET.get('itemID', None))
 
 def search(request):
+    selected_category1 = 0
+    selected_category2 = Item.CATEGORIES[0][1][0][0]
+    search_result = []
+    if request.method == 'POST':
+        category = request.POST['category']
+        for i in range(len(Item.CATEGORIES)):
+            for c,n in Item.CATEGORIES[i][1]:
+                if c == category:
+                    selected_category1 = i
+                    selected_category2 = c
+                    break
+
+        items = Item.objects.filter(category=category)
+        try:
+            lower = int(request.POST['lower'])
+            items = items.exclude(price__lte=lower)
+        except: pass
+        try:
+            upper = int(request.POST['upper'])
+            items = items.exclude(price__gte=upper)
+        except: pass
+        search_result = items
+
     category2 = []
     for i in range(len(Item.CATEGORIES)):
         for c,n in Item.CATEGORIES[i][1]:
             category2.append((i,c,n))
     return render(request, 'search.html', 
         {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
-         'category2': category2})
+         'category2': category2,
+         'selected_category1': selected_category1,
+         'selected_category2': selected_category2,
+         'search_result': search_result})
 
 def upload(request):
     if request.method == 'POST':
