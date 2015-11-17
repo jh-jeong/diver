@@ -84,12 +84,8 @@ def search(request):
     for i in range(len(Item.CATEGORIES)):
         for c,n in Item.CATEGORIES[i][1]:
             category2.append((i,c,n))
-<<<<<<< HEAD
-    return render(request, 'search.html',
-=======
 
     return render(request, 'search.html',
->>>>>>> 85b20637c3fff6b0362201a81f302d7a89dd4f39
         {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
          'category2': category2,
          'selected_category1': selected_category1,
