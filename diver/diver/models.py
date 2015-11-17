@@ -25,6 +25,16 @@ class Image(models.Model):
     filename = models.CharField(max_length=30)
     image = models.ImageField(null=True)
 
+def lookup_code(mapping):
+    def lookup(self, code):
+        for c,s in mapping:
+            if type(s) is tuple:
+                for k,v in s:
+                    if v == code: return k
+            else:
+                if c == code: return s
+    return lookup
+
 class Item(models.Model):
     name = models.CharField(max_length=30)
 
@@ -38,9 +48,10 @@ class Item(models.Model):
             ('KNIT', "Knit"),
             ('HOOD', "Hood"),
             ('CREW', "Crew sweatshirt"),
-        ),
+        )),
     )
     category = models.CharField(max_length=10, choices=CATEGORIES)
+    get_category_code = lookup_code(CATEGORIES)
 
     # List of materials.
     # Material code should be 2 chars.
@@ -58,6 +69,7 @@ class Item(models.Model):
         ('WL', "Wool"),
     )
     material = models.CharField(max_length=2, choices=MATERIALS)
+    get_material_code = lookup_code(MATERIALS)
 
     # List of patterns.
     # Pattern code should be 2 chars.
@@ -75,11 +87,13 @@ class Item(models.Model):
         ('TW', 'Twisted'),
     )
     pattern = models.CharField(max_length=2, choices=PATTERNS)
+    get_pattern_code = lookup_code(PATTERNS)
 
     sleeve_length = models.IntegerField()
     size = models.IntegerField()
     price = models.IntegerField()
     images = models.ManyToManyField(Image)
+    comment = models.TextField()
     purchase_url = models.URLField()
     #shop = models.ForeignKey(through = 'Shop')
 
