@@ -15,6 +15,7 @@ class Customer(models.Model):
     # Basic authentication information
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=128)
+    user_id = models.ForeignKey('auth.User')
 
     # Body dimensions
     height_cm = models.IntegerField()
@@ -60,6 +61,11 @@ class Item(models.Model):
             ('KNIT', "Knit"),
             ('HOOD', "Hood"),
             ('CREW', "Crew sweatshirt"),
+        )),
+        ("Bottom", (
+            ('DENIM', "Denim"),
+            ('SLACKS', "Slacks"),
+            ('JOGGER', "Jogger"),
         )),
     )
     category = models.CharField(max_length=10, choices=CATEGORIES)
