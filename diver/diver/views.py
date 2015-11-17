@@ -27,7 +27,6 @@ def main(request):
     return render(request, 'main.html', {'items':items})
 
 def like(request):
-
     if request.method == 'GET':
         print (request.GET.get('itemID', None))
 
