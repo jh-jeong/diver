@@ -107,6 +107,14 @@ class Item(models.Model):
     images = models.URLField()
     comment = models.TextField()
     purchase_url = models.URLField()
+
+    color_id1 = models.IntegerField()
+    color_id2 = models.IntegerField()
+    color_id3 = models.IntegerField()
+    color_ratio1 = models.IntegerField()
+    color_ratio2 = models.IntegerField()
+    color_ratio3 = models.IntegerField()
+
     #shop = models.ForeignKey(through = 'Shop')
 
 
