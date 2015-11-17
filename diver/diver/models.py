@@ -26,13 +26,13 @@ class Image(models.Model):
     image = models.ImageField(null=True)
 
 def lookup_code(mapping):
-    def lookup(self, code):
+    def lookup(name):
         for c,s in mapping:
             if type(s) is tuple:
                 for k,v in s:
-                    if v == code: return k
+                    if v.lower() == name.lower(): return k
             else:
-                if c == code: return s
+                if s.lower() == name.lower(): return s
     return lookup
 
 class Item(models.Model):
@@ -90,7 +90,7 @@ class Item(models.Model):
     get_pattern_code = lookup_code(PATTERNS)
 
     sleeve_length = models.IntegerField()
-    size = models.IntegerField()
+    size = models.IntegerField(null=True)
     price = models.IntegerField()
     images = models.ManyToManyField(Image)
     comment = models.TextField()
