@@ -6,6 +6,8 @@ from django.core.files import File
 from django.core.files import storage
 
 from diver.models import Image
+from diver.models import Item
+
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
 
@@ -18,9 +20,12 @@ def auth(request):
 def main(request):
 
     if request.method == 'GET':
-        pass
+        items = Item.objects.all()
 
-    return render(request, 'main.html')
+        # for item in items:
+        #     print (item.images)
+        print (items)
+    return render(request, 'main.html', {'items':items})
 
 def search(request):
     return render(request, 'search.html')
