@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
   {% load staticfiles %}
+
   <div class="jumbotron">
     <div class="container">
       <h1>DIVER</h1>
@@ -32,16 +33,45 @@
         <p><a href="#" role="button" class="btn btn-default">상세히 살피기</a></p>
       </div>
     </div>
-
-    <div class="row">
-      {% for item in items %}
-        <div class="col-md-3">
-          <img src={{ item.images }}>
-          {{ item.name }}
-          {{ item.price }}
-        </div>
-      {% endfor %}
-    </div>
   </div>
 
+  <div id="item-list" class="raw">
+    {% for item in items %}
+      <li like-item-id="{{ item.id }}">
+          <img src={{ item.images }}>
+          {{ item.name }} {{ item.price }}
+      </li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(document).ready(function(){
+      $.each($('div#item-list li'), function (i, li) {
+        var $li = $(li);
+        var itemID = $li.attr('like-item-id');
+        var a = $(document.createElement('button')).click(function(e){
+          $.ajax({
+            'method' : 'get',
+            'dataType': 'text',
+            'url' : '/like/',
+            'data' : {
+              'itemID' : itemID
+            },
+            'success' : function(res){
+              //console.log("success!!" + reservationID);
+              alert(res);
+              location.reload();
+            },
+            'error': function(jqxhr){
+              console.log("wtf!!" + reservationID);
+            }
+          });
+        }).text("좋아요");
+        $li.append(a);
+      })
+    });
+  </script>
 {% endblock %}
