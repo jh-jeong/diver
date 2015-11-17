@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="330d47bf-694c-4694-ab46-70184b63c343" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/diver/diver/templates/account.html" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/diver/diver/templates/upload.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/diver/db.sqlite3" afterPath="$PROJECT_DIR$/diver/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/diver/diver/templates/base.html" afterPath="$PROJECT_DIR$/diver/diver/templates/base.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/diver/diver/models.py" afterPath="$PROJECT_DIR$/diver/diver/models.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/diver/diver/templates/search.html" afterPath="$PROJECT_DIR$/diver/diver/templates/search.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/diver/diver/settings.py" afterPath="$PROJECT_DIR$/diver/diver/settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/diver/diver/urls.py" afterPath="$PROJECT_DIR$/diver/diver/urls.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/diver/diver/views.py" afterPath="$PROJECT_DIR$/diver/diver/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="diver.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -64,8 +56,8 @@
       <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/diver/diver/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.2255639" vertical-offset="471" max-vertical-offset="1515">
-              <caret line="64" column="16" selection-start-line="64" selection-start-column="16" selection-end-line="64" selection-end-column="16" />
+            <state vertical-scroll-proportion="-0.42857143" vertical-offset="1581" max-vertical-offset="1980">
+              <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -126,10 +118,11 @@
       <file leaf-file-name="search.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/diver/diver/templates/search.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0" vertical-offset="15" max-vertical-offset="975">
+            <state vertical-scroll-proportion="-0.0" vertical-offset="15" max-vertical-offset="1080">
               <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
               <folding>
-                <marker date="1447776616000" expanded="true" signature="1550:1626" placeholder="/*...*/" />
+                <marker date="1447780078000" expanded="true" signature="2200:2228" placeholder="{% block script ... %}" />
+                <marker date="1447780078000" expanded="true" signature="1929:2005" placeholder="/*...*/" />
               </folding>
             </state>
           </provider>
@@ -1062,7 +1055,8 @@
         <state vertical-scroll-proportion="-0.0" vertical-offset="15" max-vertical-offset="975">
           <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
           <folding>
-            <marker date="1447776616000" expanded="true" signature="1550:1626" placeholder="/*...*/" />
+            <marker date="1447780078000" expanded="true" signature="2200:2228" placeholder="{% block script ... %}" />
+            <marker date="1447780078000" expanded="true" signature="1929:2005" placeholder="/*...*/" />
           </folding>
         </state>
       </provider>
@@ -1127,8 +1121,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/diver/diver/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.2255639" vertical-offset="471" max-vertical-offset="1515">
-          <caret line="64" column="16" selection-start-line="64" selection-start-column="16" selection-end-line="64" selection-end-column="16" />
+        <state vertical-scroll-proportion="-0.42857143" vertical-offset="1581" max-vertical-offset="1980">
+          <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

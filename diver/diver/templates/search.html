@@ -4,39 +4,46 @@
 <div class="row">
   <div class="col-md-2">
     <h3>검색 필터 설정</h3>
-    <form method="post" action="/upload/" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
       <div class="form-group">
         <label for="category1">대분류</label>
         <select class="form-control" id="category1">
           {% for i, c in category1 %}
-            <option value="{{ i }}">{{ c }}</option>
+            <option value="{{ i }}" {% if i == selected_category1 %}selected="selected"{% endif %}>{{ c }}</option>
           {% endfor %}
         </select>
       </div>
 
       <div class="form-group">
         <label for="category2">소분류</label>
-        <select class="form-control" id="category2">
+        <select name="category" class="form-control" id="category2">
           {% for i, c, n in category2 %}
-            <option data-parent-value="{{ i }}" value="{{ c }}">{{ n }}</option>
+            <option data-parent-value="{{ i }}" value="{{ c }}" {% if c == selected_category2 %}selected="selected"{% endif %}>{{ n }}</option>
           {% endfor %}
         </select>
       </div>
 
       <div class="form-group">
         <label for="lower">가격 하한선</label>
-        <input class="form-control" type="number" id="lower">
+        <input name="lower" class="form-control" type="number" id="lower" value="{{ lower }}">
       </div>
       <div class="form-group">
         <label for="upper">가격 상한선 (상한 없음: 0)</label>
-        <input class="form-control" type="number" id="upper">
+        <input name="upper" class="form-control" type="number" id="upper" value="{{ upper }}">
       </div>
       <input type="submit" id="send" value="검색!" class="btn btn-primary"/>
     </form>
   </div>
   <div class="col-md-10">
+    {% if search_result %}
+      {% for item in search_result %}
+        <img src="{{ item.images }}">
+        <span>{{ item.name }}</span>
+        <span>{{ item.price }}</span>
+      {% endfor %}
+    {% endif %}
     <h3>옷들 갤러리 뷰가 들어감</h3>
   </div>
 </div>
@@ -45,15 +52,15 @@
 <script>
 function update_category2(category1) {
   $("#category2").children("[data-parent-value=\"" + category1 + "\"]").show();
-  $("#category2").children("[data-parent-value=\"" + category1 + "\"]").first().attr("selected", "selected");
   $("#category2").children(":not([data-parent-value=\"" + category1 + "\"])").hide();
 }
 
 $(document).ready(function() {
   $("#category1").change(function(e) {
     update_category2(e.target.value);
+    $("#category2").children("[data-parent-value=\"" + e.target.value + "\"]").first().attr("selected", "selected");
   });
-  update_category2("0");
+  update_category2($("#category1").val());
 });
 </script>
 {% endblock %}

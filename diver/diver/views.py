@@ -54,13 +54,44 @@ def like(request):
 
 @survey_required
 def search(request):
+    selected_category1 = 0
+    selected_category2 = Item.CATEGORIES[0][1][0][0]
+    specified_lower = None
+    specified_upper = None
+    search_result = []
+    if request.method == 'POST':
+        category = request.POST['category']
+        for i in range(len(Item.CATEGORIES)):
+            for c,n in Item.CATEGORIES[i][1]:
+                if c == category:
+                    selected_category1 = i
+                    selected_category2 = c
+                    break
+
+        items = Item.objects.filter(category=category)
+        try:
+            specified_lower = int(request.POST['lower'])
+            items = items.exclude(price__lte=specified_lower)
+        except: pass
+        try:
+            specified_upper = int(request.POST['upper'])
+            items = items.exclude(price__gte=specified_upper)
+        except: pass
+        search_result = items
+
     category2 = []
     for i in range(len(Item.CATEGORIES)):
         for c,n in Item.CATEGORIES[i][1]:
             category2.append((i,c,n))
-    return render(request, 'search.html',
-                  {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
-                   'category2': category2})
+
+    return render(request, 'search.html', 
+        {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
+         'category2': category2,
+         'selected_category1': selected_category1,
+         'selected_category2': selected_category2,
+         'lower': specified_lower,
+         'upper': specified_upper,
+         'search_result': search_result})
 
 @survey_required
 def upload(request):
