@@ -28,7 +28,13 @@ def main(request):
     return render(request, 'main.html', {'items':items})
 
 def search(request):
-    return render(request, 'search.html')
+    category2 = []
+    for i in range(len(Item.CATEGORIES)):
+        for c,n in Item.CATEGORIES[i][1]:
+            category2.append((i,c,n))
+    return render(request, 'search.html', 
+        {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
+         'category2': category2})
 
 def upload(request):
     if request.method == 'POST':
