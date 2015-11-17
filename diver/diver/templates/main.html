@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+  {% load staticfiles %}
   <div class="jumbotron">
     <div class="container">
       <h1>DIVER</h1>
@@ -33,7 +34,9 @@
     </div>
 
     <div class="row">
-
+      <img src="{% static 'images/logo.png' %}" alt="logo" class="logo">
     </div>
+
+
   </div>
 {% endblock %}
