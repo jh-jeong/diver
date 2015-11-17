@@ -23,8 +23,7 @@ __author__ = 'un'
 def survey_required(function):
   def wrap(request, *args, **kwargs):
 
-
-        if Customer.objects.filter(user_id=request.user.id):
+        if Customer.objects.filter(user_id=request.user.id) or not request.user.is_authenticated():
             return function(request, *args, **kwargs)
         else:
             return HttpResponseRedirect('/account')
