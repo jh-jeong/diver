@@ -1,15 +1,37 @@
 from django.db import models
 
 
+def lookup_code(mapping):
+    def lookup(name):
+        for c,s in mapping:
+            if type(s) is tuple:
+                for k,v in s:
+                    if v.lower() == name.lower(): return k
+            else:
+                if s.lower() == name.lower(): return s
+    return lookup
+
 class Customer(models.Model):
+    # Basic authentication information
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=128)
+
+    # Body dimensions
     height_cm = models.IntegerField()
-    weight_km = models.IntegerField()
-    shirt_size = models.IntegerField()
-    pants_size = models.IntegerField()
-    cap_size = models.IntegerField()
-    # body shape
+    weight_kg = models.IntegerField()
+    chest_size_cm = models.IntegerField()
+    waist_size_cm = models.IntegerField()
+    sleeve_length_cm = models.IntegerField()
+    leg_length_cm = models.IntegerField()
+    BODY_SHAPES = (
+        ('O', 'Abdominal obese'),
+        ('M', 'Muscular'),
+        ('A', 'Skinny'),
+        ('B', 'Fat'),
+        ('N', 'Normal'),
+    )
+    body_shape = models.CharField(max_length=1, choices=BODY_SHAPES)
+    get_body_shape_code = lookup_code(BODY_SHAPES)
 
     def like(item):
         pass
@@ -24,16 +46,6 @@ class Customer(models.Model):
 class Image(models.Model):
     filename = models.CharField(max_length=30)
     image = models.ImageField(null=True)
-
-def lookup_code(mapping):
-    def lookup(name):
-        for c,s in mapping:
-            if type(s) is tuple:
-                for k,v in s:
-                    if v.lower() == name.lower(): return k
-            else:
-                if s.lower() == name.lower(): return s
-    return lookup
 
 class Item(models.Model):
     name = models.CharField(max_length=30)
