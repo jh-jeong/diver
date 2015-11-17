@@ -1,7 +1,26 @@
 {% extends 'base.html' %}
+{% block head %}
+<style>
+.ellipsis {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.item {
+  padding-bottom: 40px;
+  text-align: center;
+}
+.item img {
+  width: 100%;
+}
+.item > .row {
+  width: 100%;
+}
+</style>
+{% endblock %}
 {% block content %}
   {% load staticfiles %}
-
   <div class="jumbotron">
     <div class="container">
       <h1>DIVER</h1>
@@ -10,8 +29,24 @@
       <p><a href="#" role="button" class="btn btn-default btn-lg">Learn more</a></p>
     </div>
   </div>
-
   <div class="container">
+    <div class="row">
+      {% for item in items %}
+        <div class="col-lg-3 col-md-4 col-xs-6 item">
+            <img src={{ item.images }}>
+            <div class="row">
+              <div class="col-md-9">
+                <p class="btn btn-link ellipsis">{{ item.name }}</p>
+              </div>
+              <div class="col-md-3">
+                <p class="btn btn-link" onclick="">{{ item.price }}</p>
+              </div>
+            </div>
+            <a class="btn btn- like" onclick="like({{item.id}})">Like!</a>
+        </div>
+      {% endfor %}
+    </div>
+
     <div class="row">
       <div class="col-md-4">
         <h2>이번달의 인기상품</h2>
@@ -34,44 +69,24 @@
       </div>
     </div>
   </div>
-
-  <div id="item-list" class="raw">
-    {% for item in items %}
-      <li like-item-id="{{ item.id }}">
-          <img src={{ item.images }}>
-          {{ item.name }} {{ item.price }}
-      </li>
-    {% endfor %}
-  </ul>
-
 {% endblock %}
 
 {% block script %}
   <script>
-    $(document).ready(function(){
-      $.each($('div#item-list li'), function (i, li) {
-        var $li = $(li);
-        var itemID = $li.attr('like-item-id');
-        var a = $(document.createElement('button')).click(function(e){
-          $.ajax({
-            'method' : 'get',
-            'dataType': 'text',
-            'url' : '/like/',
-            'data' : {
-              'itemID' : itemID
-            },
-            'success' : function(res){
-              //console.log("success!!" + reservationID);
-              alert(res);
-              location.reload();
-            },
-            'error': function(jqxhr){
-              console.log("wtf!!" + reservationID);
-            }
-          });
-        }).text("좋아요");
-        $li.append(a);
-      })
-    });
+    function like(id) {
+      $.ajax({
+        'method': 'get',
+        'dataType': 'text',
+        'url': '/like/'+id,
+        'success': function(res){
+          //console.log("success!!" + reservationID);
+          alert(res);
+          location.reload();
+        },
+        'error': function(request,status,error){
+          console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        }
+      });
+    }
   </script>
 {% endblock %}
