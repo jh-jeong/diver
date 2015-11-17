@@ -92,7 +92,7 @@ class Item(models.Model):
     sleeve_length = models.IntegerField()
     size = models.IntegerField(null=True)
     price = models.IntegerField()
-    images = models.ManyToManyField(Image)
+    images = models.URLField()
     comment = models.TextField()
     purchase_url = models.URLField()
     #shop = models.ForeignKey(through = 'Shop')
