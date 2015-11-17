@@ -6,6 +6,8 @@ from django.core.files import File
 from django.core.files import storage
 
 from diver.models import Image
+from diver.models import Item
+
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
 
@@ -16,10 +18,27 @@ def auth(request):
     return render(request, 'auth.html')
 
 def main(request):
-    return render(request, 'main.html')
+
+    if request.method == 'GET':
+        items = Item.objects.all()
+
+        # for item in items:
+        #     print (item.images)
+    return render(request, 'main.html', {'items':items})
+
+def like(request):
+
+    if request.method == 'GET':
+        print (request.GET.get('itemID', None))
 
 def search(request):
-    return render(request, 'search.html')
+    category2 = []
+    for i in range(len(Item.CATEGORIES)):
+        for c,n in Item.CATEGORIES[i][1]:
+            category2.append((i,c,n))
+    return render(request, 'search.html', 
+        {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
+         'category2': category2})
 
 def upload(request):
     if request.method == 'POST':
