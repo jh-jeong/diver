@@ -24,8 +24,12 @@ def main(request):
 
         # for item in items:
         #     print (item.images)
-        print (items)
     return render(request, 'main.html', {'items':items})
+
+def like(request):
+
+    if request.method == 'GET':
+        print (request.GET.get('itemID', None))
 
 def search(request):
     category2 = []
