@@ -27,11 +27,11 @@
 
       <div class="form-group">
         <label for="lower">가격 하한선</label>
-        <input name="lower" class="form-control" type="number" id="lower">
+        <input name="lower" class="form-control" type="number" id="lower" value="{{ lower }}">
       </div>
       <div class="form-group">
         <label for="upper">가격 상한선 (상한 없음: 0)</label>
-        <input name="upper" class="form-control" type="number" id="upper">
+        <input name="upper" class="form-control" type="number" id="upper" value="{{ upper }}">
       </div>
       <input type="submit" id="send" value="검색!" class="btn btn-primary"/>
     </form>
@@ -40,6 +40,8 @@
     {% if search_result %}
       {% for item in search_result %}
         <img src="{{ item.images }}">
+        <span>{{ item.name }}</span>
+        <span>{{ item.price }}</span>
       {% endfor %}
     {% endif %}
     <h3>옷들 갤러리 뷰가 들어감</h3>

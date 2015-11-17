@@ -34,6 +34,8 @@ def like(request):
 def search(request):
     selected_category1 = 0
     selected_category2 = Item.CATEGORIES[0][1][0][0]
+    specified_lower = None
+    specified_upper = None
     search_result = []
     if request.method == 'POST':
         category = request.POST['category']
@@ -46,12 +48,12 @@ def search(request):
 
         items = Item.objects.filter(category=category)
         try:
-            lower = int(request.POST['lower'])
-            items = items.exclude(price__lte=lower)
+            specified_lower = int(request.POST['lower'])
+            items = items.exclude(price__lte=specified_lower)
         except: pass
         try:
-            upper = int(request.POST['upper'])
-            items = items.exclude(price__gte=upper)
+            specified_upper = int(request.POST['upper'])
+            items = items.exclude(price__gte=specified_upper)
         except: pass
         search_result = items
 
@@ -64,6 +66,8 @@ def search(request):
          'category2': category2,
          'selected_category1': selected_category1,
          'selected_category2': selected_category2,
+         'lower': specified_lower,
+         'upper': specified_upper,
          'search_result': search_result})
 
 def upload(request):
