@@ -15,6 +15,7 @@ class Customer(models.Model):
     # Basic authentication information
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=128)
+    user_id = models.ForeignKey('auth.User')
 
     # Body dimensions
     height_cm = models.IntegerField()
