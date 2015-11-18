@@ -4,6 +4,8 @@ Created on 2015. 11. 18.
 @author: biscuit
 '''
 
+from fp_growth import find_frequent_itemsets
+
 def loadDataSet():
     return [[1, 3, 4], [2, 3, 5], [1, 2, 3, 5], [2, 5]]
 
@@ -23,7 +25,7 @@ def scanD(D, Ck, minSupport):
     for tid in D:
         for can in Ck:
             if can.issubset(tid):
-                if not ssCnt.has_key(can): ssCnt[can]=1
+                if not can in ssCnt: ssCnt[can]=1
                 else: ssCnt[can] += 1
     numItems = float(len(D))
     retList = []
@@ -48,7 +50,7 @@ def aprioriGen(Lk, k): #creates Ck
 
 def apriori(dataSet, minSupport = 0.5):
     C1 = createC1(dataSet)
-    D = map(set, dataSet)
+    D = list(map(set, dataSet))
     L1, supportData = scanD(D, C1, minSupport)
     L = [L1]
     k = 2
@@ -98,3 +100,8 @@ def pntRules(ruleList, itemMeaning):
             print(itemMeaning[item])
         print("confidence: %f" % ruleTup[2])
         print()       #print a blank line
+        
+A, B = apriori(loadDataSet(), 0.4)
+print(A, B)
+
+print (list(find_frequent_itemsets(loadDataSet(), 0.2, True)))

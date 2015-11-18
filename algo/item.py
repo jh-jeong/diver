@@ -7,13 +7,15 @@ import queue
 import time
 import threading
 from scipy.sparse import dok_matrix
-from .low_rank import MatrixCompletion
+from low_rank import MatrixCompletion
 import numpy as np
 import sqlite3 as sql
+import color
 
-DEFALUT_WEIGHT = (100,)
+DEFALUT_WEIGHT = (80, 20)
 FLUSH_MIN = 5
 SLEEP_TIME = 5
+LIKE_MAX = 50
 
 USER_NUM, ITEM_NUM = 0, 0
 USERS = []
@@ -45,25 +47,47 @@ def _init_rating():
         ITEMS.append(r[0])
     USER_NUM = len(USERS)
     ITEM_NUM = len(ITEMS)
-    RATING = dok_matrix((USER_NUM, ITEM_NUM), dtype=np.int8)
-    for u_id, i_id, rating in cur.execute("SELECT * FROM ratings"):
+    RATING = dok_matrix((USER_NUM, ITEM_NUM), dtype=np.float)
+    for u_id, i_id, rating in cur.execute("SELECT user_id, item_id, rating FROM item_conf"):
         RATING[u_id][i_id] = rating
     LRMC = MatrixCompletion(RATING)
 
-def score_item(weight, user_id, item_id):
-    global cr_read, cr_write
+def score_item(hanger, user_id, item_id):
+    global cr_read, cr_write, cur
+    
+    weight = DEFALUT_WEIGHT
+    # query for weight
     u_idx = USERS.index(user_id) 
     i_idx = ITEMS.index(item_id)
     with cr_mutex:
         cr_read += 1
         if cr_read == 1:
             cr_write.acquire()
-    score = weight * COMP_RATING[u_idx][i_idx]
+    score = weight[0]* COMP_RATING[u_idx][i_idx]
     with cr_mutex:
         cr_read -= 1
         if cr_read == 0:
             cr_write.release()
+    
+    cid_list, c_ratio = color.get_color(item_id)
+    color_d = 0
+    points = color.hanger_getColor(hanger)
+    for cid, ratio in zip(cid_list, c_ratio):
+        color_d += color.eval_color(points, cid) * ratio
+    score += weight[1]* color_d
+    
+    cur.execute("SELECT rate_count FROM items WHERE item_id=?",(item_id,))
+    rate_count = cur.fetchone()
+    
+    if rate_count > LIKE_MAX:
+        rate_count = LIKE_MAX
+    
+    score += weight[2]* rate_count / LIKE_MAX
+    
     return score
+
+def reorder_items(items, user_id, hanger):
+    return sorted(items, key= lambda x: score_item(hanger, user_id, x))
 
 def handle_q():
     global Q, RATING, USER_NUM, ITEM_NUM
@@ -118,3 +142,32 @@ def rating_add_item(item_id):
 
 def rating_remove_item(item_id):
     Q.put(('i-', item_id))
+
+
+def main():
+    global RATING, LRMC
+    _init_rating()
+    color.init_color()
+    RATING = RATING.toarray()
+    with open("test.csv", "r") as f:
+        for i, l in enumerate(f):
+            vals = l.split(",")
+            for j, v in enumerate(vals):
+                try:
+                    RATING[i][j] = float(v)
+                except ValueError:
+                    RATING[i][j] = np.NaN
+    LRMC._M = RATING
+    print("################################## BEFORE")
+    print(LRMC.get_matrix())
+    LRMC.complete_it("ASD")
+    C = LRMC.get_optimized_matrix()
+    for i, rows in enumerate(C):
+        for j, elem in enumerate(rows):
+            C[i][j] = round(C[i][j])
+    print()
+    print("################################## AFTER")
+    print(C)
+        
+if __name__ == '__main__':
+    main()
