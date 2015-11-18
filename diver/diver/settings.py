@@ -1,3 +1,4 @@
+
 """
 Django settings for diver project.
 
@@ -9,6 +10,7 @@ https://docs.djangoproject.com/en/1.8/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.8/ref/settings/
 """
+# from config import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -37,7 +39,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'diver'
+    'diver',
+    'social.apps.django_app.default',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -51,6 +54,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
 )
 
+AUTHENTICATION_BACKENDS = (
+   'social.backends.facebook.FacebookOAuth2',
+   'social.backends.google.GoogleOAuth2',
+   'social.backends.twitter.TwitterOAuth',
+   'django.contrib.auth.backends.ModelBackend',
+)
+
 ROOT_URLCONF = 'diver.urls'
 
 TEMPLATES = [
@@ -59,6 +69,8 @@ TEMPLATES = [
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
+            # 'debug': DEBUG,
+            # 'Debug': DEBUG,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -111,6 +123,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
@@ -125,3 +139,12 @@ STATIC_URL = '/static/'
 #STATIC_ROOT = "/var/www/example.com/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
 IMAGE_DIR = os.path.join(BASE_DIR, 'diver/static/images/')
+
+
+# social auth
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://localhost:8000'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = 'http://localhost:8000/account'
+
+SOCIAL_AUTH_FACEBOOK_KEY = '1643820665877805'
+SOCIAL_AUTH_FACEBOOK_SECRET = '7138426519e9f923ccc557dd31812265'
+

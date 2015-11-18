@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>My Diver</h1>
+
+<form method="post">
+{% csrf_token %}
+<input type="submit" name="survey"/>
+</form>
+
+{% endblock %}
