@@ -25,7 +25,7 @@ RATING = None
 COMP_RATING = None
 LRMC = None
 
-r_mutex = threading.Lock() 
+r_mutex = threading.Lock()
 cr_mutex = threading.Lock()
 cr_write = threading.Lock()
 ch_lock = threading.Lock()
@@ -38,7 +38,7 @@ conn = None
 cur = None
 
 def _init_rating():
-    global conn, cur, RATING, USER_NUM, ITEM_NUM, LRMC 
+    global conn, cur, RATING, USER_NUM, ITEM_NUM, LRMC
     conn = sql.connect("test.sqlite3")
     cur = conn.cursor()
     for r in cur.execute("SELECT user_id FROM users ORDER BY user_id"):
