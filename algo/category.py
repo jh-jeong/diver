@@ -9,7 +9,7 @@ from fp_growth import find_frequent_itemsets
 conn, cur_m, cur_i = None, None, None
 
 category_top = ["t-shirt", "crew", "knit", "shirt", "hood", "sleeveless"] 
-category_outer = [""]
+category_outer = ["stadium jumper", "blouson", "jumper", "denim", "jacket", "coat", "vest"]
 category_bottom = ["jean", "cotton", "jogger", "baggy", "slacks"]
 pattern = ["none", "multicolors", "checked", "printed", "striped", 
            "snowflake", "floral", "camoflage", "gradation", "twisted"]
@@ -22,11 +22,14 @@ mItemSet = None
 
 def _get_item_type(item_id):
     global cur_i
-    cur_i.execute("SELECT type, category, pattern, collar FROM items WHERE item_id=?", (item_id,))
+    cur_i.execute("SELECT type, category, pattern, collar, padding FROM items WHERE item_id=?", (item_id,))
     temp = cur_i.fetchone()
     ty = temp[0]
     
-    vec_i = [(0, temp[1], temp[2]), (1, temp[1], temp[3]), (2, temp[1]), (3, temp[1])][ty]
+    vec_i = [(0, temp[1], temp[2]), 
+             (1, temp[1], temp[3], temp[4]), 
+             (2, temp[1]), 
+             (3, temp[1])][ty]
     return vec_i
 
 def _get_match_data(match_id):
