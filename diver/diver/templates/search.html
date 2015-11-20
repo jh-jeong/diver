@@ -44,12 +44,12 @@
   </div>
   <div id="hanger">
     <h3>My hanger</h3>
-    <div class="hanger-slot outer-slot" data-accepts="OUTER"></div>
-    <div class="hanger-slot outer-slot" data-accepts="OUTER"></div>
-    <div class="hanger-slot top-slot" data-accepts="TOP"></div>
-    <div class="hanger-slot top-slot" data-accepts="TOP"></div>
-    <div class="hanger-slot bottom-slot" data-accepts="BOTTOM"></div>
-    <div class="hanger-slot shoes-slot" data-accepts="SHOE"></div>
+    <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
+    <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 1 %}</div>
+    <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 0 %}</div>
+    <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 1 %}</div>
+    <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
+    <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
   </div>
 </div>
 {% endblock %}
@@ -58,9 +58,18 @@
 $( function(){
   $(".button-to-hanger a").click( function(e) {
     item = $(e.target.parentElement.parentElement);
-    available_slots = $(`.hanger-slot:empty[data-accepts="${item.data("item-category1").toUpperCase()}"]`)
+    available_slots = $(`.hanger-slot:not(:has(*))[data-accepts="${item.data("item-category1").toUpperCase()}"]`)
     if(available_slots.length > 0){
       available_slots.first().append(item.clone());
+      $.ajax( {
+        type: 'POST',
+        url: '{% url 'update_hanger' %}',
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'ADD',
+            item_id: item.data("item-id")
+        }
+      });
     } else {
       alert("Hanger is full!");
     }

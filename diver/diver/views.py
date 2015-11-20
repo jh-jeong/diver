@@ -95,7 +95,27 @@ def search(request):
          'selected_category2': selected_category2,
          'lower': specified_lower,
          'upper': specified_upper,
-         'search_result': search_result})
+         'search_result': search_result,
+         'hanger': request.session.get('hanger', None)})
+
+def update_hanger(request):
+    if request.method == 'POST':
+        action = request.POST['action']
+        item_id = int(request.POST['item_id'])
+        
+        if not request.session.get('hanger', False):
+            request.session['hanger'] = []
+        print(request.session['hanger'])
+
+        if action == 'ADD':
+            request.session['hanger'].append(item_id)
+        elif action == 'DELETE':
+            request.session['hanger'].remove(item_id)
+        else:
+            raise SuspiciousMultipartForm()
+        return HttpResponse("")
+    else:
+        raise SuspiciousMultipartForm()
 
 @survey_required
 def upload(request):

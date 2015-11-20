@@ -12,3 +12,7 @@
   height: 10%;
   border: 1px solid black;
 }
+
+#hanger .hanger-slot .hanger-item img {
+  width: 120px;
+}

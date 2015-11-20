@@ -70,6 +70,14 @@ class Item(models.Model):
     )
     category = models.CharField(max_length=10, choices=CATEGORIES)
     get_category_code = lookup_code(CATEGORIES)
+    @staticmethod
+    def get_category1(category):
+        for category1 in Item.CATEGORIES:
+            for category2 in category1[1]:
+                if category.upper() == category2[0].upper():
+                    return category1[0]
+    def category1(self):
+        return Item.get_category1(self.category)
 
     # List of materials.
     # Material code should be 2 chars.
