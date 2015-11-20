@@ -196,8 +196,8 @@ def init_rating(cursor_):
         RATING[u_id][i_id] = rating
     LRMC = MatrixCompletion(RATING)
 
-    th_q = threading.Thread(None, _handle_q, "q_handle", daemon=True)
-    th_r = threading.Thread(None, _rating_refresh, "rate_refresh", daemon=True)
+    th_q = threading.Thread(None, _handle_q, "q_handle")
+    th_r = threading.Thread(None, _rating_refresh, "rate_refresh")
 
     th_q.start()
     th_r.start()
