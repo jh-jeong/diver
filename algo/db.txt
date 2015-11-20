@@ -173,9 +173,10 @@ CREATE TABLE users
 	height_cm            INTEGER NULL,
 	weight_kg            INTEGER NULL,
 	body_shape           INTEGER NULL,
+        size_leg             INTEGER NULL,
 	size_chest           INTEGER NULL,
 	size_waist           INTEGER NULL,
+        size_hip             INTEGER NULL,
+        size_thigh           INTEGER NULL,
 	like_count           INTEGER NULL,
-	sleeve_length        INTEGER NULL,
-	leg_length           INTEGER NULL
 );
