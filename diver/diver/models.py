@@ -62,10 +62,20 @@ class Item(models.Model):
             ('HOOD', "Hood"),
             ('CREW', "Crew sweatshirt"),
         )),
+        ("Outer", (
+            ('STJP', "Stadium jumper"),
+            ('BLOUSON', "Blouson"),
+            ('JUMPER', "Jumper"),
+            ('JACKET', "Jacket"),
+            ('COAT', "Coat"),
+            ('VEST', "Vest"),
+        )),
         ("Bottom", (
-            ('DENIM', "Denim"),
+            ('JEAN', "Jean"),
+            ('COTTON', "Cotton"),
             ('SLACKS', "Slacks"),
             ('JOGGER', "Jogger"),
+            ('BAGGY', "Baggy"),
         )),
     )
     category = models.CharField(max_length=10, choices=CATEGORIES)
@@ -94,6 +104,7 @@ class Item(models.Model):
         ('TW', "Tweed"),
         ('WL', "Wool"),
         ('DN', "Denim"),
+        ('LT', "Leather"),
     )
     material = models.CharField(max_length=2, choices=MATERIALS)
     get_material_code = lookup_code(MATERIALS)
@@ -124,8 +135,8 @@ class Item(models.Model):
         (3, "SHOES"),
     )
     type = models.IntegerField(choices=TYPES)
+    get_type_code = lookup_code(TYPES)
 
-    size = models.IntegerField(null=True)
     price = models.IntegerField()
     images = models.URLField()
     comment = models.TextField()
@@ -138,7 +149,7 @@ class Item(models.Model):
     color_ratio2 = models.IntegerField()
     color_ratio3 = models.IntegerField()
 
-    rate_count = models.IntegerField()
+    rate_count = models.IntegerField(default=0)
 
     # For Top
     sleeve_level = models.IntegerField()
@@ -152,18 +163,18 @@ class Item(models.Model):
         ('CL', "Collar"),
         ('CH', "Chinese"),
     )
-    neck = models.CharField(max_length=2, choices=NECK_TYPES)
+    neck = models.CharField(max_length=2, choices=NECK_TYPES, null=True)
     get_neck_code = lookup_code(NECK_TYPES)
-    zipper = models.IntegerField()
-    button = models.IntegerField()
+    zipper = models.IntegerField(null=True)
+    button = models.IntegerField(null=True)
 
     # For Outer
     ## sleeve_level
     ## zipper
-    length_level = models.IntegerField()
-    collar = models.IntegerField()
-    hat = models.IntegerField()
-    button = models.IntegerField()
+    length_level = models.IntegerField(null=True)
+    collar = models.IntegerField(null=True)
+    hat = models.IntegerField(null=True)
+    button = models.IntegerField(null=True)
 
     # For Bottom
     ## length_level
@@ -175,13 +186,13 @@ class Item(models.Model):
         ('WD', "Wide"),
         ('TP', "Tappered"),
     )
-    fit = models.CharField(max_length=2, choices=FIT_TYPES)
+    fit = models.CharField(max_length=2, choices=FIT_TYPES, null=True)
     get_fit_code = lookup_code(FIT_TYPES)
 
     # For Shoes
-    weight_g = models.IntegerField()
-    insoles = models.IntegerField()
-    brand = models.CharField(max_length=100)
+    weight_g = models.IntegerField(null=True)
+    insoles = models.IntegerField(null=True)
+    brand = models.CharField(max_length=100, null=True)
 
     #shop = models.ForeignKey(through = 'Shop')
 
