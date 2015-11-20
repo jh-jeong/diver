@@ -32,19 +32,19 @@ def size_filter_shoes(items, user_id): #item_id�쓽list瑜� 諛쏅뒗�떎?
 def size_filter_bottom(items, leg, waist, hip, thigh):
     filtered_list = []
     for item_id in items:
-        temp = cur.execute("SELECT length_level FROM bottom WHERE item_id=?", (item_id,))
+        temp = cur.execute("SELECT length_level FROM item WHERE item_id=?", (item_id,))
         level = temp.fetchone()[0]
         if level == 4:
             for length_, crotch_, waist_, thigh_, hip_ in \
                 cur.execute("SELECT length_cm, crotch_cm, waist_cm,\
-                thigh_cm, hip_cm FROM bottom_size WHERE item_id=?",(item_id,)):
+                thigh_cm, hip_cm FROM size WHERE item_id=?",(item_id,)):
                 if leg < (length_ - crotch_) and waist < waist_ and \
                     hip < hip_ and thigh < thigh_:
                     filtered_list.append(item_id)
                     break
         else:
             for waist_, thigh_, hip_ in cur.execute("SELECT waist_cm, thigh_cm,\
-                hip_cm FROM bottom_size WHERE item=id?",item_id):
+                hip_cm FROM size WHERE item=id?",item_id):
                 if waist < waist_ and thigh < thigh_ and hip < hip_:
                     filtered_list.append(item_id)
                     break
@@ -55,8 +55,7 @@ def size_filter_bottom(items, leg, waist, hip, thigh):
 def size_filter_top(items, chest):
     filtered_list = []
     for item_id in items:
-        for chest_, in cur.execute("SELECT chest_cm FROM top_size WHERE \
-            item_id=?", item_id):
+        for chest_, in cur.execute("SELECT chest_cm FROM size WHERE item_id=?", item_id):
             if chest < chest_:
                 filtered_list.append(item_id)
                 break

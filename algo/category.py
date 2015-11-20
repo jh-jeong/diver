@@ -22,26 +22,11 @@ mItemSet = None
 
 def _get_item_type(item_id):
     global cur_i
-    cur_i.execute("SELECT type FROM items WHERE item_id=?", (item_id,))
+    cur_i.execute("SELECT type, category, pattern, collar FROM items WHERE item_id=?", (item_id,))
     temp = cur_i.fetchone()
-    ty = temp[0] 
-    if ty == 0:
-        cur_i.execute("SELECT category, pattern FROM top WHERE item_id=?", (item_id,))
-        cat, pat = cur_i.fetchone()
-        vec_i = (0, cat, pat)
-    elif ty == 1:
-        cur_i.execute("SELECT category, collar FROM outer WHERE item_id=?", (item_id,))
-        cat, col = cur_i.fetchone()
-        vec_i = (1, cat, col)
-    elif ty == 2:
-        cur_i.execute("SELECT category FROM bottom WHERE item_id=?", (item_id,))
-        cat = cur_i.fetchone()[0]
-        vec_i = (2, cat)
-    else:
-        cur_i.execute("SELECT category FROM shoes WHERE item_id=?", (item_id,))
-        cat = cur_i.fetchone()[0]
-        vec_i = (3, cat)
-
+    ty = temp[0]
+    
+    vec_i = [(0, temp[1], temp[2]), (1, temp[1], temp[3]), (2, temp[1]), (3, temp[1])][ty]
     return vec_i
 
 def _get_match_data(match_id):
