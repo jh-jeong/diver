@@ -6,8 +6,7 @@ Created on 2015. 11. 19.
 import sqlite3 as sql
 from fp_growth import find_frequent_itemsets
 
-conn = None
-cur_c = None
+cur = None
 
 COLOR = []
 COLOR_THRESHOLD = 0.7
@@ -22,9 +21,10 @@ PALETTE = {'beige': (245,245,220), 'black': (0,0,0), 'blue': (0,0,255), 'brown':
            'white':(255,255,255), 'yellow': (255,255,0)}
 
 def _get_color(item_id):
-    global cur_c
-    cur_c.execute("SELECT c_id1, c_id1_ratio, c_id2, c_id2_ratio, c_id3, c_id3_ratio FROM items WHERE item_id=?", (item_id,))
-    temp = cur_c.fetchone()
+    global cur
+    cur.execute("SELECT color_id1, color_ratio1, color_id2, color_ratio2, color_id3, color_ratio3 \
+                FROM diver_item WHERE id=?", (item_id,))
+    temp = cur.fetchone()
     cid, c_ratio = temp[::2], temp[1::2]
     return cid, c_ratio
 
@@ -40,11 +40,11 @@ def _get_color_type(item_id):
     return vec_c
 
 def _get_color_data(match_id):
-    global cur_m
+    global cur
     ColorSet = []
-    for m in cur_m.execute("SELECT outer_id1, outer_id2, top_id1, \
-                            top_id2, bottom_id, shoes_id \
-                            FROM matches WHERE match_id=?", (match_id,)):
+    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, \
+                            top2_id, bottom_id, shoes_id \
+                            FROM diver_match WHERE id=?", (match_id,)):
         vec_m = []
         for i in m:
             if i != None:
@@ -54,10 +54,10 @@ def _get_color_data(match_id):
     return ColorSet
 
 def _init_color_data():
-    global cur_c
+    global cur
     colorSet = []
     vec_c = None
-    rows = list(cur_c.execute("SELECT outer_id1, outer_id2, top_id1, top_id2, bottom_id, shoes_id FROM matches"))
+    rows = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"))
     for m in rows:
         vec_c = set([])
         for i in m:
@@ -69,10 +69,9 @@ def _init_color_data():
 
 ''' Helper '''
 
-def init_color():
-    global COLOR, cItemSet, conn, cur_c
-    conn = sql.connect("test.sqlite3")
-    cur_c = conn.cursor()
+def init_color(cursor_):
+    global COLOR, cItemSet, cur
+    cur = cursor_
     COLOR = _init_color_data()
     cItemSet = list(find_frequent_itemsets(COLOR, 2, True))
     
@@ -117,7 +116,9 @@ def find_cid(r,g,b):
     return min_cid
 
 def main():
-    init_color()
+    conn = sql.connect("../diver/db.sqlite3")
+    cur = conn.cursor()
+    init_color(cur)
     
     print("MATCH SET:")
     print(COLOR)
@@ -126,7 +127,6 @@ def main():
     print("Caculated Item sets:")
     print(cItemSet)
     
-    conn.close()
     
 if __name__ == '__main__':
     main()
