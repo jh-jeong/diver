@@ -89,14 +89,8 @@ def search(request):
         except: pass
         search_result = items
 
-    category2 = []
-    for i in range(len(Item.CATEGORIES)):
-        for c,n in Item.CATEGORIES[i][1]:
-            category2.append((i,c,n))
-
     return render(request, 'search.html',
-        {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
-         'category2': category2,
+        {'categories': Item.CATEGORIES, 
          'selected_category1': selected_category1,
          'selected_category2': selected_category2,
          'lower': specified_lower,
@@ -133,4 +127,4 @@ def upload(request):
             #reopen.close()
 
         return redirect('/upload/')
-    return render(request, 'upload.html')
+    return render(request, 'upload.html', {'categories': Item.CATEGORIES})

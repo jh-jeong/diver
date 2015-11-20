@@ -22,6 +22,9 @@
       height: 4em;
     }
   </style>
+  <script type="text/javascript" src="{% static 'javascript/jquery.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'javascript/jquery-ui.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'javascript/bootstrap.min.js' %}"></script>
   {% block head %}{% endblock %}
   <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -67,13 +70,10 @@
       {% block content %}{% endblock %}
     </section>
   </div>
+{% block script %}{% endblock %}
 </body>
 </div>
 <hr />
 <footer>
 </footer>
-<script type="text/javascript" src="{% static 'javascript/jquery.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'javascript/jquery-ui.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'javascript/bootstrap.min.js' %}"></script>
-{% block script %}{% endblock %}
 </html>
