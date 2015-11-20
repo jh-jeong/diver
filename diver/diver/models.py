@@ -62,6 +62,8 @@ class Item(models.Model):
             ('HOOD', "Hood"),
             ('CREW', "Crew sweatshirt"),
         )),
+        ("Outer", (
+        )),
         ("Bottom", (
             ('DENIM', "Denim"),
             ('SLACKS', "Slacks"),
@@ -93,6 +95,7 @@ class Item(models.Model):
         ('SL', "Slub"),
         ('TW', "Tweed"),
         ('WL', "Wool"),
+        ('DN', "Denim"),
     )
     material = models.CharField(max_length=2, choices=MATERIALS)
     get_material_code = lookup_code(MATERIALS)
@@ -111,11 +114,19 @@ class Item(models.Model):
         ('SF', 'Snowflake'),
         ('ST', 'Striped'),
         ('TW', 'Twisted'),
+        ('VS', 'Vertical'),
     )
     pattern = models.CharField(max_length=2, choices=PATTERNS)
     get_pattern_code = lookup_code(PATTERNS)
 
-    sleeve_length = models.IntegerField()
+    TYPES = (
+        (0, "TOP"),
+        (1, "OUTER"),
+        (2, "BOTTOM"),
+        (3, "SHOES"),
+    )
+    type = models.IntegerField(choices=TYPES)
+
     size = models.IntegerField(null=True)
     price = models.IntegerField()
     images = models.URLField()
@@ -128,6 +139,51 @@ class Item(models.Model):
     color_ratio1 = models.IntegerField()
     color_ratio2 = models.IntegerField()
     color_ratio3 = models.IntegerField()
+
+    rate_count = models.IntegerField()
+
+    # For Top
+    sleeve_level = models.IntegerField()
+    NECK_TYPES = (
+        ('RN', "Round"),
+        ('HR', "Henry"),
+        ('HT', "Hat"),
+        ('VN', "V-Neck"),
+        ('ST', "Stripe"),
+        ('TT', "Turtle"),
+        ('CL', "Collar"),
+        ('CH', "Chinese"),
+    )
+    neck = models.CharField(max_length=2, choices=NECK_TYPES)
+    get_neck_code = lookup_code(NECK_TYPES)
+    zipper = models.IntegerField()
+    button = models.IntegerField()
+
+    # For Outer
+    ## sleeve_level
+    ## zipper
+    length_level = models.IntegerField()
+    collar = models.IntegerField()
+    hat = models.IntegerField()
+    button = models.IntegerField()
+
+    # For Bottom
+    ## length_level
+    FIT_TYPES = (
+        ('ST', "Straight"),
+        ('SL', "Slim"),
+        ('BG', "Baggy"),
+        ('SK', "Skinny"),
+        ('WD', "Wide"),
+        ('TP', "Tappered"),
+    )
+    fit = models.CharField(max_length=2, choices=FIT_TYPES)
+    get_fit_code = lookup_code(FIT_TYPES)
+
+    # For Shoes
+    weight_g = models.IntegerField()
+    insoles = models.IntegerField()
+    brand = models.CharField(max_length=100)
 
     #shop = models.ForeignKey(through = 'Shop')
 
