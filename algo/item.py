@@ -12,7 +12,7 @@ import numpy as np
 import sqlite3 as sql
 import color
 
-DEFALUT_WEIGHT = (80, 20)
+DEFALUT_WEIGHT = (60, 20, 20)
 FLUSH_MIN = 5
 SLEEP_TIME = 5
 LIKE_MAX = 50
@@ -51,45 +51,14 @@ def _init_rating():
     for u_id, i_id, rating in cur.execute("SELECT user_id, item_id, rating FROM item_conf"):
         RATING[u_id][i_id] = rating
     LRMC = MatrixCompletion(RATING)
+    
+    th_q = threading.Thread(None, _handle_q, "q_handle", daemon=True)
+    th_r = threading.Thread(None, _rating_refresh, "rate_refresh", daemon=True)
+    
+    th_q.start()
+    th_r.start()
 
-def score_item(hanger, user_id, item_id):
-    global cr_read, cr_write, cur
-    
-    weight = DEFALUT_WEIGHT
-    # query for weight
-    u_idx = USERS.index(user_id) 
-    i_idx = ITEMS.index(item_id)
-    with cr_mutex:
-        cr_read += 1
-        if cr_read == 1:
-            cr_write.acquire()
-    score = weight[0]* COMP_RATING[u_idx][i_idx]
-    with cr_mutex:
-        cr_read -= 1
-        if cr_read == 0:
-            cr_write.release()
-    
-    cid_list, c_ratio = color.get_color(item_id)
-    color_d = 0
-    points = color.hanger_getColor(hanger)
-    for cid, ratio in zip(cid_list, c_ratio):
-        color_d += color.eval_color(points, cid) * ratio
-    score += weight[1]* color_d
-    
-    cur.execute("SELECT rate_count FROM items WHERE item_id=?",(item_id,))
-    rate_count = cur.fetchone()
-    
-    if rate_count > LIKE_MAX:
-        rate_count = LIKE_MAX
-    
-    score += weight[2]* rate_count / LIKE_MAX
-    
-    return score
-
-def reorder_items(items, user_id, hanger):
-    return sorted(items, key= lambda x: score_item(hanger, user_id, x))
-
-def handle_q():
+def _handle_q():
     global Q, RATING, USER_NUM, ITEM_NUM
     while True:
         req = Q.get()
@@ -110,7 +79,7 @@ def handle_q():
 
 
 def _rating_refresh():
-    global COMP_RATING
+    global COMP_RATING, ch_count
     while True:
         time.sleep(SLEEP_TIME)
         with ch_lock:
@@ -121,6 +90,9 @@ def _rating_refresh():
             LRMC.complete_it("ASD")
         with cr_write:
             COMP_RATING = LRMC.get_optimized_matrix()
+
+
+''' helper functions '''
 
 def rating_fill(user_id, item_id, rating):
     global ch_count
@@ -143,31 +115,69 @@ def rating_add_item(item_id):
 def rating_remove_item(item_id):
     Q.put(('i-', item_id))
 
+def score_item(hanger, user_id, item_id):
+    global cr_read, cr_write, cur
+    
+    weight = DEFALUT_WEIGHT
+    # query for weight
+    u_idx = USERS.index(user_id) 
+    i_idx = ITEMS.index(item_id)
+    with cr_mutex:
+        cr_read += 1
+        if cr_read == 1:
+            cr_write.acquire()
+    score = weight[0]* COMP_RATING[u_idx][i_idx]
+    with cr_mutex:
+        cr_read -= 1
+        if cr_read == 0:
+            cr_write.release()
+    
+    cid_list, c_ratio = color.get_color(item_id)
+    color_d = 0
+    if len(hanger) != 0:
+        points = color.hanger_getColor(hanger)
+        for cid, ratio in zip(cid_list, c_ratio):
+            color_d += color.eval_color(points, cid) * ratio
+        score += weight[1]* color_d
+    else:
+        score += weight[1]
+    
+    cur.execute("SELECT rate_count FROM items WHERE item_id=?",(item_id,))
+    rate_count = cur.fetchone()[0]
+    
+    if rate_count > LIKE_MAX:
+        rate_count = LIKE_MAX
+    
+    score += weight[2]* rate_count / LIKE_MAX
+    
+    return score
+
+def reorder_items(items, user_id, hanger):
+    return sorted(items, key= lambda x: score_item(hanger, user_id, x))
+
 
 def main():
     global RATING, LRMC
     _init_rating()
     color.init_color()
-    RATING = RATING.toarray()
     with open("test.csv", "r") as f:
         for i, l in enumerate(f):
             vals = l.split(",")
             for j, v in enumerate(vals):
                 try:
-                    RATING[i][j] = float(v)
+                    RATING[(i,j)] = float(v)
                 except ValueError:
-                    RATING[i][j] = np.NaN
+                    pass
     LRMC._M = RATING
     print("################################## BEFORE")
     print(LRMC.get_matrix())
-    LRMC.complete_it("ASD")
+    LRMC.complete_it("sASD")
     C = LRMC.get_optimized_matrix()
     for i, rows in enumerate(C):
         for j, elem in enumerate(rows):
-            C[i][j] = round(C[i][j])
+            C[i][j] = round(elem)
     print()
     print("################################## AFTER")
     print(C)
-        
 if __name__ == '__main__':
     main()

@@ -25,14 +25,14 @@ for a given user_id
 '''
 
 
-def size_filter_shoes(items, user_id): #item_id의list를 받는다?
+def size_filter_shoes(items, user_id): #item_id�쓽list瑜� 諛쏅뒗�떎?
     return_list = []
 
 
 def size_filter_bottom(items, leg, waist, hip, thigh):
     filtered_list = []
     for item_id in items:
-        level, = cur.execute("SELECT length_level FROM bottom WHERE item_id=?",item_id):
+        level, = cur.execute("SELECT length_level FROM bottom WHERE item_id=?",item_id)
         if level == 4:
             for length_, crotch_, waist_, thigh_, hip_ in
                 cur.execute("SELECT length_cm, crotch_cm, waist_cm,\
@@ -108,26 +108,26 @@ def complete_size(height, weight, body_shape, \
     size_list = []
     clf = linear_model.LinearRegression()
 
-    if body_shape == 'O': #복부비만형
+    if body_shape == 'O': #蹂듬�鍮꾨쭔�삎
         #size_list.append(Size(160, 58, 67, 88, 78, 89, 42)) #SO
         size_list.append(Size(165, 63, 68, 90, 80, 91, 43)) #MO
         size_list.append(Size(170, 68, 70, 92, 82, 93, 45)) #MLO
         size_list.append(Size(175, 72, 72, 94, 84, 95, 47)) #LO
-    elif body_shape == 'M': #근육형
+    elif body_shape == 'M': #洹쇱쑁�삎
         size_list.append(Size(165, 61, 69, 92, 72, 90, 44)) #MM
         size_list.append(Size(170, 65, 71, 94, 74, 92, 46)) #MLM
         size_list.append(Size(175, 69, 73.5, 96, 76, 94, 48)) #LM
-    elif body_shape == 'A': #마른형
+    elif body_shape == 'A': #留덈Ⅸ�삎
         size_list.append(Size(165, 58, 69, 88, 70, 89, 42)) #MA
         size_list.append(Size(170, 63, 71, 90, 72, 91, 44)) #MLA
         size_list.append(Size(175, 67, 73.5, 92, 74, 93, 46)) #LA
-    elif body_shape == 'B': #비만형
+    elif body_shape == 'B': #鍮꾨쭔�삎
         size_list.append(Size(160, 60, 67, 92, 78, 91, 45)) #SB
         size_list.append(Size(165, 65, 69, 94, 80, 93, 47)) #MB
         size_list.append(Size(170, 70, 71, 94, 80, 94, 49)) #MLB
         size_list.append(Size(175, 75, 73.5, 98, 84, 97, 51)) #LB
         size_list.append(Size(180, 80, 75.5, 100, 86, 98, 53)) #XLB
-    else: #보통체형
+    else: #蹂댄넻泥댄삎
         size_list.append(Size(160, 56, 67, 88, 72, 89, 42)) #S
         size_list.append(Size(165, 62, 69, 90, 74, 91, 44)) #M
         size_list.append(Size(170, 66, 71, 92, 76, 93, 46)) #ML

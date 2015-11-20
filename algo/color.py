@@ -6,8 +6,8 @@ Created on 2015. 11. 19.
 import sqlite3 as sql
 from fp_growth import find_frequent_itemsets
 
-conn = sql.connect("test.sqlite3")
-cur_c = conn.cursor()
+conn = None
+cur_c = None
 
 COLOR = []
 COLOR_THRESHOLD = 0.7
@@ -21,15 +21,15 @@ PALETTE = {'beige': (245,245,220), 'black': (0,0,0), 'blue': (0,0,255), 'brown':
            'orange': (255,165,0), 'pink': (255,105,180), 'red': (255,0,0), 'skyblue': (135,206,250), 
            'white':(255,255,255), 'yellow': (255,255,0)}
 
-def get_color(item_id):
+def _get_color(item_id):
     global cur_c
     cur_c.execute("SELECT c_id1, c_id1_ratio, c_id2, c_id2_ratio, c_id3, c_id3_ratio FROM items WHERE item_id=?", (item_id,))
     temp = cur_c.fetchone()
     cid, c_ratio = temp[::2], temp[1::2]
     return cid, c_ratio
 
-def get_color_type(item_id):
-    cid, c_ratio = get_color(item_id)
+def _get_color_type(item_id):
+    cid, c_ratio = _get_color(item_id)
     if c_ratio[0] > COLOR_THRESHOLD:
         vec_c = set([cid[0],])
     elif c_ratio[0] + c_ratio[1] > COLOR_THRESHOLD:
@@ -39,7 +39,7 @@ def get_color_type(item_id):
         
     return vec_c
 
-def get_color_data(match_id):
+def _get_color_data(match_id):
     global cur_m
     ColorSet = []
     for m in cur_m.execute("SELECT outer_id1, outer_id2, top_id1, \
@@ -48,7 +48,7 @@ def get_color_data(match_id):
         vec_m = []
         for i in m:
             if i != None:
-                vec_m.append(get_color_type(i))
+                vec_m.append(_get_color_type(i))
         ColorSet.append(vec_m)
     # caching
     return ColorSet
@@ -59,10 +59,10 @@ def _init_color_data():
     vec_c = None
     rows = list(cur_c.execute("SELECT outer_id1, outer_id2, top_id1, top_id2, bottom_id, shoes_id FROM matches"))
     for m in rows:
-        vec_c = set([])    
+        vec_c = set([])
         for i in m:
             if i != None and type(i) != str:
-                vec_c |= get_color_type(i)
+                vec_c |= _get_color_type(i)
         colorSet.append(vec_c)
     # caching
     return colorSet
@@ -70,13 +70,15 @@ def _init_color_data():
 ''' Helper '''
 
 def init_color():
-    global COLOR, cItemSet
+    global COLOR, cItemSet, conn, cur_c
+    conn = sql.connect("test.sqlite3")
+    cur_c = conn.cursor()
     COLOR = _init_color_data()
     cItemSet = list(find_frequent_itemsets(COLOR, 2, True))
     
 def hanger_getColor(hanger):
     h_set = set([])
-    for c in map(get_color_type, hanger):
+    for c in map(_get_color_type, hanger):
         h_set |= c
     cand = {}
     for match, sup in cItemSet:
@@ -84,7 +86,7 @@ def hanger_getColor(hanger):
             cand[frozenset(match)]=sup
     
     result = set([])
-    for i in sorted(cand, key=cand.get, reverse=True)[:3]:
+    for i in sorted(cand, key=cand.get)[:3]:
         result |= i
     return result
 
@@ -103,8 +105,29 @@ def eval_color(cid_list, cid):
         if d < min_dist:
             min_dist = d
     return 1 - min_dist/COLOR_DMAX
+
+def find_cid(r,g,b):
+    min_d = COLOR_DMAX + 1
+    min_cid = -1
+    for i, c in enumerate(PALETTE.values()):
+        d = abs(c[0]-r) + abs(c[1]-g) + abs(c[2]-b)
+        if min_d > d:
+            min_cid = i
+            min_d = d
+    return min_cid
+
+def main():
+    init_color()
     
-
-
-
+    print("MATCH SET:")
+    print(COLOR)
+    
+    print()
+    print("Caculated Item sets:")
+    print(cItemSet)
+    
+    conn.close()
+    
+if __name__ == '__main__':
+    main()
 
