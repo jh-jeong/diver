@@ -4,7 +4,7 @@ Created on 2015. 11. 10.
 @author: biscuit
 '''
 import sqlite3 as sql
-from algo.fp_growth import find_frequent_itemsets
+from algo.fp import find_frequent_itemsets
 
 conn, cur_m, cur_i = None, None, None
 

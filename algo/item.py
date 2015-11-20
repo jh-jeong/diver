@@ -38,9 +38,7 @@ conn = None
 cur = None
 
 def add_prefercence_row(user_id):
-    global conn, cur, USER_NUM
-    conn = sql.connect("test.sqlite3")
-    cur = conn.cursor()
+    global cur
     cur.execute("insert into preference(user_id) values(?)", (user_id,))
     #-->other columns have default value 0
 
@@ -56,60 +54,60 @@ def update_preference(user_id, item_id, new_rating, prev_rating=0):
     # top
     if type_ == 0:
         # pattern, color, neck, sleeve_level
-        cur.execute("select pattern, neck, sleeve_level from top where \
-                item_id=?", (item_id,))
-        p, n, s = cur.fetchone()
-        ratio = 0
+        cur.execute("select pattern, neck, sleeve_level \
+                    color_id1, color_ratio1, \
+                    color_id2, color_ratio2, \
+                    color_id3, color_ratio3 from items where \
+                    item_id=?", (item_id,))
+        t = cur.fetchone()
+        p, n, s = t[:3]
+        c = t[3:]
         colors = []
-        for i in range(1,4):
-            cur.execute("select c_id%d, c_id%d_ratio from items where \
-                    item_id=?"%(i,i), (item_id,))
-            c, c_r = cur.fetchone()
-            ratio += c_r
-            colors.append((c,c_r))
+        for v in zip(c[0::2], c[1::2]):
+            colors.append(v)
         cur.execute("select pattern_%d, neck_%d, sleeveT_%d from preference \
-                where user_id=?"%(p, n, s),(user_id,))
+                    where user_id=?" % (p, n, s),(user_id,))
         o_p, o_n, o_s = cur.fetchone()
         cur.execute("update preference set pattern_%d=?, neck_%d=?,\
-                sleeveT_%d=? where user_id=?"%(p, n, s),
+                    sleeveT_%d=? where user_id=?" % (p, n, s),
                 (o_p + rating, o_n + rating, o_s + rating, user_id))
         for c, c_r in colors:
-            cur.execute("select top_%d from preference where user_id=?"%c,
-                    (user_id,))
+            cur.execute("select top_%d from preference where user_id=?" %c,(user_id,))
             o_c, = cur.fetchone()
-            cur.execute("update preference set top_%d=? where user_id=?"%c,
-                    (o_c + rating*c_r, user_id))
+            cur.execute("update preference set top_%d=? where user_id=?"%c,(o_c + rating*c_r, user_id))
     # outer
     elif type_ == 1:
         # zipper, button, hat, length
-        cur.execute("select zipper, button, hat, length_level from outer \
-                where item_id=?", (item_id,))
+        cur.execute("select zipper, button, hat, length_level from items \
+                    where item_id=?", (item_id,))
         z, b, h, l = cur.fetchone()
         cur.execute("select zipperO_%d, outer_button_%d, hatO_%d, out_len_%d \
-                from preference where user_id=?"%(z,b,h,l), (user_id,))
+                    from preference where user_id=?"%(z,b,h,l), (user_id,))
         o_z, o_b, o_h, o_l = cur.fetchone()
         cur.execute("update preference set zipperO_%d=?, outer_button_%d=?, \
-                hatO_%d=?, out_len_%d=? where user_id=?"%(z,b,h,l),
-                (o_z+rating, o_b+rating, o_h+rating, o_l+rating, user_id))
+                    hatO_%d=?, out_len_%d=? where user_id=?"%(z,b,h,l),
+                    (o_z+rating, o_b+rating, o_h+rating, o_l+rating, user_id))
     # bottom
     elif type_ == 2:
         # color, fit
         colors = []
-        ratio = 0
-        for i in range(1,4):
-            cur.execute("select c_id%d, c_id%d_ratio from items where \
-                    item_id=?"%(i,i), (item_id,))
-            c, c_r = cur.fetchone()
-            ratio += c_r
-            colors.append((c,c_r))
+        cur.execute("select fit \
+                    color_id1, color_ratio1, \
+                    color_id2, color_ratio2, \
+                    color_id3, color_ratio3 from items where \
+                    item_id=?", (item_id,))
+        t = cur.fetchone()
+        f = t[0]
+        c = t[1:]
+        for v in zip(c[0::2], c[1::2]):
+            colors.append(v)
         for c, c_r in colors:
             cur.execute("select bottom_%d from preference where user_id=?"%c,
                     (user_id,))
             o_c, = cur.fetchone()
             cur.execute("update preference set bottom_%d=? where user_id=?"%c,
                     (o_c + rating*c_r, user_id))
-        cur.execute("select fit from bottom where item_id=?", (item_id,))
-        f = cur.fetchone()
+            
         cur.execute("select fit_%d from preference where user_id=?"%f,
                 (user_id,))
         o_f, = cur.fetchone()
@@ -125,17 +123,17 @@ def cal_subscore(item_id, user_id):
 
     #top
     if type_ == 0:
-        cur.execute("select pattern, neck, sleeve_level from top where \
-            item_id=?", (item_id,))
-        p, n, s = cur.fetchone()
-        ratio = 0
+        cur.execute("select pattern, neck, sleeve_level \
+                    color_id1, color_ratio1, \
+                    color_id2, color_ratio2, \
+                    color_id3, color_ratio3 from items where \
+                    item_id=?", (item_id,))
+        t = cur.fetchone()
+        p, n, s = t[:3]
+        c = t[3:]
         colors = []
-        for i in range(1,4):
-            cur.execute("select c_id%d, c_id%d_ratio from items where \
-                item_id=?"%(i,i), (item_id,))
-            c, c_r = cur.fetchone()
-            ratio += c_r
-            colors.append((c,c_r))
+        for v in zip(c[0::2], c[1::2]):
+            colors.append(v)
 
         cur.execute("select pattern_%d, neck_%d, sleeveT_%d from preference \
             where user_id=?"%(p, n, s),(user_id,))
@@ -143,8 +141,7 @@ def cal_subscore(item_id, user_id):
         o_p, o_n, o_s = cur.fetchone()
         sum_ = 0
         for c, c_r in colors:
-            cur.execute("select top_%d from preference where user_id=?"%c,
-                (user_id,))
+            cur.execute("select top_%d from preference where user_id=?" %c,(user_id,))
             o_c, = cur.fetchone()
             sum_ += 1.2**(o_c*c_r)
 
@@ -153,11 +150,11 @@ def cal_subscore(item_id, user_id):
     #outer
     elif type_ == 1:
         # zipper, button, hat, length
-        cur.execute("select zipper, button, hat, length_level from outer \
-                where item_id=?", (item_id,))
+        cur.execute("select zipper, button, hat, length_level from items \
+                    where item_id=?", (item_id,))
         z, b, h, l = cur.fetchone()
         cur.execute("select zipperO_%d, outer_button_%d, hatO_%d, out_len_%d \
-                from preference where user_id=?"%(z,b,h,l), (user_id,))
+                    from preference where user_id=?" % (z,b,h,l), (user_id,))
         o_z, o_b, o_h, o_l = cur.fetchone()
 
         return 1.2**o_z + 1.2**o_b + 1.2**o_h + 1.2**o_l
@@ -166,29 +163,30 @@ def cal_subscore(item_id, user_id):
     elif type_ == 2:
         # color, fit
         colors = []
-        ratio = 0
-        for i in range(1,4):
-            cur.execute("select c_id%d, c_id%d_ratio from items where \
-                    item_id=?"%(i,i), (item_id,))
-            c, c_r = cur.fetchone()
-            ratio += c_r
-            colors.append((c,c_r))
+        cur.execute("select fit \
+                    color_id1, color_ratio1, \
+                    color_id2, color_ratio2, \
+                    color_id3, color_ratio3 from items where \
+                    item_id=?", (item_id,))
+        t = cur.fetchone()
+        f = t[0]
+        c = t[1:]
+        for v in zip(c[0::2], c[1::2]):
+            colors.append(v)
+            
         sum_ = 0
         for c, c_r in colors:
-            cur.execute("select bottom_%d from preference where user_id=?"%c,
-                    (user_id,))
+            cur.execute("select bottom_%d from preference where user_id=?"%c, (user_id,))
             o_c, = cur.fetchone()
             sum_ += 1.2**(o_c*c_r)
 
-        cur.execute("select fit from bottom where item_id=?", (item_id,))
-        f = cur.fetchone()
-        cur.execute("select fit_%d from preference where user_id=?"%f,
-                (user_id,))
+        cur.execute("select fit_%d from preference where user_id=?"%f, (user_id,))
         o_f, = cur.fetchone()
 
         return  1.2**o_f + sum_
 
-    return 0
+    else: 
+        return 0
 
 
 def _init_rating():
