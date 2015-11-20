@@ -37,27 +37,6 @@ Q = queue.Queue()
 conn = None
 cur = None
 
-def _init_rating():
-    global conn, cur, RATING, USER_NUM, ITEM_NUM, LRMC
-    conn = sql.connect("test.sqlite3")
-    cur = conn.cursor()
-    for r in cur.execute("SELECT user_id FROM users ORDER BY user_id"):
-        USERS.append(r[0])
-    for r in cur.execute("SELECT item_id FROM items ORDER BY item_id"):
-        ITEMS.append(r[0])
-    USER_NUM = len(USERS)
-    ITEM_NUM = len(ITEMS)
-    RATING = dok_matrix((USER_NUM, ITEM_NUM), dtype=np.float)
-    for u_id, i_id, rating in cur.execute("SELECT user_id, item_id, rating FROM item_conf"):
-        RATING[u_id][i_id] = rating
-    LRMC = MatrixCompletion(RATING)
-    
-    th_q = threading.Thread(None, _handle_q, "q_handle", daemon=True)
-    th_r = threading.Thread(None, _rating_refresh, "rate_refresh", daemon=True)
-    
-    th_q.start()
-    th_r.start()
-
 def _handle_q():
     global Q, RATING, USER_NUM, ITEM_NUM
     while True:
@@ -93,6 +72,27 @@ def _rating_refresh():
 
 
 ''' helper functions '''
+
+def init_rating():
+    global conn, cur, RATING, USER_NUM, ITEM_NUM, LRMC
+    conn = sql.connect("test.sqlite3")
+    cur = conn.cursor()
+    for r in cur.execute("SELECT user_id FROM users ORDER BY user_id"):
+        USERS.append(r[0])
+    for r in cur.execute("SELECT item_id FROM items ORDER BY item_id"):
+        ITEMS.append(r[0])
+    USER_NUM = len(USERS)
+    ITEM_NUM = len(ITEMS)
+    RATING = dok_matrix((USER_NUM, ITEM_NUM), dtype=np.float)
+    for u_id, i_id, rating in cur.execute("SELECT user_id, item_id, rating FROM item_conf"):
+        RATING[u_id][i_id] = rating
+    LRMC = MatrixCompletion(RATING)
+    
+    th_q = threading.Thread(None, _handle_q, "q_handle", daemon=True)
+    th_r = threading.Thread(None, _rating_refresh, "rate_refresh", daemon=True)
+    
+    th_q.start()
+    th_r.start()
 
 def rating_fill(user_id, item_id, rating):
     global ch_count
