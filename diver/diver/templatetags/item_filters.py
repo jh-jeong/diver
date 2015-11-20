@@ -8,6 +8,10 @@ register = template.Library()
 def get_category1(category):
     return Item.get_category1(category)
 
+@register.inclusion_tag('item_card_template.html')
+def item_card(item, class_names):
+    return {'item': item, 'class_names': class_names}
+
 @register.inclusion_tag('hanger_item_template.html')
 def hanger_item(item_ids, category1, slot_number):
     item = None
