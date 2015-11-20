@@ -176,6 +176,7 @@ class Item(models.Model):
     collar = models.IntegerField(null=True)
     hat = models.IntegerField(null=True)
     button = models.IntegerField(null=True)
+    padding = models.IntegerField(null=True)
 
     # For Bottom
     ## length_level
