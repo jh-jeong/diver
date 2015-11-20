@@ -69,6 +69,7 @@ class Item(models.Model):
             ('JACKET', "Jacket"),
             ('COAT', "Coat"),
             ('VEST', "Vest"),
+            ('DENIM', "Denim"),
         )),
         ("Bottom", (
             ('JEAN', "Jean"),
