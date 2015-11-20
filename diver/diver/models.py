@@ -62,8 +62,6 @@ class Item(models.Model):
             ('HOOD', "Hood"),
             ('CREW', "Crew sweatshirt"),
         )),
-        ("Outer", (
-        )),
         ("Bottom", (
             ('DENIM', "Denim"),
             ('SLACKS', "Slacks"),
@@ -187,6 +185,29 @@ class Item(models.Model):
 
     #shop = models.ForeignKey(through = 'Shop')
 
+class Size(models.Model):
+    item = models.ForeignKey('Item')
+
+    # For Top
+    length_cm = models.IntegerField()
+    shoulder_cm = models.IntegerField()
+    chest_cm = models.IntegerField()
+    sleeve_cm = models.IntegerField()
+    letter = models.CharField(max_length=5)
+
+    # For Outer
+    ## Shares attributes with Top
+
+    # For Bottom
+    ## length_cm
+    waist_cm = models.IntegerField()
+    thigh_cm = models.IntegerField()
+    crotch_cm = models.IntegerField()
+    ## letter
+
+    # For Shoes
+    size_mm = models.IntegerField()
+    correction = models.IntegerField()
 
 class Match(models.Model):
     items = models.ManyToManyField(Item)
@@ -197,6 +218,7 @@ class Shop(models.Model):
     url = models.URLField()
     items = models.ManyToManyField(Item)
     matches = models.ManyToManyField(Match)
+    rate_count = models.IntegerField()
 
 class Like(models.Model):
     customer_id = models.ImageField(null=False)
