@@ -32,14 +32,15 @@ def size_filter_shoes(items, user_id): #item_id�쓽list瑜� 諛쏅뒗�떎?
 def size_filter_bottom(items, leg, waist, hip, thigh):
     filtered_list = []
     for item_id in items:
-        level, = cur.execute("SELECT length_level FROM bottom WHERE item_id=?",item_id)
+        temp = cur.execute("SELECT length_level FROM bottom WHERE item_id=?", (item_id,))
+        level = temp.fetchone()[0]
         if level == 4:
-            for length_, crotch_, waist_, thigh_, hip_ in
+            for length_, crotch_, waist_, thigh_, hip_ in \
                 cur.execute("SELECT length_cm, crotch_cm, waist_cm,\
-                thigh_cm, hip_cm FROM bottom_size WHERE item_id=?",item_id):
-                if leg < (length_ - crotch_) and waist < waist_ and
+                thigh_cm, hip_cm FROM bottom_size WHERE item_id=?",(item_id,)):
+                if leg < (length_ - crotch_) and waist < waist_ and \
                     hip < hip_ and thigh < thigh_:
-                    filterd_list.append(item_id)
+                    filtered_list.append(item_id)
                     break
         else:
             for waist_, thigh_, hip_ in cur.execute("SELECT waist_cm, thigh_cm,\
@@ -54,7 +55,7 @@ def size_filter_bottom(items, leg, waist, hip, thigh):
 def size_filter_top(items, chest):
     filtered_list = []
     for item_id in items:
-        for chest_, in cur.execute("SELECT chest_cm FROM top_size WHERE
+        for chest_, in cur.execute("SELECT chest_cm FROM top_size WHERE \
             item_id=?", item_id):
             if chest < chest_:
                 filtered_list.append(item_id)
@@ -65,8 +66,8 @@ def size_filter_top(items, chest):
 
 def size_filter(items, user_id, class_):
     height, weight, body_shape, leg, chest, waist, hip, thigh = \
-            cur.execute("SELECT height_cm, weight_kg, body_shape, size_leg,
-            size_chest, size_waist, size_hip, size_thigh FROM users WHERE
+            cur.execute("SELECT height_cm, weight_kg, body_shape, size_leg, \
+            size_chest, size_waist, size_hip, size_thigh FROM users WHERE \
             user_id=%d"%user_id)
     height, weight, body_shape, leg, chest, waist, hip, thigh = \
             complete_size(height, weight, body_shape, leg, chest, waist, hip, thigh)
