@@ -6,10 +6,10 @@ Created on 2015. 11. 10.
 import sqlite3 as sql
 from algo.fp import find_frequent_itemsets
 
-conn, cur_m, cur_i = None, None, None
+cur = None
 
 category_top = ["t-shirt", "crew", "knit", "shirt", "hood", "sleeveless"] 
-category_outer = ["stadium jumper", "blouson", "jumper", "denim", "jacket", "coat", "vest"]
+category_outer = ["stadium jumper", "blouson", "jumper", "denim", "jacket", "coat", "vest", "cardigan"]
 category_bottom = ["jean", "cotton", "jogger", "baggy", "slacks"]
 pattern = ["none", "multicolors", "checked", "printed", "striped", 
            "snowflake", "floral", "camoflage", "gradation", "twisted"]
@@ -21,9 +21,9 @@ COLOR = []
 mItemSet = None
 
 def _get_item_type(item_id):
-    global cur_i
-    cur_i.execute("SELECT type, category, pattern, collar, padding FROM items WHERE item_id=?", (item_id,))
-    temp = cur_i.fetchone()
+    global cur
+    cur.execute("SELECT type, category, pattern, collar, padding FROM diver_item WHERE item_id=?", (item_id,))
+    temp = cur.fetchone()
     ty = temp[0]
     
     vec_i = [(0, temp[1], temp[2]), 
@@ -33,11 +33,11 @@ def _get_item_type(item_id):
     return vec_i
 
 def _get_match_data(match_id):
-    global cur_m
+    global cur
     dataSet = []
-    for m in cur_m.execute("SELECT outer_id1, outer_id2, top_id1, \
-                            top_id2, bottom_id, shoes_id \
-                            FROM matches WHERE match_id=?", (match_id,)):
+    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, \
+                            top2_id, bottom_id, shoes_id \
+                            FROM diver_match WHERE match_id=?", (match_id,)):
         vec_m = []
         for i in m:
             if i != None:
@@ -56,9 +56,9 @@ def _hanger_getMatch(hanger):
 
 
 def init_match_data():
-    global cur_m
+    global cur
     dataSet = []
-    for m in cur_m.execute("SELECT outer_id1, outer_id2, top_id1, top_id2, bottom_id, shoes_id FROM matches"):
+    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"):
         vec_m = []
         for i in m:
             if i != None and type(i) != str:
@@ -67,20 +67,18 @@ def init_match_data():
     # caching
     return dataSet
 
-def init_category():
-    global MATCH, mItemSet, conn, cur_m, cur_i
-    conn = sql.connect("test.sqlite3")
-    cur_m = conn.cursor()
-    cur_i = conn.cursor()
+def init_category(cursor_):
+    global MATCH, mItemSet, cur
+    cur = cursor_
     MATCH = init_match_data()
     mItemSet = list(find_frequent_itemsets(MATCH, 2, True))
     
-def hanger_complete(hanger, user_id):
-    global cur_m
+def hanger_complete(hanger, customer_id):
+    global cur
     
     candDict = _hanger_getMatch(hanger)
     
-    for r, mid in cur_m.execute("SELECT rating, match_id FROM ratings WHERE user_id=?", (user_id,)):
+    for r, mid in cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)):
         s = frozenset(_get_match_data(mid))
         try:
             candDict[s] = candDict[s]*r/5
@@ -89,7 +87,9 @@ def hanger_complete(hanger, user_id):
     return max(candDict, key=candDict.get)
     
 def main():
-    init_category()
+    conn = sql.connect("../diver/db.sqlite3")
+    cur = conn.cursor()
+    init_category(cur)
     
     print("MATCH SET:")
     print(MATCH)
@@ -97,8 +97,6 @@ def main():
     print()
     print("Caculated Item sets:")
     print(mItemSet)
-    
-    conn.close()
     
 if __name__ == '__main__':
     main()
