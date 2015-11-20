@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block styletags %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
+{% endblock %}
+
 {% block content %}
 <h1>추천 받기</h1>
 <div class="row">
@@ -7,23 +13,7 @@
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
-      <div class="form-group">
-        <label for="category1">대분류</label>
-        <select class="form-control" id="category1">
-          {% for i, c in category1 %}
-            <option value="{{ i }}" {% if i == selected_category1 %}selected="selected"{% endif %}>{{ c }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="category2">소분류</label>
-        <select name="category" class="form-control" id="category2">
-          {% for i, c, n in category2 %}
-            <option data-parent-value="{{ i }}" value="{{ c }}" {% if c == selected_category2 %}selected="selected"{% endif %}>{{ n }}</option>
-          {% endfor %}
-        </select>
-      </div>
+      {% include "category_select.html" %}
 
       <div class="form-group">
         <label for="lower">가격 하한선</label>
@@ -37,30 +27,44 @@
     </form>
   </div>
   <div class="col-md-10">
+    {% load item_filters %}
     {% if search_result %}
       {% for item in search_result %}
-        <img src="{{ item.images }}">
-        <span>{{ item.name }}</span>
-        <span>{{ item.price }}</span>
+        <div class="item-view col-md-5"
+            data-item-id="{{ item.id }}"
+            data-item-category1="{{ item.category|category1 }}"
+            data-item-category2="{{ item.category }}">
+          <img src="{{ item.images }}">
+          <span>{{ item.name }}</span>
+          <span>{{ item.price }}</span>
+          <span class="button-to-hanger"><a href="#">To hanger</a></span>
+        </div>
       {% endfor %}
     {% endif %}
-    <h3>옷들 갤러리 뷰가 들어감</h3>
+  </div>
+  <div id="hanger">
+    <h3>My hanger</h3>
+    <div class="hanger-slot outer-slot" data-accepts="OUTER"></div>
+    <div class="hanger-slot outer-slot" data-accepts="OUTER"></div>
+    <div class="hanger-slot top-slot" data-accepts="TOP"></div>
+    <div class="hanger-slot top-slot" data-accepts="TOP"></div>
+    <div class="hanger-slot bottom-slot" data-accepts="BOTTOM"></div>
+    <div class="hanger-slot shoes-slot" data-accepts="SHOE"></div>
   </div>
 </div>
 {% endblock %}
 {% block script %}
 <script>
-function update_category2(category1) {
-  $("#category2").children("[data-parent-value=\"" + category1 + "\"]").show();
-  $("#category2").children(":not([data-parent-value=\"" + category1 + "\"])").hide();
-}
-
-$(document).ready(function() {
-  $("#category1").change(function(e) {
-    update_category2(e.target.value);
-    $("#category2").children("[data-parent-value=\"" + e.target.value + "\"]").first().attr("selected", "selected");
+$( function(){
+  $(".button-to-hanger a").click( function(e) {
+    item = $(e.target.parentElement.parentElement);
+    available_slots = $(`.hanger-slot:empty[data-accepts="${item.data("item-category1").toUpperCase()}"]`)
+    if(available_slots.length > 0){
+      available_slots.first().append(item.clone());
+    } else {
+      alert("Hanger is full!");
+    }
   });
-  update_category2($("#category1").val());
 });
 </script>
 {% endblock %}
