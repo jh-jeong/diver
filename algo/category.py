@@ -9,7 +9,7 @@ from algo.fp import find_frequent_itemsets
 cur = None
 
 category_top = ["t-shirt", "crew", "knit", "shirt", "hood", "sleeveless"] 
-category_outer = ["stadium jumper", "blouson", "jumper", "denim", "jacket", "coat", "vest"]
+category_outer = ["stadium jumper", "blouson", "jumper", "denim", "jacket", "coat", "vest", "cardigan"]
 category_bottom = ["jean", "cotton", "jogger", "baggy", "slacks"]
 pattern = ["none", "multicolors", "checked", "printed", "striped", 
            "snowflake", "floral", "camoflage", "gradation", "twisted"]
