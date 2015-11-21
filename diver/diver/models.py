@@ -70,6 +70,7 @@ class Item(models.Model):
             ('COAT', "Coat"),
             ('VEST', "Vest"),
             ('DENIM', "Denim"),
+            ('CARDIGAN', "Cardigan"),
         )),
         ("Bottom", (
             ('JEAN', "Jean"),
@@ -106,6 +107,7 @@ class Item(models.Model):
         ('WL', "Wool"),
         ('DN', "Denim"),
         ('LT', "Leather"),
+        ('NL', "Nylon"),
     )
     material = models.CharField(max_length=2, choices=MATERIALS)
     get_material_code = lookup_code(MATERIALS)
@@ -223,27 +225,27 @@ class Size(models.Model):
     correction = models.IntegerField()
 
 class Match(models.Model):
-    shop = models.ForeignKey('Shop')
-    image = models.UrlField()
+    image = models.URLField()
     rate_count = models.IntegerField()
-    url = models.UrlField()
-    outer1 = models.ForeignKey('Item')
-    outer2 = models.ForeignKey('Item')
-    top1 = models.ForeignKey('Item')
-    top2 = models.ForeignKey('Item')
-    bottom = models.ForeignKey('Item')
-    shoes = models.ForeignKey('Item')
+    url = models.URLField()
+    outer1 = models.ForeignKey('Item', related_name='match_for_outer1')
+    outer2 = models.ForeignKey('Item', related_name='match_for_outer2')
+    top1 = models.ForeignKey('Item', related_name='match_for_top1')
+    top2 = models.ForeignKey('Item', related_name='match_for_top2')
+    bottom = models.ForeignKey('Item', related_name='match_for_bottom')
+    shoes = models.ForeignKey('Item', related_name='match_for_shoes')
 
 class Shop(models.Model):
     name = models.CharField(max_length=30)
     url = models.URLField()
     items = models.ManyToManyField(Item)
-    matches = models.ManyToManyField(Match)
+    matches = models.ManyToManyField('Match')
     rate_count = models.IntegerField()
 
 class Rating(models.Model):
     customer = models.ForeignKey('Customer')
-    item = models.ForeignKey('Item')
+    match = models.ForeignKey('Match', null=True)
+    item = models.ForeignKey('Item', null=True)
     rating = models.IntegerField()
 
 class Pref(models.Model):
@@ -303,7 +305,7 @@ class Pref(models.Model):
     outer_button_1 = models.IntegerField(default=0)
     outer_button_2 = models.IntegerField(default=0)
     outer_button_3 = models.IntegerField(default=0)
-    outer_button_4 = models.NUMERIC Field(default=0)
+    outer_button_4 = models.IntegerField(default=0)
     outer_button_5 = models.IntegerField(default=0)
     fit_0 = models.IntegerField(default=0)
     fit_1 = models.IntegerField(default=0)
