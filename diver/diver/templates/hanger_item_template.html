@@ -1,5 +1,7 @@
-{% if item %}
 <div class="hanger-item">
-  <img src="{{ item.images }}">
+    {% if item %}
+    <img src="{{ item.images }}">
+    {% else %}
+    <p>NO ITEM</p>
+    {% endif%}
 </div>
-{% else %}{% endif %}
