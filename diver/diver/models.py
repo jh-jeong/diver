@@ -237,7 +237,7 @@ class Color(models.Model):
         (13, "Skyblue"),
         (14, "White"),
         (15, "Yellow"),
-        (16, "Charcole"),
+        (16, "Charcoal"),
         (17, "Ivory"),
         (18, "Purple"),
         (19, "Dark green"),
