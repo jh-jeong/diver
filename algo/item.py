@@ -232,9 +232,9 @@ def init_rating(cursor_):
     ITEM_NUM = len(ITEMS)
     RATING = dok_matrix((USER_NUM+1, ITEM_NUM), dtype=np.float)
     for u_id, i_id, rating in cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"):
-        RATING[u_id][i_id] = rating
+        RATING[(USERS[u_id],ITEMS[i_id])] = rating
     for i in range(ITEM_NUM):
-        RATING[-1,i] = 0
+        RATING[(-1,ITEMS[i])] = 0
     LRMC = MatrixCompletion(RATING)
 
     th_q = threading.Thread(None, _handle_q, "q_handle")
