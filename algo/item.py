@@ -152,7 +152,7 @@ def _handle_q():
 
 
 def _rating_refresh():
-    global COMP_RATING, ch_count
+    global COMP_RATING, ch_count, LRMC
     
     with r_mutex:
         LRMC.complete_it("sASD")
