@@ -1,11 +1,12 @@
 {% if item %}
 {% load item_filters %}
 <div class="item {{ class_names }}"
-    data-item-id="{{ item.id }"
+     data-item-id="{{ item.id }}"
     data-item-category1="{{ item.category|category1 }}"
     data-item-category2="{{ item.category }}">
     <img src={{ item.images }}>
     <div class="item-colors col-md-12 col-xs-12 col-lg-12">
+      {% if item.color_set.all %}
       {% for color in item.color_set.all %}
         <div class="item-color-combination">
           <div class="item-color" style="background-color: {{ color.color_id1|hex_code }}; height: {{ color.color_ratio1 }}%;"></div>
@@ -17,6 +18,9 @@
           {% endif %}
         </div>
       {% endfor %}
+      {% else %}
+      <div class="dummy-color-combination"></div>
+      {% endif %}
     </div>
     <div class="col-md-12 col-xs-12 col-lg-12">
       <span class="star-rating">
