@@ -25,3 +25,10 @@ def hanger_item(item_ids, category1, slot_number):
                 else:
                     slot_number -= 1
     return {'item': item}
+
+@register.inclusion_tag('match_item_template.html')
+def match_item(cat1, num):
+    items = Item.objects.filter(type=cat1)
+    cat1 = Item.TYPES[cat1][1]
+
+    return {'items': items, 'num': num, 'type': cat1}

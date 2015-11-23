@@ -150,4 +150,4 @@ def upload(request):
             #reopen.close()
 
         return redirect('/upload/')
-    return render(request, 'upload.html', {'categories': Item.CATEGORIES})
+    return render(request, 'upload.html')

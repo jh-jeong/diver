@@ -1,0 +1,24 @@
+{% load item_filters %}
+<div class="panel panel-default">
+  <div class="panel-heading" role="tab" id="heading{{type}}{{num}}">
+    <h4 class="panel-title">
+      <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                              href="#collapse{{type}}{{num}}"
+                                              aria-expanded="true"
+                                              aria-controls="collapse{{type}}{{num}}">
+        {{type}} #{{num}}
+      </a>
+    </h4>
+  </div>
+  <div id="collapse{{type}}{{num}}" class="panel-collapse collapse"
+                                    role="tabpanel"
+                                    aria-labelledby="heading{{type}}{{num}">
+    <div class="panel-body">
+      <select id="select-{{type}}{{num}}">
+        {% for item in items %}
+        <option value="{{item.id}}">{{item.name}}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>
