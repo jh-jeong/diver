@@ -94,10 +94,10 @@ def size_filter_top(items, chest):
 
 
 def size_filter(items, user_id, class_):
-    height, weight, body_shape, leg, chest, waist, hip, thigh = \
+    height, weight, body_shape, leg, chest, waist, hip, thigh, shoes = \
             cur.execute("SELECT height_cm, weight_kg, body_shape, size_leg, \
-            size_chest, size_waist, size_hip, size_thigh FROM diver_customer WHERE \
-            user_id=%d"%user_id)
+            size_chest, size_waist, size_hip, size_thigh, shoes_size_mm \
+            FROM diver_customer WHERE user_id=%d"%user_id)
     height, weight, body_shape, leg, chest, waist, hip, thigh = \
             complete_size(height, weight, body_shape, leg, chest, waist, hip, thigh)
 
@@ -106,7 +106,7 @@ def size_filter(items, user_id, class_):
     elif class_ == 'bottom':
         filtered_list = size_filter_bottom(items, leg, waist, hip, thigh)
     else:
-        filtered_list = items
+        filtered_list = size_filter_sheos(items, shoes)
 
     return filtered_list
 
