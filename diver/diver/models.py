@@ -24,6 +24,7 @@ class Customer(models.Model):
     waist_size_cm = models.IntegerField()
     sleeve_length_cm = models.IntegerField()
     leg_length_cm = models.IntegerField()
+    shoes_size_mm = models.IntegerField()
     BODY_SHAPES = (
         ('O', 'Abdominal obese'),
         ('M', 'Muscular'),
@@ -270,7 +271,11 @@ class Rating(models.Model):
     customer = models.ForeignKey('Customer')
     match = models.ForeignKey('Match', null=True)
     item = models.ForeignKey('Item', null=True)
-    rating = models.IntegerField()
+
+    def rating_range_validator(rating):
+        if not (-2 <= RAting <= 2):
+            raise ValidationError("Rating should be between -2 and 2, inclusively.")
+    rating = models.SmallIntegerField(default=0, validators=[rating_range_validator])
 
 class Pref(models.Model):
     customer = models.ForeignKey(Customer)
