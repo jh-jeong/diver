@@ -26,8 +26,15 @@ filter the list of items according to existance proper size
 for a given user_id
 '''
 
-def size_filter_shoes(items, user_id): #item_id�쓽list瑜� 諛쏅뒗�떎?
-    return_list = []
+def size_filter_shoes(items, user_size_mm): #item_id�쓽list瑜� 諛쏅뒗�떎?
+    filtered_list = []
+    for item_id in items:
+        cur.execute("SELECT size_mm, correction FROM diver_size WHERE item_id=?",(item_id,))
+        size_mm, correction = cur.fetchone()
+        if user_size_mm < size_mm + correction + 2 and \
+                user_size_mm > size_mm + correction - 2:
+            filtered_list.append(item_id)
+    return filtered_list
 
 
 def size_filter_bottom(items, leg, waist, hip, thigh):
@@ -35,20 +42,42 @@ def size_filter_bottom(items, leg, waist, hip, thigh):
     for item_id in items:
         temp = cur.execute("SELECT length_level FROM diver_item WHERE item_id=?", (item_id,))
         level = temp.fetchone()[0]
-        if level == 4:
-            for length_, crotch_, waist_, thigh_, hip_ in \
+        for legnth_, crotch_, waist_, thigh_, hip_ in \
                 cur.execute("SELECT length_cm, crotch_cm, waist_cm,\
-                thigh_cm, hip_cm FROM diver_size WHERE item_id=?",(item_id,)):
-                if leg < (length_ - crotch_) and waist < waist_ and \
-                    hip < hip_ and thigh < thigh_:
+                thigh_cm, hip_cm FROM diver_size WHERE item_id=?", (item_id,)):
+            if (level == 4) and (waist_cm != -1):
+                if (leg < (length_ - crotch_)) and \
+                   (waist < waist_) and (hip < hip_) and (thigh < thigh_):
                     filtered_list.append(item_id)
                     break
-        else:
-            for waist_, thigh_, hip_ in cur.execute("SELECT waist_cm, thigh_cm,\
-                hip_cm FROM diver_size WHERE item=id?",item_id):
-                if waist < waist_ and thigh < thigh_ and hip < hip_:
+            elif (level == 4):
+                if (leg < (length_ - crotch_)) and \
+                   (hip < hip_) and (thigh < thigh_):
                     filtered_list.append(item_id)
                     break
+            elif waist_cm != -1:
+                if (waist < waist_) and (hip < hip_) and (thigh < thigh_):
+                    filtered_list.append(item_id)
+                    break
+            else:
+                if thigh < thigh_ and hip < hip_:
+                    filtered_list.append(item_id)
+                    break
+
+        #if level == 4:
+        #    for length_, crotch_, waist_, thigh_, hip_ in \
+        #        cur.execute("SELECT length_cm, crotch_cm, waist_cm,\
+        #        thigh_cm, hip_cm FROM diver_size WHERE item_id=?",(item_id,)):
+        #        if leg < (length_ - crotch_) and waist < waist_ and \
+        #            hip < hip_ and thigh < thigh_:
+        #            filtered_list.append(item_id)
+        #            break
+        #else:
+        #    for waist_, thigh_, hip_ in cur.execute("SELECT waist_cm, thigh_cm,\
+        #        hip_cm FROM diver_size WHERE item=id?",item_id):
+        #        if waist < waist_ and thigh < thigh_ and hip < hip_:
+        #            filtered_list.append(item_id)
+        #            break
 
     return filtered_list
 
@@ -65,10 +94,10 @@ def size_filter_top(items, chest):
 
 
 def size_filter(items, user_id, class_):
-    height, weight, body_shape, leg, chest, waist, hip, thigh = \
+    height, weight, body_shape, leg, chest, waist, hip, thigh, shoes = \
             cur.execute("SELECT height_cm, weight_kg, body_shape, size_leg, \
-            size_chest, size_waist, size_hip, size_thigh FROM diver_customer WHERE \
-            user_id=%d"%user_id)
+            size_chest, size_waist, size_hip, size_thigh, shoes_size_mm \
+            FROM diver_customer WHERE user_id=%d"%user_id)
     height, weight, body_shape, leg, chest, waist, hip, thigh = \
             complete_size(height, weight, body_shape, leg, chest, waist, hip, thigh)
 
@@ -77,7 +106,7 @@ def size_filter(items, user_id, class_):
     elif class_ == 'bottom':
         filtered_list = size_filter_bottom(items, leg, waist, hip, thigh)
     else:
-        filtered_list = items
+        filtered_list = size_filter_sheos(items, shoes)
 
     return filtered_list
 

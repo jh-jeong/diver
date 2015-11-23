@@ -5,6 +5,19 @@
     data-item-category1="{{ item.category|category1 }}"
     data-item-category2="{{ item.category }}">
     <img src={{ item.images }}>
+    <div class="item-colors">
+      {% for color in item.color_set.all %}
+        <div class="item-color-combination">
+          <div class="item-color" style="background-color: {{ color.color_id1|hex_code }}; height: {{ color.color_ratio1 }}%;"></div>
+          {% if color.color_ratio2 != 0 %}
+          <div class="item-color" style="background-color: {{ color.color_id2|hex_code }}; height: {{ color.color_ratio2 }}%;"></div>
+          {% endif %}
+          {% if color.color_ratio3 != 0 %}
+          <div class="item-color" style="background-color: {{ color.color_id3|hex_code }}; height: {{ color.color_ratio3 }}%;"></div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
     <div class="row">
       <div class="col-md-9">
         <p class="btn btn-link ellipsis">{{ item.name }}</p>
