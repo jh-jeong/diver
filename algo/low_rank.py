@@ -186,10 +186,9 @@ class MatrixCompletion:
     
         # Get shape and Omega
         m, n = M.shape
-        print(m,n)
         if r == None:
             r = min(m-1, n-1, 50)
-        print(r)
+    
         # Set relative error
         I, J = [], []
         M_list = []
@@ -213,7 +212,6 @@ class MatrixCompletion:
     
         XY = np.dot(X, Y)
         diff_on_omega = M_list - XY[Omega]
-        print(diff_on_omega)
         res = linalg.norm(diff_on_omega)
         iter_c = 0
         itres[iter_c] = res/frob_norm_data
