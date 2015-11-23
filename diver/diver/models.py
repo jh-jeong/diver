@@ -51,6 +51,16 @@ class Image(models.Model):
 class Item(models.Model):
     name = models.CharField(max_length=30)
 
+    # List of types.
+    TYPES = (
+        (0, "TOP"),
+        (1, "OUTER"),
+        (2, "BOTTOM"),
+        (3, "SHOES"),
+    )
+    type = models.IntegerField(choices=TYPES)
+    get_type_code = lookup_code(TYPES)
+
     # List of categories.
     # Category code should not be longer than 10 chars.
     CATEGORIES = (
@@ -131,26 +141,40 @@ class Item(models.Model):
     pattern = models.CharField(max_length=2, choices=PATTERNS)
     get_pattern_code = lookup_code(PATTERNS)
 
-    TYPES = (
-        (0, "TOP"),
-        (1, "OUTER"),
-        (2, "BOTTOM"),
-        (3, "SHOES"),
+    COLORS = (
+        (0, "Beige"),
+        (1, "Black"),
+        (2, "Blue"),
+        (3, "Brown"),
+        (4, "Gold"),
+        (5, "Green"),
+        (6, "Grey"),
+        (7, "Kakhi"),
+        (8, "Mint"),
+        (9, "Navy"),
+        (10, "Orange"),
+        (11, "Pink"),
+        (12, "Red"),
+        (13, "Skyblue"),
+        (14, "White"),
+        (15, "Yellow"),
+        (16, "Charcole"),
+        (17, "Ivory"),
+        (18, "Purple"),
+        (19, "Dark green"),
     )
-    type = models.IntegerField(choices=TYPES)
-    get_type_code = lookup_code(TYPES)
+    get_color_code = lookup_code(COLORS)
+    color_id1 = models.IntegerField(choices=COLORS)
+    color_id2 = models.IntegerField(choices=COLORS)
+    color_id3 = models.IntegerField(choices=COLORS)
+    color_ratio1 = models.IntegerField()
+    color_ratio2 = models.IntegerField()
+    color_ratio3 = models.IntegerField()
 
     price = models.IntegerField()
     images = models.URLField()
     comment = models.TextField()
     purchase_url = models.URLField()
-
-    color_id1 = models.IntegerField()
-    color_id2 = models.IntegerField()
-    color_id3 = models.IntegerField()
-    color_ratio1 = models.IntegerField()
-    color_ratio2 = models.IntegerField()
-    color_ratio3 = models.IntegerField()
 
     rate_count = models.IntegerField(default=0)
 
