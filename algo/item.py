@@ -36,10 +36,12 @@ ch_count = 0
 Q = queue.Queue()
 cur = None
 
+'''
 def add_preference_row(customer_id):
     global cur
     cur.execute("insert into diver_pref(customer_id) values(?)", (customer_id,))
     #-->other columns have default value 0
+'''
 
 #update_preference
 #items : list of item_id
@@ -151,6 +153,11 @@ def _handle_q():
 
 def _rating_refresh():
     global COMP_RATING, ch_count
+    
+    with r_mutex:
+        LRMC.complete_it("sASD")
+    with cr_write:
+        COMP_RATING = LRMC.get_optimized_matrix()
     while True:
         time.sleep(SLEEP_TIME)
         with ch_lock:
@@ -158,12 +165,12 @@ def _rating_refresh():
                 continue
             ch_count = 0
         with r_mutex:
-            LRMC.complete_it("ASD")
+            LRMC.complete_it("sASD")
         with cr_write:
             COMP_RATING = LRMC.get_optimized_matrix()
 
 def _score_item(hanger, user_id, item_id, weight):
-    global cr_read, cr_write, cur
+    global cr_read, cr_write, cur, COMP_RATING
 
     u_idx = USERS.index(user_id)
     i_idx = ITEMS.index(item_id)
