@@ -107,8 +107,8 @@ def hanger_getColor(hanger):
 def get_color_list(item_id):
     global cur
     cid_list = []
-    for id, in cur.excute("SELECT id FROM diver_color WHERE item_id=?", (item_id,)):
-        cid_list.append(id)
+    for sty_id, in cur.excute("SELECT id FROM diver_color WHERE item_id=?", (item_id,)):
+        cid_list.append(sty_id)
         
     return cid_list
 

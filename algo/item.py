@@ -86,7 +86,7 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
                 (o_f+rating, customer_id))
 
 
-def cal_subscore(item_id, customer_id):
+def _cal_subscore(item_id, customer_id):
     global conn, cur
 
     cur.execute("select type from diver_item where id=?", (item_id,))
@@ -129,27 +129,6 @@ def cal_subscore(item_id, customer_id):
     else: 
         return 0
 
-
-def init_rating(cursor_):
-    global cur, RATING, USER_NUM, ITEM_NUM, LRMC
-    cur = cursor_
-    for r in cur.execute("SELECT id FROM diver_customer ORDER BY id"):
-        USERS.append(r[0])
-    for r in cur.execute("SELECT id FROM diver_item ORDER BY id"):
-        ITEMS.append(r[0])
-    USER_NUM = len(USERS)
-    ITEM_NUM = len(ITEMS)
-    RATING = dok_matrix((USER_NUM, ITEM_NUM), dtype=np.float)
-    for u_id, i_id, rating in cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"):
-        RATING[u_id][i_id] = rating
-    LRMC = MatrixCompletion(RATING)
-
-    th_q = threading.Thread(None, _handle_q, "q_handle")
-    th_r = threading.Thread(None, _rating_refresh, "rate_refresh")
-
-    th_q.start()
-    th_r.start()
-
 def _handle_q():
     global Q, RATING, USER_NUM, ITEM_NUM
     while True:
@@ -183,31 +162,7 @@ def _rating_refresh():
         with cr_write:
             COMP_RATING = LRMC.get_optimized_matrix()
 
-
-''' helper functions '''
-
-def rating_fill(user_id, item_id, rating):
-    global ch_count
-    Q.put(('r', user_id, item_id, rating))
-    with ch_lock:
-        ch_count += 1
-
-def rating_add_user(user_id):
-    Q.put(('u+', user_id))
-
-def rating_remove_user(user_id):
-    global ch_count
-    Q.put(('u-', user_id))
-    with ch_lock:
-        ch_count += 1
-
-def rating_add_item(item_id):
-    Q.put(('i+', item_id))
-
-def rating_remove_item(item_id):
-    Q.put(('i-', item_id))
-
-def score_item(hanger, user_id, item_id, weight):
+def _score_item(hanger, user_id, item_id, weight):
     global cr_read, cr_write, cur
 
     u_idx = USERS.index(user_id)
@@ -251,6 +206,49 @@ def score_item(hanger, user_id, item_id, weight):
 
     return score, max_sty
 
+''' helper functions '''
+
+def init_rating(cursor_):
+    global cur, RATING, USER_NUM, ITEM_NUM, LRMC
+    cur = cursor_
+    for r in cur.execute("SELECT id FROM diver_customer ORDER BY id"):
+        USERS.append(r[0])
+    for r in cur.execute("SELECT id FROM diver_item ORDER BY id"):
+        ITEMS.append(r[0])
+    USER_NUM = len(USERS)
+    ITEM_NUM = len(ITEMS)
+    RATING = dok_matrix((USER_NUM, ITEM_NUM), dtype=np.float)
+    for u_id, i_id, rating in cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"):
+        RATING[u_id][i_id] = rating
+    LRMC = MatrixCompletion(RATING)
+
+    th_q = threading.Thread(None, _handle_q, "q_handle")
+    th_r = threading.Thread(None, _rating_refresh, "rate_refresh")
+
+    th_q.start()
+    th_r.start()
+
+def rating_fill(user_id, item_id, rating):
+    global ch_count
+    Q.put(('r', user_id, item_id, rating))
+    with ch_lock:
+        ch_count += 1
+
+def rating_add_user(user_id):
+    Q.put(('u+', user_id))
+
+def rating_remove_user(user_id):
+    global ch_count
+    Q.put(('u-', user_id))
+    with ch_lock:
+        ch_count += 1
+
+def rating_add_item(item_id):
+    Q.put(('i+', item_id))
+
+def rating_remove_item(item_id):
+    Q.put(('i-', item_id))
+
 def reorder_items(items, user_id, hanger):
     weight = DEFALUT_WEIGHT
     score_dict = {}
@@ -258,8 +256,8 @@ def reorder_items(items, user_id, hanger):
     sub_min, sub_max = (-1, -1)
     sty_dict = {}
     for i in items:
-        sc, max_sty = score_item(hanger, user_id, i, weight)
-        sb_sc = cal_subscore(i, user_id)
+        sc, max_sty = _score_item(hanger, user_id, i, weight)
+        sb_sc = _cal_subscore(i, user_id)
         if (sub_min == -1) or (sub_min > sb_sc):
             sub_min = sb_sc
         if (sub_max == -1) or (sub_max < sb_sc):
