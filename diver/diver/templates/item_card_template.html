@@ -5,6 +5,19 @@
     data-item-category1="{{ item.category|category1 }}"
     data-item-category2="{{ item.category }}">
     <img src={{ item.images }}>
+    <div class="item-colors col-md-12 col-xs-12 col-lg-12">
+      {% for color in item.color_set.all %}
+        <div class="item-color-combination">
+          <div class="item-color" style="background-color: {{ color.color_id1|hex_code }}; height: {{ color.color_ratio1 }}%;"></div>
+          {% if color.color_ratio2 != 0 %}
+          <div class="item-color" style="background-color: {{ color.color_id2|hex_code }}; height: {{ color.color_ratio2 }}%;"></div>
+          {% endif %}
+          {% if color.color_ratio3 != 0 %}
+          <div class="item-color" style="background-color: {{ color.color_id3|hex_code }}; height: {{ color.color_ratio3 }}%;"></div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
     <div class="col-md-12 col-xs-12 col-lg-12">
       <span class="star-rating">
         <input type="radio" name="rating{{item.id}}" value="1"><i></i>

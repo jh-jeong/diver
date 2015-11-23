@@ -14,22 +14,36 @@ COLOR_DMAX = 765
 
 cItemSet= None
 
-PALETTE = {'beige': (245,245,220), 'black': (0,0,0), 'blue': (0,0,255), 'brown': (165,42,42),
-           'darkgreen': (0,100,0), 'gold': (255,215,0), 'green':(50,205,50), 'gray':(190,190,190), 
-           'ivory': (255,255,240), 'kakhi': (189,183,107), 'mint': (173,255,47), 'navy':(0,0,128), 
-           'orange': (255,165,0), 'pink': (255,105,180), 'red': (255,0,0), 'skyblue': (135,206,250), 
-           'white':(255,255,255), 'yellow': (255,255,0)}
+COLOR_NAME = ["beige", "black", "blue", "brown", "gold", "green", "grey", "khaki",
+              "mint", "navy", "orange", "pink", "red", "skyblue", "white", "yellow",
+              "charcole", "ivory", "purple", "darkgreen"]
 
-def _get_color(item_id):
+PALETTE = {'beige': (245,245,220), 'black': (0,0,0), 'blue': (0,0,255), 'brown': (165,42,42),
+           'gold': (255,215,0), 'green':(50,205,50), 'grey':(190,190,190), 
+           'ivory': (255,255,240), 'khaki': (189,183,107), 'mint': (173,255,47), 'navy':(0,0,128), 
+           'orange': (255,165,0), 'pink': (255,105,180), 'red': (255,0,0), 'skyblue': (135,206,250), 
+           'white':(255,255,255), 'yellow': (255,255,0), 'charcole': (54, 69, 79), 
+           'ivory' : (255, 255, 240), 'purple': (128, 0, 128), 'darkgreen': (1, 50, 32)}
+
+COLOR_RGB = [PALETTE[d] for d in COLOR_NAME]
+
+def _get_color(color_id):
     global cur
     cur.execute("SELECT color_id1, color_ratio1, color_id2, color_ratio2, color_id3, color_ratio3 \
-                FROM diver_item WHERE id=?", (item_id,))
+                FROM diver_color WHERE id=?", (color_id,))
     temp = cur.fetchone()
     cid, c_ratio = temp[::2], temp[1::2]
     return cid, c_ratio
 
-def _get_color_type(item_id):
-    cid, c_ratio = _get_color(item_id)
+def _get_item_id(color_id):
+    global cur
+    cur.execute("SELECT item_id \
+                FROM diver_color WHERE id=?", (color_id,))
+    item_id, = cur.fetchone()
+    return item_id
+
+def _get_color_type(color_id):
+    cid, c_ratio = _get_color(color_id)
     if c_ratio[0] > COLOR_THRESHOLD:
         vec_c = set([cid[0],])
     elif c_ratio[0] + c_ratio[1] > COLOR_THRESHOLD:
@@ -89,8 +103,17 @@ def hanger_getColor(hanger):
         result |= i
     return result
 
+
+def get_color_list(item_id):
+    global cur
+    cid_list = []
+    for sty_id, in cur.excute("SELECT id FROM diver_color WHERE item_id=?", (item_id,)):
+        cid_list.append(sty_id)
+        
+    return cid_list
+
 def manhattan_color(cid_1, cid_2):
-    color_1, color_2 = PALETTE[cid_1], PALETTE[cid_2]
+    color_1, color_2 = COLOR_RGB[cid_1], COLOR_RGB[cid_2]
     distance = 0
     distance += abs(color_1[0] - color_2[0])
     distance += abs(color_1[1] - color_2[1])
@@ -108,7 +131,7 @@ def eval_color(cid_list, cid):
 def find_cid(r,g,b):
     min_d = COLOR_DMAX + 1
     min_cid = -1
-    for i, c in enumerate(PALETTE.values()):
+    for i, c in enumerate(COLOR_RGB.values()):
         d = abs(c[0]-r) + abs(c[1]-g) + abs(c[2]-b)
         if min_d > d:
             min_cid = i

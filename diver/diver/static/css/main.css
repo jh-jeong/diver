@@ -14,6 +14,21 @@ body {
 .item img {
   width: 100%;
 }
+.item .item-colors {
+  position: relative;
+  bottom: 40px;
+  left: 7px;
+}
+.item .item-color-combination {
+  width: 30px;
+  height: 30px;
+  border: 1px solid black;
+  float: left;
+  margin: 3px;
+}
+.item .item-color {
+  width: 100%;
+}
 .item > .row {
   width: 100%;
 }
