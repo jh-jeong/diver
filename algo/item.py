@@ -144,10 +144,16 @@ def _handle_q():
             else:           # "u" or "i" in req[0]
                 ty, res = req[0]
                 if ty == 'u':
+                    for i in range(ITEM_NUM):
+                        RATING.pop(-1,i)
                     USER_NUM += [-1, 1][res=="+"]
+                    RATING.resize((USER_NUM, ITEM_NUM))
+                    for i in range(ITEM_NUM):
+                        RATING[-1,i] = 0
                 else:
                     ITEM_NUM += [-1, 1][res=="+"]
-                RATING.resize((USER_NUM, ITEM_NUM))
+                    RATING[-1,-1] = 0
+                
         Q.task_done()
 
 
@@ -224,9 +230,11 @@ def init_rating(cursor_):
         ITEMS.append(r[0])
     USER_NUM = len(USERS)
     ITEM_NUM = len(ITEMS)
-    RATING = dok_matrix((USER_NUM, ITEM_NUM), dtype=np.float)
+    RATING = dok_matrix((USER_NUM+1, ITEM_NUM), dtype=np.float)
     for u_id, i_id, rating in cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"):
         RATING[u_id][i_id] = rating
+    for i in range(ITEM_NUM):
+        RATING[-1,i] = 0
     LRMC = MatrixCompletion(RATING)
 
     th_q = threading.Thread(None, _handle_q, "q_handle")
