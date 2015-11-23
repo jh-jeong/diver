@@ -139,27 +139,26 @@ def _handle_q():
             break
         with r_mutex:
             if 'r' in req[0]:
-                u_id, i_id, rating = req[1:]
-                RATING[u_id][i_id] = rating
+                u_idx, i_idx, rating = req[1:]
+                RATING[(u_idx,i_idx)] = rating
             else:           # "u" or "i" in req[0]
                 ty, res = req[0]
                 if ty == 'u':
                     for i in range(ITEM_NUM):
-                        RATING.pop((-1,i))
+                        RATING[(-1,i)] = 0
                     USER_NUM += [-1, 1][res=="+"]
                     RATING.resize((USER_NUM, ITEM_NUM))
                     for i in range(ITEM_NUM):
-                        RATING[(-1,i)] = 0
+                        RATING[(-1,i)] = 1
                 else:
                     ITEM_NUM += [-1, 1][res=="+"]
-                    RATING[(-1,-1)] = 0
+                    RATING[(-1,-1)] = 1
                 
         Q.task_done()
 
 
 def _rating_refresh():
     global COMP_RATING, ch_count, LRMC
-    
     with r_mutex:
         LRMC.complete_it("sASD")
     with cr_write:
@@ -232,9 +231,9 @@ def init_rating(cursor_):
     ITEM_NUM = len(ITEMS)
     RATING = dok_matrix((USER_NUM+1, ITEM_NUM), dtype=np.float)
     for u_id, i_id, rating in cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"):
-        RATING[(USERS.index(u_id)-1,ITEMS.index(i_id)-1)] = rating
+        RATING[(USERS.index(u_id),ITEMS.index(i_id))] = rating
     for i in range(ITEM_NUM):
-        RATING[(-1,i)] = 0
+        RATING[(-1,i)] = 1
     LRMC = MatrixCompletion(RATING)
 
     th_q = threading.Thread(None, _handle_q, "q_handle")
@@ -245,7 +244,7 @@ def init_rating(cursor_):
 
 def rating_fill(user_id, item_id, rating):
     global ch_count
-    Q.put(('r', user_id, item_id, rating))
+    Q.put(('r', USERS.index(user_id), ITEMS.index(item_id), rating))
     with ch_lock:
         ch_count += 1
 
@@ -292,15 +291,7 @@ def main():
     cur = conn.cursor()
     init_rating(cur)
     color.init_color(cur)
-    with open("test.csv", "r") as f:
-        for i, l in enumerate(f):
-            vals = l.split(",")
-            for j, v in enumerate(vals):
-                try:
-                    RATING[(i,j)] = float(v)
-                except ValueError:
-                    pass
-    LRMC._M = RATING
+    '''
     print("################################## BEFORE")
     print(LRMC.get_matrix())
     LRMC.complete_it("sASD")
@@ -311,6 +302,7 @@ def main():
     print()
     print("################################## AFTER")
     print(C)
+    '''
     
 if __name__ == '__main__':
     main()
