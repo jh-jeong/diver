@@ -197,6 +197,8 @@ class MatrixCompletion:
             J.append(j)
             M_list.append(M[i,j])
         M_list = np.array(M_list)
+        
+        print(M_list)
         Omega = [I,J]
         frob_norm_data = linalg_s.norm(M)
         relres = reltol * frob_norm_data
@@ -212,6 +214,7 @@ class MatrixCompletion:
     
         XY = np.dot(X, Y)
         diff_on_omega = M_list - XY[Omega]
+        print(diff_on_omega)
         res = linalg.norm(diff_on_omega)
         iter_c = 0
         itres[iter_c] = res/frob_norm_data
