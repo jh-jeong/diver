@@ -5,6 +5,7 @@ Created on 2015. 11. 10.
 '''
 import sqlite3 as sql
 from algo.fp import find_frequent_itemsets
+from algo import color
 
 cur = None
 
@@ -41,13 +42,15 @@ def _get_match_data(match_id):
         vec_m = []
         for i in m:
             if i != None:
-                vec_m.append(_get_item_type(i))
+                item_id = color._get_item_id(i)
+                vec_m.append(_get_item_type(item_id))
         dataSet.append(vec_m)
     # caching
     return dataSet
 
 def _hanger_getMatch(hanger):
-    h_set = set(map(_get_item_type, hanger))
+    i_hanger = map(hanger, color._get_item_id)
+    h_set = set(map(_get_item_type, i_hanger))
     cand = {}
     for match, sup in mItemSet:
         if h_set < set(match):
@@ -62,7 +65,8 @@ def init_match_data():
         vec_m = []
         for i in m:
             if i != None and type(i) != str:
-                vec_m.append(_get_item_type(i))
+                item_id = color._get_color(i)
+                vec_m.append(_get_item_type(item_id))
         dataSet.append(vec_m)
     # caching
     return dataSet
@@ -81,7 +85,7 @@ def hanger_complete(hanger, customer_id):
     for r, mid in cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)):
         s = frozenset(_get_match_data(mid))
         try:
-            candDict[s] = candDict[s]*r/5
+            candDict[s] = candDict[s]*(r+2)/4
         except KeyError:
             pass
     return max(candDict, key=candDict.get)

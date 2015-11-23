@@ -41,7 +41,6 @@ def add_prefercence_row(customer_id):
     cur.execute("insert into diver_pref(customer_id) values(?)", (customer_id,))
     #-->other columns have default value 0
 
-
 #update_preference
 #items : list of item_id
 #rating : -2~2
@@ -52,28 +51,17 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
     type_, =cur.fetchone()
     # top
     if type_ == 0:
-        # pattern, color, neck, sleeve_level
+        # pattern, neck, sleeve_level
         cur.execute("select pattern, neck, sleeve_level \
-                    color_id1, color_ratio1, \
-                    color_id2, color_ratio2, \
-                    color_id3, color_ratio3 from diver_item where \
-                    id=?", (item_id,))
-        t = cur.fetchone()
-        p, n, s = t[:3]
-        c = t[3:]
-        colors = []
-        for v in zip(c[0::2], c[1::2]):
-            colors.append(v)
+                    from diver_item where id=?", (item_id,))
+        p, n, s = cur.fetchone()
         cur.execute("select pattern_%d, neck_%d, sleeveT_%d from diver_pref \
                     where customer_id=?" % (p, n, s),(customer_id,))
         o_p, o_n, o_s = cur.fetchone()
         cur.execute("update diver_pref set pattern_%d=?, neck_%d=?,\
                     sleeveT_%d=? where customer_id=?" % (p, n, s),
                 (o_p + rating, o_n + rating, o_s + rating, customer_id))
-        for c, c_r in colors:
-            cur.execute("select top_%d from diver_pref where customer_id=?" %c,(customer_id,))
-            o_c, = cur.fetchone()
-            cur.execute("update diver_pref set top_%d=? where customer_id=?"%c,(o_c + rating*c_r, customer_id))
+            
     # outer
     elif type_ == 1:
         # zipper, button, hat, length
@@ -87,24 +75,10 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
                     (o_z+rating, o_b+rating, o_h+rating, o_l+rating, customer_id))
     # bottom
     elif type_ == 2:
-        # color, fit
-        colors = []
-        cur.execute("select fit \
-                    color_id1, color_ratio1, \
-                    color_id2, color_ratio2, \
-                    color_id3, color_ratio3 from diver_item where id=?", (item_id,))
-        t = cur.fetchone()
-        f = t[0]
-        c = t[1:]
-        for v in zip(c[0::2], c[1::2]):
-            colors.append(v)
-        for c, c_r in colors:
-            cur.execute("select bottom_%d from diver_pref where customer_id=?"%c,
-                    (customer_id,))
-            o_c, = cur.fetchone()
-            cur.execute("update diver_pref set bottom_%d=? where customer_id=?"%c,
-                    (o_c + rating*c_r, customer_id))
-            
+        # fit
+        cur.execute("select fit from diver_item where id=?", (item_id,))
+        f, = cur.fetchone()
+        
         cur.execute("select fit_%d from diver_pref where customer_id=?"%f,
                 (customer_id,))
         o_f, = cur.fetchone()
@@ -121,26 +95,14 @@ def cal_subscore(item_id, customer_id):
     #top
     if type_ == 0:
         cur.execute("select pattern, neck, sleeve_level \
-                    color_id1, color_ratio1, \
-                    color_id2, color_ratio2, \
-                    color_id3, color_ratio3 from diver_item where id=?", (item_id,))
-        t = cur.fetchone()
-        p, n, s = t[:3]
-        c = t[3:]
-        colors = []
-        for v in zip(c[0::2], c[1::2]):
-            colors.append(v)
+                    from diver_item where id=?", (item_id,))
+        p, n, s = cur.fetchone()
 
         cur.execute("select pattern_%d, neck_%d, sleeveT_%d from diver_pref where customer_id=?"%(p, n, s),(customer_id,))
 
         o_p, o_n, o_s = cur.fetchone()
-        sum_ = 0
-        for c, c_r in colors:
-            cur.execute("select top_%d from diver_pref where customer_id=?" %c,(customer_id,))
-            o_c, = cur.fetchone()
-            sum_ += 1.2**(o_c*c_r)
 
-        return 1.2**o_p + 1.2**o_n + 1.2**o_s + sum_
+        return 1.2**o_p + 1.2**o_n + 1.2**o_s
 
     #outer
     elif type_ == 1:
@@ -156,27 +118,13 @@ def cal_subscore(item_id, customer_id):
     #bottom
     elif type_ == 2:
         # color, fit
-        colors = []
-        cur.execute("select fit \
-                    color_id1, color_ratio1, \
-                    color_id2, color_ratio2, \
-                    color_id3, color_ratio3 from diver_item where id=?", (item_id,))
-        t = cur.fetchone()
-        f = t[0]
-        c = t[1:]
-        for v in zip(c[0::2], c[1::2]):
-            colors.append(v)
+        cur.execute("select fit from diver_item where id=?", (item_id,))
+        f, = cur.fetchone()
             
-        sum_ = 0
-        for c, c_r in colors:
-            cur.execute("select bottom_%d from diver_pref where customer_id=?"%c, (customer_id,))
-            o_c, = cur.fetchone()
-            sum_ += 1.2**(o_c*c_r)
-
         cur.execute("select fit_%d from diver_pref where customer_id=?"%f, (customer_id,))
         o_f, = cur.fetchone()
 
-        return  1.2**o_f + sum_
+        return  1.2**o_f
 
     else: 
         return 0
@@ -273,18 +221,27 @@ def score_item(hanger, user_id, item_id, weight):
         cr_read -= 1
         if cr_read == 0:
             cr_write.release()
-
-    cid_list, c_ratio = color.get_color(item_id)
-    color_d = 0
+            
+    
     if len(hanger) != 0:
         points = color.hanger_getColor(hanger)
-        for cid, ratio in zip(cid_list, c_ratio):
-            color_d += color.eval_color(points, cid) * ratio
-        score += weight[1]* color_d
+    
+    color_list = color.get_color_list(item_id)
+    color_score = {}
+    for sty in color_list:
+        cids, c_ratios = color._get_color(sty)
+        color_d = 0
+        for cid, ratio in zip(cids, c_ratios):
+            color_d += color.eval_color(points, cid) * ratio / 100
+        color_score[sty] = color_d
+            
+    if len(hanger) != 0:
+        max_sty = max(color_d, key=color_d.get)
+        score += weight[1]* color_score[max_sty]
     else:
         score += weight[1]
 
-    cur.execute("SELECT rate_count FROM items WHERE id=?",(item_id,))
+    cur.execute("SELECT rate_count FROM diver_item WHERE id=?",(item_id,))
     rate_count = cur.fetchone()[0]
 
     if rate_count > LIKE_MAX:
@@ -292,17 +249,27 @@ def score_item(hanger, user_id, item_id, weight):
 
     score += weight[2]* rate_count / LIKE_MAX
 
-    return score
+    return score, max_sty
 
 def reorder_items(items, user_id, hanger):
-    sub_score = [(item_id, cal_subscore(item_id, user_id)) for item_id in items]
-    _, min_ = min(sub_score, key = lambda x: x[1])
-    _, max_ = max(sub_score, key = lambda x: x[1])
-    sub_score = dict(sub_score)
     weight = DEFALUT_WEIGHT
-    return sorted(items, key= lambda x: score_item(hanger, user_id, x, weight)+\
-                                weight[3]*((sub_score[x]-min_) / (max_-min_)), \
-                         reverse = True)
+    score_dict = {}
+    sub_scores = {}
+    sub_min, sub_max = (-1, -1)
+    sty_dict = {}
+    for i in items:
+        sc, max_sty = score_item(hanger, user_id, i, weight)
+        sb_sc = cal_subscore(i, user_id)
+        if (sub_min == -1) or (sub_min > sb_sc):
+            sub_min = sb_sc
+        if (sub_max == -1) or (sub_max < sb_sc):
+            sub_max = sb_sc
+        score_dict[i]= sc
+        sub_scores[i]= sb_sc
+        sty_dict[i] = max_sty    
+    
+    return sorted(items, key= lambda x: score_dict[x]+ weight[3]*((sub_scores[x]-sub_min) / (sub_max-sub_min))
+                  ,reverse = True), sty_dict
 
 
 def main():
