@@ -1,12 +1,16 @@
 from django import template
 
-from diver.models import Item
+from diver.models import Item, Color
 
 register = template.Library()
 
 @register.filter(name='category1')
 def get_category1(category):
     return Item.get_category1(category)
+
+@register.filter(name='hex_code')
+def hex_code(color_id):
+    return "#%02X%02X%02X" % Color.COLOR_VALUES[color_id][1]
 
 @register.inclusion_tag('item_card_template.html')
 def item_card(item, class_names):
