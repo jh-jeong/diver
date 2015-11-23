@@ -36,7 +36,7 @@ ch_count = 0
 Q = queue.Queue()
 cur = None
 
-def add_prefercence_row(customer_id):
+def add_preference_row(customer_id):
     global cur
     cur.execute("insert into diver_pref(customer_id) values(?)", (customer_id,))
     #-->other columns have default value 0
