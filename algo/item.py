@@ -145,14 +145,14 @@ def _handle_q():
                 ty, res = req[0]
                 if ty == 'u':
                     for i in range(ITEM_NUM):
-                        RATING.pop(-1,i)
+                        RATING.pop((-1,i))
                     USER_NUM += [-1, 1][res=="+"]
                     RATING.resize((USER_NUM, ITEM_NUM))
                     for i in range(ITEM_NUM):
-                        RATING[-1,i] = 0
+                        RATING[(-1,i)] = 0
                 else:
                     ITEM_NUM += [-1, 1][res=="+"]
-                    RATING[-1,-1] = 0
+                    RATING[(-1,-1)] = 0
                 
         Q.task_done()
 
@@ -232,9 +232,9 @@ def init_rating(cursor_):
     ITEM_NUM = len(ITEMS)
     RATING = dok_matrix((USER_NUM+1, ITEM_NUM), dtype=np.float)
     for u_id, i_id, rating in cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"):
-        RATING[(USERS[u_id],ITEMS[i_id])] = rating
+        RATING[(USERS.index(u_id)-1,ITEMS.index(i_id)-1)] = rating
     for i in range(ITEM_NUM):
-        RATING[(-1,ITEMS[i])] = 0
+        RATING[(-1,i)] = 0
     LRMC = MatrixCompletion(RATING)
 
     th_q = threading.Thread(None, _handle_q, "q_handle")
