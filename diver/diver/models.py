@@ -6,9 +6,9 @@ def lookup_code(mapping):
         for c,s in mapping:
             if type(s) is tuple:
                 for k,v in s:
-                    if v.lower() == name.lower(): return k
+                    if v.strip().lower() == name.strip().lower(): return k
             else:
-                if s.lower() == name.lower(): return s
+                if s.strip().lower() == name.strip().lower(): return c
     return lookup
 
 class Customer(models.Model):
@@ -131,7 +131,7 @@ class Item(models.Model):
         ('FL', 'Floral'),
         ('GR', 'Gradation'),
         ('LG', 'Logo'),
-        ('MC', 'Multicolors'),
+        ('MC', 'MultiCOLors'),
         ('NO', 'None'), 
         ('PR', 'Printed'), 
         ('SF', 'Snowflake'),
@@ -142,35 +142,6 @@ class Item(models.Model):
     pattern = models.CharField(max_length=2, choices=PATTERNS)
     get_pattern_code = lookup_code(PATTERNS)
 
-    COLORS = (
-        (0, "Beige"),
-        (1, "Black"),
-        (2, "Blue"),
-        (3, "Brown"),
-        (4, "Gold"),
-        (5, "Green"),
-        (6, "Grey"),
-        (7, "Kakhi"),
-        (8, "Mint"),
-        (9, "Navy"),
-        (10, "Orange"),
-        (11, "Pink"),
-        (12, "Red"),
-        (13, "Skyblue"),
-        (14, "White"),
-        (15, "Yellow"),
-        (16, "Charcole"),
-        (17, "Ivory"),
-        (18, "Purple"),
-        (19, "Dark green"),
-    )
-    get_color_code = lookup_code(COLORS)
-    color_id1 = models.IntegerField(choices=COLORS)
-    color_id2 = models.IntegerField(choices=COLORS)
-    color_id3 = models.IntegerField(choices=COLORS)
-    color_ratio1 = models.IntegerField()
-    color_ratio2 = models.IntegerField()
-    color_ratio3 = models.IntegerField()
 
     price = models.IntegerField()
     images = models.URLField()
@@ -224,6 +195,38 @@ class Item(models.Model):
     brand = models.CharField(max_length=100, null=True)
 
     #shop = models.ForeignKey(through = 'Shop')
+
+class Color(models.Model):
+    item = models.ForeignKey('Item')
+    COLORS = (
+        (0, "Beige"),
+        (1, "Black"),
+        (2, "Blue"),
+        (3, "Brown"),
+        (4, "Gold"),
+        (5, "Green"),
+        (6, "Grey"),
+        (7, "Khaki"),
+        (8, "Mint"),
+        (9, "Navy"),
+        (10, "Orange"),
+        (11, "Pink"),
+        (12, "Red"),
+        (13, "Skyblue"),
+        (14, "White"),
+        (15, "Yellow"),
+        (16, "Charcole"),
+        (17, "Ivory"),
+        (18, "Purple"),
+        (19, "Dark green"),
+    )
+    get_color_code = lookup_code(COLORS)
+    color_id1 = models.SmallIntegerField(choices=COLORS)
+    color_id2 = models.SmallIntegerField(choices=COLORS, null=True)
+    color_id3 = models.SmallIntegerField(choices=COLORS, null=True)
+    color_ratio1 = models.SmallIntegerField()
+    color_ratio2 = models.SmallIntegerField()
+    color_ratio3 = models.SmallIntegerField()
 
 class Size(models.Model):
     item = models.ForeignKey('Item')
