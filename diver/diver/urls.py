@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^upload/$', views.upload),
     url(r'^search/$', views.search),
     url(r'^auth/$', views.auth),
-    url(r'^like/([0-9]+)$',views.like),
+    url(r'^like/([0-9]+)/([0-9]+)$',views.like),
     url(r'^account/$', views.account),
     url(r'^update_hanger/$', views.update_hanger, name="update_hanger"),
     url('', include('social.apps.django_app.urls', namespace='social')),

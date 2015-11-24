@@ -6,9 +6,9 @@ def lookup_code(mapping):
         for c,s in mapping:
             if type(s) is tuple:
                 for k,v in s:
-                    if v.lower() == name.lower(): return k
+                    if v.strip().lower() == name.strip().lower(): return k
             else:
-                if s.lower() == name.lower(): return s
+                if s.strip().lower() == name.strip().lower(): return c
     return lookup
 
 class Customer(models.Model):
@@ -24,6 +24,7 @@ class Customer(models.Model):
     waist_size_cm = models.IntegerField()
     sleeve_length_cm = models.IntegerField()
     leg_length_cm = models.IntegerField()
+    shoes_size_mm = models.IntegerField()
     BODY_SHAPES = (
         ('O', 'Abdominal obese'),
         ('M', 'Muscular'),
@@ -34,7 +35,7 @@ class Customer(models.Model):
     body_shape = models.CharField(max_length=1, choices=BODY_SHAPES)
     get_body_shape_code = lookup_code(BODY_SHAPES)
 
-    def like(item):
+    def like(item, score):
         pass
 
     def dislike(item):
@@ -50,6 +51,16 @@ class Image(models.Model):
 
 class Item(models.Model):
     name = models.CharField(max_length=30)
+
+    # List of types.
+    TYPES = (
+        (0, "TOP"),
+        (1, "OUTER"),
+        (2, "BOTTOM"),
+        (3, "SHOES"),
+    )
+    type = models.IntegerField(choices=TYPES)
+    get_type_code = lookup_code(TYPES)
 
     # List of categories.
     # Category code should not be longer than 10 chars.
@@ -120,7 +131,7 @@ class Item(models.Model):
         ('FL', 'Floral'),
         ('GR', 'Gradation'),
         ('LG', 'Logo'),
-        ('MC', 'Multicolors'),
+        ('MC', 'MultiCOLors'),
         ('NO', 'None'), 
         ('PR', 'Printed'), 
         ('SF', 'Snowflake'),
@@ -131,26 +142,11 @@ class Item(models.Model):
     pattern = models.CharField(max_length=2, choices=PATTERNS)
     get_pattern_code = lookup_code(PATTERNS)
 
-    TYPES = (
-        (0, "TOP"),
-        (1, "OUTER"),
-        (2, "BOTTOM"),
-        (3, "SHOES"),
-    )
-    type = models.IntegerField(choices=TYPES)
-    get_type_code = lookup_code(TYPES)
 
     price = models.IntegerField()
     images = models.URLField()
     comment = models.TextField()
     purchase_url = models.URLField()
-
-    color_id1 = models.IntegerField()
-    color_id2 = models.IntegerField()
-    color_id3 = models.IntegerField()
-    color_ratio1 = models.IntegerField()
-    color_ratio2 = models.IntegerField()
-    color_ratio3 = models.IntegerField()
 
     rate_count = models.IntegerField(default=0)
 
@@ -200,6 +196,60 @@ class Item(models.Model):
 
     #shop = models.ForeignKey(through = 'Shop')
 
+class Color(models.Model):
+    item = models.ForeignKey('Item')
+    COLOR_VALUES = (
+        (0, (0xF5, 0xF5, 0xDC)),
+        (1, (0x00, 0x00, 0x00)),
+        (2, (0x00, 0x00, 0xFF)),
+        (3, (0xA5, 0x2A, 0x2A)),
+        (4, (0xFF, 0xD7, 0x00)),
+        (5, (0x00, 0x80, 0x00)),
+        (6, (0x80, 0x80, 0x80)),
+        (7, (0xF0, 0xF6, 0x8C)),
+        (8, (0xF5, 0xFF, 0xFA)),
+        (9, (0x00, 0x00, 0x80)),
+        (10,(0xFF, 0xA5, 0x00)),
+        (11,(0xFF, 0xC0, 0xCB)),
+        (12,(0xFF, 0x00, 0x00)),
+        (13,(0x87, 0xCE, 0xEB)),
+        (14,(0xFF, 0xFF, 0xFF)),
+        (15,(0xFF, 0xFF, 0x00)),
+        (16,(0xA9, 0xA9, 0xA9)),
+        (17,(0xFF, 0xFF, 0xF0)),
+        (18,(0x80, 0x00, 0x80)),
+        (19,(0x00, 0x64, 0x00)),
+    )
+    COLORS = (
+        (0, "Beige"),
+        (1, "Black"),
+        (2, "Blue"),
+        (3, "Brown"),
+        (4, "Gold"),
+        (5, "Green"),
+        (6, "Grey"),
+        (7, "Khaki"),
+        (8, "Mint"),
+        (9, "Navy"),
+        (10, "Orange"),
+        (11, "Pink"),
+        (12, "Red"),
+        (13, "Skyblue"),
+        (14, "White"),
+        (15, "Yellow"),
+        (16, "Charcoal"),
+        (17, "Ivory"),
+        (18, "Purple"),
+        (19, "Dark green"),
+    )
+    get_color_code = lookup_code(COLORS)
+    color_id1 = models.SmallIntegerField(choices=COLORS)
+    color_id2 = models.SmallIntegerField(choices=COLORS, null=True)
+    color_id3 = models.SmallIntegerField(choices=COLORS, null=True)
+    color_ratio1 = models.SmallIntegerField()
+    color_ratio2 = models.SmallIntegerField()
+    color_ratio3 = models.SmallIntegerField()
+
 class Size(models.Model):
     item = models.ForeignKey('Item')
 
@@ -246,7 +296,11 @@ class Rating(models.Model):
     customer = models.ForeignKey('Customer')
     match = models.ForeignKey('Match', null=True)
     item = models.ForeignKey('Item', null=True)
-    rating = models.IntegerField()
+
+    def rating_range_validator(rating):
+        if not (-2 <= RAting <= 2):
+            raise ValidationError("Rating should be between -2 and 2, inclusively.")
+    rating = models.SmallIntegerField(default=0, validators=[rating_range_validator])
 
 class Pref(models.Model):
     customer = models.ForeignKey(Customer)

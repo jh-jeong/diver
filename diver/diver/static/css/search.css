@@ -1,18 +1,39 @@
 #hanger {
   display: block;
-  position: absolute;
+  position: fixed;
   width: 150px;
-  height: 400px;
-  right: 0;
-  border: 1px solid black;
+  right: 0px;
+  top: 10em;
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 640px) {
+  #hanger {
+    width: 75px;
+  }}
+
+.price .button-to-hanger {
+  text-align: center;
+}
+
+
+.item-view > img {
+  width: 100%;
 }
 
 #hanger .hanger-slot {
-  width: 100%;
-  height: 10%;
-  border: 1px solid black;
+  padding: 0 !important;
 }
 
-#hanger .hanger-slot .hanger-item img {
-  width: 120px;
+#hanger .hanger-slot .hanger-item {
+  padding: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+#hanger img {
+  width: 100%;
+}
+
+.search-form {
+  margin-bottom: 2em;
 }

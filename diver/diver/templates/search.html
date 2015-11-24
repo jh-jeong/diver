@@ -7,73 +7,120 @@
 
 {% block content %}
 <h1>추천 받기</h1>
-<div class="row">
-  <div class="col-md-2">
-    <h3>검색 필터 설정</h3>
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-
-      {% include "category_select.html" %}
-
-      <div class="form-group">
-        <label for="lower">가격 하한선</label>
-        <input name="lower" class="form-control" type="number" id="lower" value="{{ lower }}">
-      </div>
-      <div class="form-group">
-        <label for="upper">가격 상한선 (상한 없음: 0)</label>
-        <input name="upper" class="form-control" type="number" id="upper" value="{{ upper }}">
-      </div>
-      <input type="submit" id="send" value="검색!" class="btn btn-primary"/>
-    </form>
+<h3>검색 필터 설정</h3>
+<form method="post" enctype="multipart/form-data" class="form-inline search-form">
+  {% csrf_token %}
+  <div class="form-group">
+  <label for="category1">대분류</label>
+  <select class="form-control" id="category1">
+    {% for c in categories %}
+      <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.0 }}</option>
+    {% endfor %}
+  </select>
   </div>
-  <div class="col-md-10">
-    {% load item_filters %}
-    {% if search_result %}
-      {% for item in search_result %}
-        <div class="item-view col-md-5"
-            data-item-id="{{ item.id }}"
-            data-item-category1="{{ item.category|category1 }}"
-            data-item-category2="{{ item.category }}">
-          <img src="{{ item.images }}">
-          <span>{{ item.name }}</span>
-          <span>{{ item.price }}</span>
-          <span class="button-to-hanger"><a href="#">To hanger</a></span>
-        </div>
+
+  <div class="form-group">
+    <label for="category2">소분류</label>
+    <select name="category" class="form-control" id="category2">
+      {% for c1 in categories %}
+        {% for c2 in c1.1 %}
+          <option data-parent-value="{{ forloop.parentloop.counter0 }}" value="{{ c2.0 }}" {% if c2.0 == selected_category2 %}selected="selected"{% endif %}>{{ c2.1 }}</option>
+        {% endfor %}
       {% endfor %}
-    {% endif %}
+    </select>
   </div>
-  <div id="hanger">
-    <h3>My hanger</h3>
-    <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
-    <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 1 %}</div>
-    <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 0 %}</div>
-    <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 1 %}</div>
-    <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
-    <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
+
+  <div class="form-group">
+    <label for="lower">가격 하한</label>
+    <input name="lower" class="form-control" type="number" id="lower" value="{{ lower }}">
+  </div>
+
+  <div class="form-group">
+    <label for="upper">가격 상한</label>
+    <input name="upper" class="form-control" type="number" id="upper" value="{{ upper }}">
+  </div>
+  <input type="submit" id="send" value="검색!" class="btn btn-primary"/>
+</form>
+
+<div class="row">
+  {% load item_filters %}
+  {% if search_result %}
+    {% for item in search_result %}
+      <div class="item-view col-xs-6 col-md-4"
+          data-item-id="{{ item.id }}"
+          data-item-category1="{{ item.category|category1 }}"
+          data-item-category2="{{ item.category }}">
+        <img src="{{ item.images }}">
+        <div class="row">
+          <div class="col-md-12 col-xs-12">
+            <p class="btn btn-link ellipsis">{{ item.name }}</p>
+          </div>
+          <div class="col-md-6 col-xs-6">
+            <p class="btn btn-link">{{ item.price }}</p>
+          </div>
+          <div class="col-md-6 col-xs-6">
+            <p class="button-to-hanger">
+            <a class="btn btn-link" onclick="toHanger({{item.id}},
+                        '{{item.category|category1}}',
+                        '{{item.images}}')">To hanger</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+<div id="hanger" class="panel panel-default">
+  <div class="panel-heading">My hanger</div>
+    <div class="panel-body">
+    <div class="hanger-slot outer-slot col-md-6" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
+    <div class="hanger-slot outer-slot col-md-6" data-accepts="OUTER">{% hanger_item hanger "OUTER" 1 %}</div>
+    <div class="hanger-slot top-slot col-md-6" data-accepts="TOP">{% hanger_item hanger "TOP" 0 %}</div>
+    <div class="hanger-slot top-slot col-md-6" data-accepts="TOP">{% hanger_item hanger "TOP" 1 %}</div>
+    <div class="hanger-slot bottom-slot col-md-6" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
+    <div class="hanger-slot shoes-slot col-md-6" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
+    <div class="recommendation">
+      <a class="btn btn-default btn-xs">청바지</a>
+    </div>
   </div>
 </div>
 {% endblock %}
 {% block script %}
-<script>
-$( function(){
-  $(".button-to-hanger a").click( function(e) {
-    item = $(e.target.parentElement.parentElement);
-    available_slots = $(`.hanger-slot:not(:has(*))[data-accepts="${item.data("item-category1").toUpperCase()}"]`)
-    if(available_slots.length > 0){
-      available_slots.first().append(item.clone());
+<script type='text/javascript'>
+  function toHanger(id, cat1, src) {
+    var category = cat1.toUpperCase();
+    var available_slot = $(".hanger-slot[data-accepts="+category+"]").has("p").first();
+    console.log(available_slot.length);
+
+    if(available_slot.length !== 0){
       $.ajax( {
         type: 'POST',
         url: '{% url 'update_hanger' %}',
         data: {
             csrfmiddlewaretoken: '{{ csrf_token }}',
             action: 'ADD',
-            item_id: item.data("item-id")
+            item_id: id
         }
       });
+      var inner_slot = available_slot.children().first();
+      console.log(inner_slot);
+      available_slot.children().first().html('<img src="'+src+'">');
     } else {
       alert("Hanger is full!");
     }
+  }
+$(document).ready(function () {
+  function update_category2(category1) {
+    $("#category2").children("[data-parent-value=\"" + category1 + "\"]").show();
+    $("#category2").children(":not([data-parent-value=\"" + category1 + "\"])").hide();
+  }
+
+  $("#category1").change(function(e) {
+    update_category2(e.target.value);
+    $("#category2").children("[data-parent-value=\"" + e.target.value + "\"]").first().attr("selected", "selected");
   });
+  update_category2($("#category1").val());
+
 });
 </script>
 {% endblock %}

@@ -7,14 +7,15 @@
     <label for="upload_filename">코디 이름</label>
     <input class="form-control" type="text" name="filename" id="upload_filename"/>
   </div>
-  <div class="row">
-    {% include 'category_select.html' with wrap_class="col-md-4" %}
-    <div class="col-md-4">
-      <div class="form-group">
-        <label for="price">가격</label>
-        <input class="form-control" type="number" id="price">
-      </div>
-    </div>
+  {% load item_filters %}
+  <div class="panel-group" id="accordion" role="tablist"
+                                          aria-multiselectable="true">
+  {% match_item 0 0 %}
+  {% match_item 0 1 %}
+  {% match_item 1 0 %}
+  {% match_item 1 1 %}
+  {% match_item 2 0 %}
+  {% match_item 3 0 %}
   </div>
   <div class="row">
     <div class="col-md-4">
@@ -37,7 +38,9 @@
     </div>
   </div>
   <div class="form-group">
-    <input type="file" name="file" id="upload_file" value="이미지 선택"/>
+    <input type="file" name="file" id="upload_file" value="이미지 선택"
+                                                    class="multi with-preview"
+                                                    multiple>
   </div>
   <input type="submit" id="send" value="업로드" class="btn btn-primary"/>
 </form>

@@ -57,14 +57,13 @@ def main(request):
         #     print (item.images)
     return render(request, 'main.html', {'items':items})
 
-def like(request, id):
-    print ("inin")
+def like(request, id, score):
 
     if request.method == 'GET':
         item = Item.objects.filter(id = id)
         if item != []:
             customer = Customer.objects.filter(user_id = request.user.id)
-            customer.like(Item.objects.filter(id = id))
+            customer.like(Item.objects.filter(id = id), like)
 
     return HttpResponse("recieved" + id)
 
@@ -96,7 +95,7 @@ def search(request):
         search_result = items
 
     return render(request, 'search.html',
-        {'categories': Item.CATEGORIES, 
+        {'categories': Item.CATEGORIES,
          'selected_category1': selected_category1,
          'selected_category2': selected_category2,
          'lower': specified_lower,
@@ -108,15 +107,18 @@ def update_hanger(request):
     if request.method == 'POST':
         action = request.POST['action']
         item_id = int(request.POST['item_id'])
-        
+
         if not request.session.get('hanger', False):
             request.session['hanger'] = []
-        print(request.session['hanger'])
 
         if action == 'ADD':
-            request.session['hanger'].append(item_id)
+            new_hanger = request.session['hanger']
+            new_hanger.append(item_id)
+            request.session['hanger'] = new_hanger
         elif action == 'DELETE':
-            request.session['hanger'].remove(item_id)
+            new_hanger = request.session['hanger']
+            new_hanger.remove(item_id)
+            request.session['hanger'] = new_hanger
         else:
             raise SuspiciousMultipartForm()
         return HttpResponse("")
@@ -153,4 +155,4 @@ def upload(request):
             #reopen.close()
 
         return redirect('/upload/')
-    return render(request, 'upload.html', {'categories': Item.CATEGORIES})
+    return render(request, 'upload.html')
