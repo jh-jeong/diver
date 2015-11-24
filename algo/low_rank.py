@@ -1,7 +1,6 @@
 import numpy as np
-from scipy.sparse import csc_matrix
+from scipy.sparse import csc_matrix,dok_matrix
 from scipy.sparse import linalg as linalg_s
-import os, random, time
 from scipy import linalg
 
 class MatrixCompletion:
@@ -96,26 +95,32 @@ class MatrixCompletion:
             r = min(m-1, n-1, 50)
     
         # Set relative error
-        Omega = ~np.isnan(M)
-        frob_norm_data = linalg.norm(M[Omega])
+        I, J = [], []
+        M_list = []
+        for i, j in M.keys():
+            I.append(i)
+            J.append(j)
+            M_list.append(M[i,j])
+        M_list = np.array(M_list)
+        Omega = [I,J]
+        frob_norm_data = linalg_s.norm(M)
         relres = reltol * frob_norm_data
     
         # Initialize
-        I, J = np.where(Omega)
-        M_omega =  csc_matrix((M[Omega], (I, J)), shape=M.shape)
+        M_omega = M.tocsc()
         U, s, V = linalg_s.svds(M_omega, r)
         S = np.diag(s)
         X = np.dot(U, S)
         Y = V
-        itres = np.zeros((maxiter+1, 1)) 
+        itres = np.zeros((maxiter+1, 1))
     
         XY = np.dot(X, Y)
-        diff_on_omega = M[Omega] - XY[Omega]
+        diff_on_omega = M_list - XY[Omega]
         res = linalg.norm(diff_on_omega)
-        iter = 0
-        itres[iter] = res/frob_norm_data 
+        iter_c = 0
+        itres[iter_c] = res/frob_norm_data 
 
-        while iter < maxiter and res >= relres:
+        while iter_c < maxiter and res >= relres:
             
             # Gradient for X
             diff_on_omega_matrix = np.zeros((m,n))
@@ -145,12 +150,12 @@ class MatrixCompletion:
             diff_on_omega = diff_on_omega-ty*delta_XY[Omega]
             
             res = linalg.norm(diff_on_omega)
-            iter = iter + 1
-            itres[iter] = res/frob_norm_data
+            iter_c = iter_c + 1
+            itres[iter_c] = res/frob_norm_data
     
         M_out = np.dot(X, Y)
     
-        out_info = [iter, itres]
+        out_info = [iter_c, itres]
     
         return M_out, out_info    
 
@@ -182,17 +187,23 @@ class MatrixCompletion:
         # Get shape and Omega
         m, n = M.shape
         if r == None:
-            r = min(m, n, 50)
+            r = min(m-1, n-1, 50)
     
         # Set relative error
-        Omega = ~np.isnan(M)
-        frob_norm_data = linalg.norm(M[Omega])
+        I, J = [], []
+        M_list = []
+        for i, j in M.keys():
+            I.append(i)
+            J.append(j)
+            M_list.append(M[i,j])
+        M_list = np.array(M_list)
+        Omega = [I,J]
+        frob_norm_data = linalg_s.norm(M)
         relres = reltol * frob_norm_data
     
         # Initialize
         identity = np.identity(r);
-        I, J = np.where(Omega)
-        M_omega =  csc_matrix((M[Omega], (I, J)), shape=M.shape)
+        M_omega = M.tocsc()
         U, s, V = linalg_s.svds(M_omega, r)
         S = np.diag(s)
         X = np.dot(U, S)
@@ -200,12 +211,12 @@ class MatrixCompletion:
         itres = np.zeros((maxiter+1, 1)) 
     
         XY = np.dot(X, Y)
-        diff_on_omega = M[Omega] - XY[Omega]
+        diff_on_omega = M_list - XY[Omega]
         res = linalg.norm(diff_on_omega)
-        iter = 0
-        itres[iter] = res/frob_norm_data
+        iter_c = 0
+        itres[iter_c] = res/frob_norm_data
 
-        while iter < maxiter and res >= relres:
+        while iter_c < maxiter and res >= relres:
     
             # Gradient for X
             diff_on_omega_matrix = np.zeros((m,n))
@@ -243,12 +254,12 @@ class MatrixCompletion:
     
             # Update iteration information
             res = linalg.norm(diff_on_omega)
-            iter = iter + 1
-            itres[iter] = res/frob_norm_data 
+            iter_c = iter_c + 1
+            itres[iter_c] = res/frob_norm_data 
     
         M_out = np.dot(X, Y)
     
-        out_info = [iter, itres]
+        out_info = [iter_c, itres]
     
         return M_out, out_info
 

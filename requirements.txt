@@ -1,3 +1,6 @@
 Django==1.8.5
 Pillow==3.0.0
 python_social_auth==0.2.13
+scipy==0.16.1
+numpy==1.10.1
+scikit-learn==0.16.1

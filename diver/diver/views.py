@@ -58,8 +58,14 @@ def main(request):
     return render(request, 'main.html', {'items':items})
 
 def like(request, id):
+    print ("inin")
+
     if request.method == 'GET':
-        print (id)
+        item = Item.objects.filter(id = id)
+        if item != []:
+            customer = Customer.objects.filter(user_id = request.user.id)
+            customer.like(Item.objects.filter(id = id))
+
     return HttpResponse("recieved" + id)
 
 @survey_required
@@ -89,19 +95,33 @@ def search(request):
         except: pass
         search_result = items
 
-    category2 = []
-    for i in range(len(Item.CATEGORIES)):
-        for c,n in Item.CATEGORIES[i][1]:
-            category2.append((i,c,n))
-
     return render(request, 'search.html',
-        {'category1': [(i, Item.CATEGORIES[i][0]) for i in range(len(Item.CATEGORIES))],
-         'category2': category2,
+        {'categories': Item.CATEGORIES, 
          'selected_category1': selected_category1,
          'selected_category2': selected_category2,
          'lower': specified_lower,
          'upper': specified_upper,
-         'search_result': search_result})
+         'search_result': search_result,
+         'hanger': request.session.get('hanger', None)})
+
+def update_hanger(request):
+    if request.method == 'POST':
+        action = request.POST['action']
+        item_id = int(request.POST['item_id'])
+        
+        if not request.session.get('hanger', False):
+            request.session['hanger'] = []
+        print(request.session['hanger'])
+
+        if action == 'ADD':
+            request.session['hanger'].append(item_id)
+        elif action == 'DELETE':
+            request.session['hanger'].remove(item_id)
+        else:
+            raise SuspiciousMultipartForm()
+        return HttpResponse("")
+    else:
+        raise SuspiciousMultipartForm()
 
 @survey_required
 def upload(request):
@@ -133,4 +153,4 @@ def upload(request):
             #reopen.close()
 
         return redirect('/upload/')
-    return render(request, 'upload.html')
+    return render(request, 'upload.html', {'categories': Item.CATEGORIES})

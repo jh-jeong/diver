@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^auth/$', views.auth),
     url(r'^like/([0-9]+)$',views.like),
     url(r'^account/$', views.account),
+    url(r'^update_hanger/$', views.update_hanger, name="update_hanger"),
     url('', include('social.apps.django_app.urls', namespace='social')),
     url('', include('django.contrib.auth.urls', namespace='auth')),
 ]
