@@ -184,6 +184,7 @@ def upload_item(request):
         if 'file' in request.FILES:
             file = request.FILES['file']
             filename = file._name
+            filename.replace (" ", "_")
 
             image_dir = os.path.join(IMAGE_DIR,filename)
             print (image_dir)
@@ -200,14 +201,31 @@ def upload_item(request):
         price = request.POST['price']
         comment = request.POST['comment']
 
-        item = Item(category = category, price = price, images="http://localhost:8000/static/images/"+filename)
+        item = Item(pattern= patterns,material=materials, comment=comment,
+                    category = category, price = price, images="http://localhost:8000/static/images/"+filename)
 
         if(selected_category1 == 0):
             item.type = 0
+            item.sleeve_level = request.POST['sleeve_level']
+            item.neck = request.POST['neck_types']
+            item.zipper = request.POST['zipper']
+            item.button = request.POST['button']
+
         elif(selected_category1 == 1):
-            item.type = 0
+            item.type = 1
+            item.sleeve_level = request.POST['sleeve_level']
+            item.button_outer = request.POST['button_outer']
+            item.length_level = request.POST['length_level_outer']
+            item.collar = request.POST['collar']
+            item.hat = request.POST['hat']
+            item.zipper = request.POST['zipper']
+            item.padding = request.POST['padding']
+
         elif(selected_category1 == 2):
-            item.type = 0
+            item.type = 2
+            item.length_level = request.POST['length_level_bottom']
+            item.fit = request.POST['fit_types']
+
         item.save()
 
         color1 = request.POST['color1']
