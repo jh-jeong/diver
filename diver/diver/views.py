@@ -23,16 +23,16 @@ __author__ = 'un'
 
 
 def survey_required(function):
-  def wrap(request, *args, **kwargs):
+    def wrap(request, *args, **kwargs):
 
         if Customer.objects.filter(user_id=request.user.id) or not request.user.is_authenticated():
             return function(request, *args, **kwargs)
         else:
             return HttpResponseRedirect('/account')
 
-  wrap.__doc__=function.__doc__
-  wrap.__name__=function.__name__
-  return wrap
+    wrap.__doc__=function.__doc__
+    wrap.__name__=function.__name__
+    return wrap
 
 def auth(request):
     return render(request, 'auth.html')
@@ -44,7 +44,7 @@ def account(request):
         customer = Customer(user_id=request.user, height_cm=180,weight_kg=73,
                             chest_size_cm=50,waist_size_cm=30,sleeve_length_cm=40,
                             leg_length_cm=30, shoes_size_mm=260
-                            )
+        )
         customer.save()
 
     return render(request, 'account.html')
@@ -80,6 +80,8 @@ def search(request):
     search_result = []
     if request.method == 'POST':
         category = request.POST['category']
+
+        print (category)
         for i in range(len(Item.CATEGORIES)):
             for c,n in Item.CATEGORIES[i][1]:
                 if c == category:
@@ -99,13 +101,13 @@ def search(request):
         search_result = items
 
     return render(request, 'search.html',
-        {'categories': Item.CATEGORIES,
-         'selected_category1': selected_category1,
-         'selected_category2': selected_category2,
-         'lower': specified_lower,
-         'upper': specified_upper,
-         'search_result': search_result,
-         'hanger': request.session.get('hanger', None)})
+                  {'categories': Item.CATEGORIES,
+                   'selected_category1': selected_category1,
+                   'selected_category2': selected_category2,
+                   'lower': specified_lower,
+                   'upper': specified_upper,
+                   'search_result': search_result,
+                   'hanger': request.session.get('hanger', None)})
 
 def update_hanger(request):
     if request.method == 'POST':
@@ -160,3 +162,40 @@ def upload(request):
 
         return redirect('/upload/')
     return render(request, 'upload.html')
+
+
+def upload_item(request):
+
+    selected_category1 = 0
+    selected_category2 = Item.CATEGORIES[0][1][0][0]
+    specified_lower = None
+    specified_upper = None
+    search_result = []
+    if request.method == 'POST':
+        category = request.POST['category']
+        for i in range(len(Item.CATEGORIES)):
+            for c,n in Item.CATEGORIES[i][1]:
+                if c == category:
+                    selected_category1 = i
+                    selected_category2 = c
+                    break
+
+        print (selected_category1,selected_category2)
+
+        if(selected_category1 == 0):
+            
+        elif(selected_category1 == 1):
+
+        elif(selected_category1 == 2):
+
+        item.save()
+
+    return render(request, 'upload_item.html',
+                  {'categories': Item.CATEGORIES,
+                   'materials': Item.MATERIALS,
+                   'neck_types': Item.NECK_TYPES,
+                   'patterns': Item.PATTERNS,
+                   'fit_types': Item.FIT_TYPES,
+                   'selected_category1': selected_category1,
+                   'selected_category2': selected_category2,
+                   'hanger': request.session.get('hanger', None)})
