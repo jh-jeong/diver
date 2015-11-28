@@ -39,7 +39,7 @@
 
       <div class="form-group">
         <label for="patterns">패턴</label>
-        <select id="patterns">
+        <select name="patterns" id="patterns">
           {% for c in patterns %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
           {% endfor %}
@@ -51,7 +51,7 @@
 
       <div class="form-group">
         <label for="materials">재료</label>
-        <select id="materials">
+        <select name="materials" id="materials">
           {% for c in materials %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
           {% endfor %}
@@ -62,7 +62,7 @@
     <div class="col-md-12" id="neck_types_div">
       <div class="form-group">
         <label for="neck_types">목 타입</label>
-        <select id="neck_types">
+        <select name="neck_types" id="neck_types">
           {% for c in neck_types %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
           {% endfor %}
@@ -73,7 +73,7 @@
     <div class="col-md-12" id="fit_types_div">
       <div class="form-group">
         <label for="fit_types">핏 타입</label>
-        <select id="fit_types">
+        <select name="fit_types" id="fit_types">
           {% for c in fit_types %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
           {% endfor %}
@@ -84,7 +84,7 @@
     <div class="col-md-12" id="sleeve_level_div">
       <div class="form-group">
         <label for="sleeve_level">sleeve_level</label>
-        <select value id="sleeve_level">
+        <select value name="sleeve_level" id="sleeve_level">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -98,7 +98,7 @@
 
       <div class="form-group" id="length_level_outer_div">
         <label for="length_level_outer">length_level_outer</label>
-        <select value id="length_level_outer">
+        <select value name="length_level_outer" id="length_level_outer">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -112,7 +112,7 @@
 
       <div class="form-group" id="length_level_bottom_div">
         <label for="length_level_bottom">length_level_bottom</label>
-        <select value id="length_level_bottom">
+        <select value name="length_level_bottom" id="length_level_bottom">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -125,7 +125,7 @@
 
       <div class="form-group">
         <label for="button_outer">버튼</label>
-        <select value id="button_outer">
+        <select value name="button_outer"" id="button_outer">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -220,7 +220,6 @@
     </div>
 
 
-
    <div class="col-md-12">
       <div class="form-group">
         <label for="comment">코맨트</label>
@@ -252,6 +251,7 @@
              class="multi with-preview"
              multiple>
     </div>
+
     <input type="submit" id="send" value="업로드" class="btn btn-primary"/>
   </form>
 

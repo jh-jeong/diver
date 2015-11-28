@@ -14,7 +14,7 @@ from django.core.files import storage
 from diver.models import Image
 from diver.models import Item
 from diver.models import Customer
-from diver.models import ItemPref
+from diver.models import ItemPref, Color
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
 
@@ -180,15 +180,41 @@ def upload_item(request):
                     selected_category2 = c
                     break
 
-        print (selected_category1,selected_category2)
+
+        if 'file' in request.FILES:
+            file = request.FILES['file']
+            filename = file._name
+
+            image_dir = os.path.join(IMAGE_DIR,filename)
+            print (image_dir)
+            # for python3
+            fp = open('%s' % (image_dir) , 'wb')
+            for chunk in file.chunks():
+                fp.write(chunk)
+
+            fp.close()
+
+
+        patterns = request.POST['patterns']
+        materials = request.POST['materials']
+        price = request.POST['price']
+        comment = request.POST['comment']
+
+        item = Item(category = category, price = price, images="http://localhost:8000/static/images/"+filename)
 
         if(selected_category1 == 0):
-            
+            item.type = 0
         elif(selected_category1 == 1):
-
+            item.type = 0
         elif(selected_category1 == 2):
-
+            item.type = 0
         item.save()
+
+        color1 = request.POST['color1']
+        color2 = request.POST['color2']
+        color3 = request.POST['color3']
+        color = Color(item = item, color_id1 = color1, color_id2 = color2,  color_id3 = color3)
+
 
     return render(request, 'upload_item.html',
                   {'categories': Item.CATEGORIES,

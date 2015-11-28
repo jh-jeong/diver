@@ -156,7 +156,7 @@ class Item(models.Model):
     rate_count = models.IntegerField(default=0)
 
     # For Top
-    sleeve_level = models.IntegerField()
+    sleeve_level = models.IntegerField(null=True)
     NECK_TYPES = (
         ('RN', "Round"),
         ('HR', "Henry"),
