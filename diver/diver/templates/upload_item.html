@@ -125,7 +125,7 @@
 
       <div class="form-group">
         <label for="button_outer">버튼</label>
-        <select value name="button_outer"" id="button_outer">
+        <select value name="button_outer" id="button_outer">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -141,7 +141,7 @@
 
       <div class="form-group">
         <label for="button_top">버튼</label>
-        <select value id="button_top">
+        <select name="button_top" id="button_top">
           <option value="0">없음</option>
           <option value="1">있음</option>
         </select>
@@ -152,7 +152,7 @@
 
       <div class="form-group">
         <label for="collar">카라</label>
-        <select value id="collar">
+        <select name="collar" id="collar">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -166,7 +166,7 @@
 
       <div class="form-group">
         <label for="zipper">지퍼</label>
-        <select value id="zipper">
+        <select name="zipper" id="zipper">
           <option value="0">없음</option>
           <option value="1">있음</option>
         </select>
@@ -177,7 +177,7 @@
 
       <div class="form-group">
         <label for="hat">모자</label>
-        <select value id="hat">
+        <select name="hat" id="hat">
           <option value="0">없음</option>
           <option value="1">있음</option>
         </select>
@@ -188,7 +188,7 @@
 
       <div class="form-group">
         <label for="padding">패딩</label>
-        <select value id="padding">
+        <select name="padding" id="padding">
           <option value="0">아님</option>
           <option value="1">맞</option>
         </select>
@@ -201,7 +201,7 @@
         어깨 <input name="shoulder_cm" class="form-control" type="number">
         가슴 <input name="chest_cm" class="form-control" type="number">
         sleeve <input name="sleeve_cm" class="form-control" type="number">
-        letter <input name="sleeve_cm" class="form-control">
+        letter <input name="letter" class="form-control">
       </div>
     </div>
 
@@ -308,7 +308,7 @@
         else if(category1 == 2){
           $("#fit_types_div").show();
           $("#length_level_bottom_div").show();
-          $("#size_bottom_div").hide();
+          $("#size_bottom_div").show();
 
         }
 

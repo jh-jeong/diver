@@ -178,7 +178,7 @@ class Item(models.Model):
     length_level = models.IntegerField(null=True)
     collar = models.IntegerField(null=True)
     hat = models.IntegerField(null=True)
-    button = models.IntegerField(null=True)
+    # button = models.IntegerField(null=True)
     padding = models.IntegerField(null=True)
 
     # For Bottom
@@ -259,25 +259,25 @@ class Size(models.Model):
     item = models.ForeignKey('Item')
 
     # For Top
-    length_cm = models.IntegerField()
-    shoulder_cm = models.IntegerField()
-    chest_cm = models.IntegerField()
-    sleeve_cm = models.IntegerField()
-    letter = models.CharField(max_length=5)
+    length_cm = models.IntegerField(null=True)
+    shoulder_cm = models.IntegerField(null=True)
+    chest_cm = models.IntegerField(null=True)
+    sleeve_cm = models.IntegerField(null=True)
+    letter = models.CharField(max_length=5, null=True)
 
     # For Outer
     ## Shares attributes with Top
 
     # For Bottom
     ## length_cm
-    waist_cm = models.IntegerField()
-    thigh_cm = models.IntegerField()
-    crotch_cm = models.IntegerField()
+    waist_cm = models.IntegerField(null=True)
+    thigh_cm = models.IntegerField(null=True)
+    crotch_cm = models.IntegerField(null=True)
     ## letter
 
     # For Shoes
-    size_mm = models.IntegerField()
-    correction = models.IntegerField()
+    size_mm = models.IntegerField(null=True)
+    correction = models.IntegerField(null=True)
 
 class Match(models.Model):
     image = models.URLField()

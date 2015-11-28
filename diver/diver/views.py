@@ -14,7 +14,7 @@ from django.core.files import storage
 from diver.models import Image
 from diver.models import Item
 from diver.models import Customer
-from diver.models import ItemPref, Color
+from diver.models import ItemPref, Color, Size
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
 
@@ -204,12 +204,20 @@ def upload_item(request):
         item = Item(pattern= patterns,material=materials, comment=comment,
                     category = category, price = price, images="http://localhost:8000/static/images/"+filename)
 
+        size = Size()
+
         if(selected_category1 == 0):
             item.type = 0
             item.sleeve_level = request.POST['sleeve_level']
             item.neck = request.POST['neck_types']
             item.zipper = request.POST['zipper']
-            item.button = request.POST['button']
+            item.button = request.POST['button_top']
+
+            size.length_cm = request.POST['length_cm']
+            size.shoulder_cm = request.POST['shoulder_cm']
+            size.chest_cm = request.POST['chest_cm']
+            size.sleeve_cm = request.POST['sleeve_cm']
+            size.letter = request.POST['letter']
 
         elif(selected_category1 == 1):
             item.type = 1
@@ -221,18 +229,31 @@ def upload_item(request):
             item.zipper = request.POST['zipper']
             item.padding = request.POST['padding']
 
+            size.length_cm = request.POST['length_cm']
+            size.shoulder_cm = request.POST['shoulder_cm']
+            size.chest_cm = request.POST['chest_cm']
+            size.sleeve_cm = request.POST['sleeve_cm']
+            size.letter = request.POST['letter']
+
         elif(selected_category1 == 2):
             item.type = 2
             item.length_level = request.POST['length_level_bottom']
             item.fit = request.POST['fit_types']
 
+            size.waist_cm = request.POST['waist_cm']
+            size.thigh_cm = request.POST['thigh_cm']
+            size.crotch_cm = request.POST['crotch_cm']
+
         item.save()
 
-        color1 = request.POST['color1']
-        color2 = request.POST['color2']
-        color3 = request.POST['color3']
-        color = Color(item = item, color_id1 = color1, color_id2 = color2,  color_id3 = color3)
+        # color1 = request.POST['color1']
+        # color2 = request.POST['color2']
+        # color3 = request.POST['color3']
+        # color = Color(item = item, color_id1 = color1, color_id2 = color2,  color_id3 = color3)
+        # color.save()
 
+        size.item = item
+        size.save()
 
     return render(request, 'upload_item.html',
                   {'categories': Item.CATEGORIES,
