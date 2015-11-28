@@ -43,7 +43,7 @@ def account(request):
     elif request.method == 'POST':
         customer = Customer(user_id=request.user, height_cm=180,weight_kg=73,
                             chest_size_cm=50,waist_size_cm=30,sleeve_length_cm=40,
-                            leg_length_cm=30
+                            leg_length_cm=30, shoes_size_mm=260
                             )
         customer.save()
 
