@@ -14,6 +14,7 @@ from django.core.files import storage
 from diver.models import Image
 from diver.models import Item
 from diver.models import Customer
+from diver.models import ItemPref
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
 
@@ -62,8 +63,11 @@ def like(request, id, score):
     if request.method == 'GET':
         item = Item.objects.filter(id = id)
         if item != []:
-            customer = Customer.objects.filter(user_id = request.user.id)
-            customer.like(Item.objects.filter(id = id), like)
+            # customer = Customer.objects.filter(user_id = request.user.id)
+            # customer.like(Item.objects.filter(id = id), like)
+            item_pref = ItemPref(item_id = id, user_id = request.user.id, score = score)
+            item_pref.save()
+
 
     return HttpResponse("recieved" + id)
 

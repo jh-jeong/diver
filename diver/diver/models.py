@@ -11,6 +11,11 @@ def lookup_code(mapping):
                 if s.strip().lower() == name.strip().lower(): return c
     return lookup
 
+class ItemPref(models.Model):
+    user_id = models.IntegerField()
+    item_id = models.IntegerField()
+    score = models.IntegerField()
+
 class Customer(models.Model):
     # Basic authentication information
     username = models.CharField(max_length=20)
