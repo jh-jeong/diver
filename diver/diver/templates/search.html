@@ -52,28 +52,7 @@
   {% load item_filters %}
   {% if search_result %}
     {% for item in search_result %}
-      <div class="item-view col-xs-6 col-md-4"
-          data-item-id="{{ item.id }}"
-          data-item-category1="{{ item.category|category1 }}"
-          data-item-category2="{{ item.category }}">
-        <img src="{{ item.images }}">
-        <div class="row">
-          <div class="col-md-12 col-xs-12">
-            <a class="btn btn-link ellipsis" href="{{item.purchase_url}}"
-              target="_blank">{{ item.name }}</a>
-          </div>
-          <div class="col-md-6 col-xs-6">
-            <p class="btn btn-link">{{ item.price }}</p>
-          </div>
-          <div class="col-md-6 col-xs-6">
-            <p class="button-to-hanger">
-            <a class="btn btn-link" onclick="toHanger({{item.id}},
-                        '{{item.category|category1}}',
-                        '{{item.images}}')">To hanger</a>
-            </p>
-          </div>
-        </div>
-      </div>
+      {% item_card item "col-lg-3 col-md-4 col-xs-6" False %}
     {% endfor %}
   {% endif %}
 </div>
