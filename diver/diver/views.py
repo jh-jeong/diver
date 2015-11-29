@@ -59,7 +59,7 @@ def main(request):
     return render(request, 'main.html', {'items':items})
 
 def like(request, id, score):
-
+    return (HttpResponse("{} {}".format(id, score)))
     if request.method == 'GET':
         item = Item.objects.filter(id = id)
         if item != []:
@@ -67,7 +67,6 @@ def like(request, id, score):
             # customer.like(Item.objects.filter(id = id), like)
             item_pref = ItemPref(item_id = id, user_id = request.user.id, score = score)
             item_pref.save()
-
 
     return HttpResponse("recieved" + id)
 
