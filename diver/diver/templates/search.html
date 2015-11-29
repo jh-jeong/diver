@@ -92,7 +92,6 @@
   function toHanger(id, cat1, src) {
     var category = cat1.toUpperCase();
     var available_slot = $(".hanger-slot[data-accepts="+category+"]").has("p").first();
-    console.log(available_slot.length);
 
     if(available_slot.length !== 0){
       $.ajax( {
@@ -104,9 +103,8 @@
             item_id: id
         }
       });
-      var inner_slot = available_slot.children().first();
-      console.log(inner_slot);
       available_slot.children().first().html('<img src="'+src+'">');
+      available_slot.children().first().attr('data-item-id', id);
     } else {
       alert("Hanger is full!");
     }
@@ -141,6 +139,7 @@ $(document).ready(function () {
 
   $(".hanger-item").click( function(e) {
     item_id = $(this).data("item-id");
+    if(!item_id) return;
     if(confirm("Are you sure you want to remove the item from hanger?")){
       removeFromHanger(item_id);
     }
