@@ -223,14 +223,17 @@ def _score_item(hanger, user_id, item_id, weight):
 def init_rating(cursor_):
     global cur, RATING, USER_NUM, ITEM_NUM, LRMC
     cur = cursor_
-    for r in cur.execute("SELECT id FROM diver_customer ORDER BY id"):
+    custs = list(cur.execute("SELECT id FROM diver_customer ORDER BY id"))
+    for r in custs:
         USERS.append(r[0])
-    for r in cur.execute("SELECT id FROM diver_item ORDER BY id"):
+    its = list(cur.execute("SELECT id FROM diver_item ORDER BY id"))
+    for r in its:
         ITEMS.append(r[0])
     USER_NUM = len(USERS)
     ITEM_NUM = len(ITEMS)
     RATING = dok_matrix((USER_NUM+1, ITEM_NUM), dtype=np.float)
-    for u_id, i_id, rating in cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"):
+    rats = list(cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"))
+    for u_id, i_id, rating in rats:
         RATING[(USERS.index(u_id),ITEMS.index(i_id))] = rating
     for i in range(ITEM_NUM):
         RATING[(-1,i)] = 1
@@ -251,18 +254,19 @@ def rating_fill(user_id, item_id, rating):
 def rating_add_user(user_id):
     Q.put(('u+', user_id))
 
+'''
 def rating_remove_user(user_id):
     global ch_count
     Q.put(('u-', user_id))
     with ch_lock:
         ch_count += 1
-
+'''
 def rating_add_item(item_id):
     Q.put(('i+', item_id))
-
+'''
 def rating_remove_item(item_id):
     Q.put(('i-', item_id))
-
+'''
 def reorder_items(items, user_id, hanger):
     weight = DEFALUT_WEIGHT
     score_dict = {}
