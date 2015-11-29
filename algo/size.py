@@ -106,7 +106,7 @@ def size_filter(items, user_id, class_):
     elif class_ == 'bottom':
         filtered_list = size_filter_bottom(items, leg, waist, hip, thigh)
     else:
-        filtered_list = size_filter_sheos(items, shoes)
+        filtered_list = size_filter_shoes(items, shoes)
 
     return filtered_list
 
