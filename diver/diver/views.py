@@ -1,7 +1,7 @@
 import os
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
-
+from django.http import JsonResponse
 
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -118,6 +118,8 @@ def update_hanger(request):
             request.session['hanger'] = []
 
         if action == 'ADD':
+            if item_id in request.session['hanger']:
+                return JsonResponse({"result": "duplicate"})
             new_hanger = request.session['hanger']
             new_hanger.append(item_id)
             request.session['hanger'] = new_hanger
@@ -127,7 +129,7 @@ def update_hanger(request):
             request.session['hanger'] = new_hanger
         else:
             raise SuspiciousMultipartForm()
-        return HttpResponse("")
+        return JsonResponse({"result": "ok"})
     else:
         raise SuspiciousMultipartForm()
 

@@ -100,11 +100,16 @@
         data: {
             csrfmiddlewaretoken: '{{ csrf_token }}',
             action: 'ADD',
-            item_id: id
+            item_id: id,
+        }
+      }).done( function(data){
+        if(data.result == "ok"){
+          available_slot.children().first().html('<img src="'+src+'">');
+          available_slot.children().first().attr('data-item-id', id);
+        } else if(data.result == "duplicate"){
+          alert("The item is already in the hanger!");
         }
       });
-      available_slot.children().first().html('<img src="'+src+'">');
-      available_slot.children().first().attr('data-item-id', id);
     } else {
       alert("Hanger is full!");
     }
@@ -112,15 +117,18 @@
 
   function removeFromHanger(id) {
     hanger_item = $('.hanger-item[data-item-id="' + id + '"]');
-    hanger_item.removeAttr("data-item-id");
-    hanger_item.html("<p>NO ITEM</p>");
     $.ajax( {
       type: 'POST',
       url: '{% url 'update_hanger' %}',
       data: {
           csrfmiddlewaretoken: '{{ csrf_token }}',
           action: 'REMOVE',
-          item_id: id
+          item_id: id,
+      }
+    }).done( function(data){
+      if(data.result == "ok"){
+        hanger_item.removeAttr("data-item-id");
+        hanger_item.html("<p>NO ITEM</p>");
       }
     });
   }
