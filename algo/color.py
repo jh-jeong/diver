@@ -87,7 +87,7 @@ def init_color(cursor_):
     global COLOR, cItemSet, cur
     cur = cursor_
     COLOR = _init_color_data()
-    cItemSet = list(find_frequent_itemsets(COLOR, 2, True))
+    cItemSet = list(find_frequent_itemsets(COLOR, 1, True))
     
 def hanger_getColor(hanger):
     h_set = set([])
