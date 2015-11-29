@@ -5,7 +5,7 @@ from django.contrib import admin
 #models
 from diver.models import Image
 from diver.models import Shop
-from diver.models import Item
+from diver.models import Item, Customer
 
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
@@ -18,6 +18,12 @@ class ShopAdmin(admin.ModelAdmin):
 @admin.register(Item)
 class ItemAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    pass
+
 
 
 
