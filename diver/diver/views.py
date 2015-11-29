@@ -121,7 +121,7 @@ def update_hanger(request):
             new_hanger = request.session['hanger']
             new_hanger.append(item_id)
             request.session['hanger'] = new_hanger
-        elif action == 'DELETE':
+        elif action == 'REMOVE':
             new_hanger = request.session['hanger']
             new_hanger.remove(item_id)
             request.session['hanger'] = new_hanger

@@ -111,18 +111,40 @@
       alert("Hanger is full!");
     }
   }
+
+  function removeFromHanger(id) {
+    hanger_item = $('.hanger-item[data-item-id="' + id + '"]');
+    hanger_item.removeAttr("data-item-id");
+    hanger_item.html("<p>NO ITEM</p>");
+    $.ajax( {
+      type: 'POST',
+      url: '{% url 'update_hanger' %}',
+      data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          action: 'REMOVE',
+          item_id: id
+      }
+    });
+  }
+
 $(document).ready(function () {
-  function update_category2(category1) {
+  function updateCategory2(category1) {
     $("#category2").children("[data-parent-value=\"" + category1 + "\"]").show();
     $("#category2").children(":not([data-parent-value=\"" + category1 + "\"])").hide();
   }
 
   $("#category1").change(function(e) {
-    update_category2(e.target.value);
+    updateCategory2(e.target.value);
     $("#category2").children("[data-parent-value=\"" + e.target.value + "\"]").first().attr("selected", "selected");
   });
-  update_category2($("#category1").val());
+  updateCategory2($("#category1").val());
 
+  $(".hanger-item").click( function(e) {
+    item_id = $(this).data("item-id");
+    if(confirm("Are you sure you want to remove the item from hanger?")){
+      removeFromHanger(item_id);
+    }
+  });
 });
 </script>
 {% endblock %}

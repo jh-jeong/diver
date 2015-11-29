@@ -1,4 +1,4 @@
-<div class="hanger-item">
+<div class="hanger-item"{% if item %} data-item-id="{{ item.id }}"{% endif %}>
     {% if item %}
     <img src="{{ item.images }}">
     {% else %}
