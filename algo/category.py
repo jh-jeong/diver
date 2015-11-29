@@ -50,9 +50,7 @@ def _get_match_data(match_id):
     # caching
     return dataSet
 
-def _hanger_getMatch(hanger):
-    i_hanger = map(hanger, color._get_item_id)
-    h_set = set(map(_get_item_type, i_hanger))
+def _hanger_getMatch(h_set):
     cand = {}
     for match, sup in mItemSet:
         if h_set < set(match):
@@ -82,8 +80,9 @@ def init_category(cursor_):
     
 def hanger_complete(hanger, customer_id):
     global cur
-    
-    candDict = _hanger_getMatch(hanger)
+    i_hanger = map(color._get_item_id, hanger)
+    h_set = set(map(_get_item_type, i_hanger))
+    candDict = _hanger_getMatch(h_set)
     ratings = list(cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)))
     for r, mid in ratings:
         s = frozenset(_get_match_data(mid))
@@ -91,7 +90,8 @@ def hanger_complete(hanger, customer_id):
             candDict[s] = candDict[s]*(r+2)/4
         except KeyError:
             pass
-    return max(candDict, key=candDict.get)
+    maxMatch = set(max(candDict, key=candDict.get))
+    return frozenset(maxMatch-h_set)
     
 def main():
     global cur
