@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.main, name='main'),
     url(r'^upload/$', views.upload),
+    url(r'^upload_item/$', views.upload_item),
     url(r'^search/$', views.search),
     url(r'^auth/$', views.auth),
     url(r'^like/([0-9]+)/([0-9]+)$',views.like),

@@ -1,7 +1,7 @@
 {% if item %}
 {% load item_filters %}
 <div class="item {{ class_names }}"
-     data-item-id="{{ item.id }}"
+    data-item-id="{{ item.id }}"
     data-item-category1="{{ item.category|category1 }}"
     data-item-category2="{{ item.category }}">
     <img src={{ item.images }}>
@@ -19,25 +19,49 @@
         </div>
       {% endfor %}
       {% else %}
-      <div class="dummy-color-combination"></div>
+        <div class="dummy-color-combination"></div>
       {% endif %}
     </div>
     <div class="col-md-12 col-xs-12 col-lg-12">
       <span class="star-rating">
-        <input type="radio" name="rating{{item.id}}" value="1"><i></i>
-        <input type="radio" name="rating{{item.id}}" value="2"><i></i>
-        <input type="radio" name="rating{{item.id}}" value="3"><i></i>
-        <input type="radio" name="rating{{item.id}}" value="4"><i></i>
-        <input type="radio" name="rating{{item.id}}" value="5"><i></i>
+        <input type="radio" name="rating{{item.id}}" value=1
+                            onclick="like({{item.id}}, 1)"><i></i>
+        <input type="radio" name="rating{{item.id}}" value=2
+                            onclick="like({{item.id}}, 2)"><i></i>
+        <input type="radio" name="rating{{item.id}}" value=3
+                            onclick="like({{item.id}}, 3)"><i></i>
+        <input type="radio" name="rating{{item.id}}" value=4
+                            onclick="like({{item.id}}, 4)"><i></i>
+        <input type="radio" name="rating{{item.id}}" value=5
+                            onclick="like({{item.id}}, 5)"><i></i>
       </span>
     </div>
+    {% if match %}
     <div class="row">
       <div class="col-md-9">
-        <p class="btn btn-link ellipsis">{{ item.name }}</p>
+        <p class="btn ellipsis"><a href="{{ item.purchase_url }}" target="_blank">{{ item.name }}</a></p>
       </div>
       <div class="col-md-3">
         <p class="btn btn-link" onclick="">{{ item.price }}</p>
       </div>
     </div>
+    {% else %}
+    <div class="row">
+      <div class="col-md-12 col-xs-12">
+        <a class="btn btn-link ellipsis" href="{{item.purchase_url}}"
+          target="_blank">{{ item.name }}</a>
+      </div>
+      <div class="col-md-6 col-xs-6">
+        <p class="btn btn-link">{{ item.price }}</p>
+      </div>
+      <div class="col-md-6 col-xs-6">
+        <p class="button-to-hanger">
+        <a class="btn btn-link" onclick="toHanger({{item.id}},
+                    '{{item.category|category1}}',
+                    '{{item.images}}')">To hanger</a>
+        </p>
+      </div>
+    </div>
+  {% endif %}
 </div>
 {% endif %}

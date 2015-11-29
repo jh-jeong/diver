@@ -1,16 +1,41 @@
-#hanger {
-  display: block;
+#hanger-panel {
+  display: inline-block;
   position: fixed;
-  width: 150px;
-  right: 0px;
+  width: 170px;
+  height: 317px;
+  right: -150px;
   top: 10em;
   margin-bottom: 0 !important;
+}
+
+#hanger-handle {
+  display: block;
+  cursor: pointer;
+  background-color: #DDD;
+  -webkit-border-top-left-radius: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+  -moz-border-radius-topleft: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  width: 20px;
+  min-height: 100%;
+  float: left;
+  padding-top: 150px;
+  text-align: center;
+}
+
+#hanger {
+  width: 150px;
+  height: 100%;
+  float: left;
 }
 
 @media (max-width: 640px) {
   #hanger {
     width: 75px;
-  }}
+  }
+}
 
 .price .button-to-hanger {
   text-align: center;
@@ -22,16 +47,28 @@
 }
 
 #hanger .hanger-slot {
+  width: 50%;
+  height: auto;
+  float: left;
   padding: 0 !important;
 }
 
 #hanger .hanger-slot .hanger-item {
   padding: 0 !important;
-  margin-bottom: 0 !important;
+  margin: .3em;
 }
 
 #hanger img {
   width: 100%;
+}
+
+#hanger .hanger-slot .hanger-item p {
+  padding-top: 2.1em;
+  padding-bottom: 2.1em;
+  border: 1px solid #DDD;
+  text-align: center;
+  font-size: 8pt;
+  margin: 0 !important;
 }
 
 .search-form {

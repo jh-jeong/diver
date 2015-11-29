@@ -11,11 +11,16 @@ def lookup_code(mapping):
                 if s.strip().lower() == name.strip().lower(): return c
     return lookup
 
+class ItemPref(models.Model):
+    user_id = models.IntegerField()
+    item_id = models.IntegerField()
+    score = models.IntegerField()
+
 class Customer(models.Model):
     # Basic authentication information
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=128)
-    user_id = models.ForeignKey('auth.User')
+    user = models.ForeignKey('auth.User')
 
     # Body dimensions
     height_cm = models.IntegerField()
@@ -151,7 +156,7 @@ class Item(models.Model):
     rate_count = models.IntegerField(default=0)
 
     # For Top
-    sleeve_level = models.IntegerField()
+    sleeve_level = models.IntegerField(null=True)
     NECK_TYPES = (
         ('RN', "Round"),
         ('HR', "Henry"),
@@ -173,7 +178,7 @@ class Item(models.Model):
     length_level = models.IntegerField(null=True)
     collar = models.IntegerField(null=True)
     hat = models.IntegerField(null=True)
-    button = models.IntegerField(null=True)
+    # button = models.IntegerField(null=True)
     padding = models.IntegerField(null=True)
 
     # For Bottom
@@ -188,6 +193,7 @@ class Item(models.Model):
     )
     fit = models.CharField(max_length=2, choices=FIT_TYPES, null=True)
     get_fit_code = lookup_code(FIT_TYPES)
+    jean_washing = models.IntegerField(null=True)
 
     # For Shoes
     weight_g = models.IntegerField(null=True)
@@ -254,36 +260,36 @@ class Size(models.Model):
     item = models.ForeignKey('Item')
 
     # For Top
-    length_cm = models.IntegerField()
-    shoulder_cm = models.IntegerField()
-    chest_cm = models.IntegerField()
-    sleeve_cm = models.IntegerField()
-    letter = models.CharField(max_length=5)
+    length_cm = models.IntegerField(null=True)
+    shoulder_cm = models.IntegerField(null=True)
+    chest_cm = models.IntegerField(null=True)
+    sleeve_cm = models.IntegerField(null=True)
+    letter = models.CharField(max_length=5, null=True)
 
     # For Outer
     ## Shares attributes with Top
 
     # For Bottom
     ## length_cm
-    waist_cm = models.IntegerField()
-    thigh_cm = models.IntegerField()
-    crotch_cm = models.IntegerField()
+    waist_cm = models.IntegerField(null=True)
+    thigh_cm = models.IntegerField(null=True)
+    crotch_cm = models.IntegerField(null=True)
     ## letter
 
     # For Shoes
-    size_mm = models.IntegerField()
-    correction = models.IntegerField()
+    size_mm = models.IntegerField(null=True)
+    correction = models.IntegerField(null=True)
 
 class Match(models.Model):
     image = models.URLField()
-    rate_count = models.IntegerField()
+    rate_count = models.IntegerField(default=0)
     url = models.URLField()
-    outer1 = models.ForeignKey('Item', related_name='match_for_outer1')
-    outer2 = models.ForeignKey('Item', related_name='match_for_outer2')
-    top1 = models.ForeignKey('Item', related_name='match_for_top1')
-    top2 = models.ForeignKey('Item', related_name='match_for_top2')
-    bottom = models.ForeignKey('Item', related_name='match_for_bottom')
-    shoes = models.ForeignKey('Item', related_name='match_for_shoes')
+    outer1 = models.ForeignKey('Color', related_name='match_for_outer1', null=True)
+    outer2 = models.ForeignKey('Color', related_name='match_for_outer2', null=True)
+    top1 = models.ForeignKey('Color', related_name='match_for_top1', null=True)
+    top2 = models.ForeignKey('Color', related_name='match_for_top2', null=True)
+    bottom = models.ForeignKey('Color', related_name='match_for_bottom', null=True)
+    shoes = models.ForeignKey('Color', related_name='match_for_shoes', null=True)
 
 class Shop(models.Model):
     name = models.CharField(max_length=30)
@@ -304,24 +310,6 @@ class Rating(models.Model):
 
 class Pref(models.Model):
     customer = models.ForeignKey(Customer)
-    top_0 = models.FloatField(default=0)
-    top_1 = models.FloatField(default=0)
-    top_2 = models.FloatField(default=0)
-    top_3 = models.FloatField(default=0)
-    top_4 = models.FloatField(default=0)
-    top_5 = models.FloatField(default=0)
-    top_6 = models.FloatField(default=0)
-    top_7 = models.FloatField(default=0)
-    top_8 = models.FloatField(default=0)
-    top_9 = models.FloatField(default=0)
-    top_10 = models.FloatField(default=0)
-    top_11 = models.FloatField(default=0)
-    top_12 = models.FloatField(default=0)
-    top_13 = models.FloatField(default=0)
-    top_14 = models.FloatField(default=0)
-    top_15 = models.FloatField(default=0)
-    top_16 = models.FloatField(default=0)
-    top_17 = models.FloatField(default=0)
     pattern_0 = models.IntegerField(default=0)
     pattern_1 = models.IntegerField(default=0)
     pattern_2 = models.IntegerField(default=0)
@@ -367,21 +355,3 @@ class Pref(models.Model):
     fit_3 = models.IntegerField(default=0)
     fit_4 = models.IntegerField(default=0)
     fit_5 = models.IntegerField(default=0)
-    bottom_0 = models.FloatField(default=0)
-    bottom_1 = models.FloatField(default=0)
-    bottom_2 = models.FloatField(default=0)
-    bottom_3 = models.FloatField(default=0)
-    bottom_4 = models.FloatField(default=0)
-    bottom_5 = models.FloatField(default=0)
-    bottom_6 = models.FloatField(default=0)
-    bottom_7 = models.FloatField(default=0)
-    bottom_8 = models.FloatField(default=0)
-    bottom_9 = models.FloatField(default=0)
-    bottom_10 = models.FloatField(default=0)
-    bottom_11 = models.FloatField(default=0)
-    bottom_12 = models.FloatField(default=0)
-    bottom_13 = models.FloatField(default=0)
-    bottom_14 = models.FloatField(default=0)
-    bottom_15 = models.FloatField(default=0)
-    bottom_16 = models.FloatField(default=0)
-    bottom_17 = models.FloatField(default=0)
