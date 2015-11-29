@@ -48,6 +48,11 @@ def survey_required(function):
 def auth(request):
     return render(request, 'auth.html')
 
+def noneCheck(input):
+    if input == '':
+        return 0
+    return input
+
 def account(request):
     if request.method == 'GET':
         pass
@@ -70,30 +75,42 @@ def account(request):
         except Customer.DoesNotExist:
             customer = None
 
+        height_cm = request.POST['height_cm']
+        weight_kg = request.POST['weight_kg']
+        chest_size_cm = request.POST['chest_size_cm']
+        waist_size_cm = request.POST['waist_size_cm']
+        sleeve_length_cm = request.POST['sleeve_length_cm']
+        leg_length_cm = request.POST['leg_length_cm']
+        shoes_size_mm = request.POST['shoes_size_mm']
+        body_shape = request.POST.get('body_shape','O')
+
+        height_cm = noneCheck(height_cm)
+        weight_kg = noneCheck(weight_kg)
+        chest_size_cm = noneCheck(chest_size_cm)
+        waist_size_cm = noneCheck(waist_size_cm)
+        sleeve_length_cm = noneCheck(sleeve_length_cm)
+        leg_length_cm = noneCheck(leg_length_cm)
+        shoes_size_mm = noneCheck(shoes_size_mm)
+
         if customer != None :
-            customer.height_cm = request.POST.get('height_cm', 0)
-            customer.weight_kg = request.POST.get('weight_kg', 0)
-            customer.chest_size_cm = request.POST.get('chest_size_cm', 0)
-            customer.waist_size_cm = request.POST.get('waist_size_cm', 0)
-            customer.sleeve_length_cm = request.POST.get('sleeve_length_cm', 0)
-            customer.leg_length_cm = request.POST.get('leg_length_cm', 0)
-            customer.shoes_size_mm = request.POST.get('shoes_size_mm', 0)
-            customer.body_shape = request.POST.get('body_shape','O')
+            customer.height_cm = height_cm
+            customer.weight_kg = weight_kg
+            customer.chest_size_cm = chest_size_cm
+            customer.waist_size_cm = waist_size_cm
+            customer.sleeve_length_cm = sleeve_length_cm
+            customer.leg_length_cm = leg_length_cm
+            customer.shoes_size_mm = shoes_size_mm
+            customer.body_shape = body_shape
+
+            customer.save()
+
         else:
-            height_cm = request.POST.get('height_cm', 0)
-            weight_kg = request.POST.get('weight_kg', 0)
-            chest_size_cm = request.POST.get('chest_size_cm', 0)
-            waist_size_cm = request.POST.get('waist_size_cm', 0)
-            sleeve_length_cm = request.POST.get('sleeve_length_cm', 0)
-            leg_length_cm = request.POST.get('leg_length_cm', 0)
-            shoes_size_mm = request.POST.get('shoes_size_mm', 0)
-            body_shape = request.POST.get('body_shape', 0)
 
             customer = Customer(user_id=request.user.id, height_cm=height_cm,weight_kg=weight_kg,
                             chest_size_cm=chest_size_cm,waist_size_cm=waist_size_cm,sleeve_length_cm=sleeve_length_cm,
-                            leg_length_cm=leg_length_cm, shoes_size_mm=shoes_size_mm,body_shape=body_shape
+                            leg_length_cm=leg_length_cm, shoes_size_mm=shoes_size_mm, body_shape=body_shape
             )
-        customer.save()
+            customer.save()
     return render(request, 'account.html')
 
 @survey_required
