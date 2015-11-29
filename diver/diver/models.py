@@ -11,6 +11,11 @@ def lookup_code(mapping):
                 if s.strip().lower() == name.strip().lower(): return c
     return lookup
 
+class ItemPref(models.Model):
+    user_id = models.IntegerField()
+    item_id = models.IntegerField()
+    score = models.IntegerField()
+
 class Customer(models.Model):
     # Basic authentication information
     username = models.CharField(max_length=20)
@@ -35,7 +40,7 @@ class Customer(models.Model):
     body_shape = models.CharField(max_length=1, choices=BODY_SHAPES)
     get_body_shape_code = lookup_code(BODY_SHAPES)
 
-    def like(item):
+    def like(item, score):
         pass
 
     def dislike(item):
@@ -151,7 +156,7 @@ class Item(models.Model):
     rate_count = models.IntegerField(default=0)
 
     # For Top
-    sleeve_level = models.IntegerField()
+    sleeve_level = models.IntegerField(null=True)
     NECK_TYPES = (
         ('RN', "Round"),
         ('HR', "Henry"),
@@ -173,7 +178,7 @@ class Item(models.Model):
     length_level = models.IntegerField(null=True)
     collar = models.IntegerField(null=True)
     hat = models.IntegerField(null=True)
-    button = models.IntegerField(null=True)
+    # button = models.IntegerField(null=True)
     padding = models.IntegerField(null=True)
 
     # For Bottom
@@ -255,25 +260,25 @@ class Size(models.Model):
     item = models.ForeignKey('Item')
 
     # For Top
-    length_cm = models.IntegerField()
-    shoulder_cm = models.IntegerField()
-    chest_cm = models.IntegerField()
-    sleeve_cm = models.IntegerField()
-    letter = models.CharField(max_length=5)
+    length_cm = models.IntegerField(null=True)
+    shoulder_cm = models.IntegerField(null=True)
+    chest_cm = models.IntegerField(null=True)
+    sleeve_cm = models.IntegerField(null=True)
+    letter = models.CharField(max_length=5, null=True)
 
     # For Outer
     ## Shares attributes with Top
 
     # For Bottom
     ## length_cm
-    waist_cm = models.IntegerField()
-    thigh_cm = models.IntegerField()
-    crotch_cm = models.IntegerField()
+    waist_cm = models.IntegerField(null=True)
+    thigh_cm = models.IntegerField(null=True)
+    crotch_cm = models.IntegerField(null=True)
     ## letter
 
     # For Shoes
-    size_mm = models.IntegerField()
-    correction = models.IntegerField()
+    size_mm = models.IntegerField(null=True)
+    correction = models.IntegerField(null=True)
 
 class Match(models.Model):
     image = models.URLField()

@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+{% block styletags %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/search.css' %}">
+{% endblock %}
+
+{% block content %}
+  <h1>추천 받기</h1>
+  <h3>검색 필터 설정</h3>
+  <form method="post" enctype="multipart/form-data" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="col-md-12">
+      <div class="form-group">
+        <label for="category1">대분류</label>
+        <select id="category1">
+          {% for c in categories %}
+            <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.0 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <div class="form-group">
+        <label for="category2">소분류</label>
+        <select name="category" id="category2">
+          {% for c1 in categories %}
+            {% for c2 in c1.1 %}
+              <option data-parent-value="{{ forloop.parentloop.counter0 }}" value="{{ c2.0 }}" {% if c2.0 == selected_category2 %}selected="selected"{% endif %}>{{ c2.1 }}</option>
+            {% endfor %}
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+
+      <div class="form-group">
+        <label for="patterns">패턴</label>
+        <select name="patterns" id="patterns">
+          {% for c in patterns %}
+            <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+
+      <div class="form-group">
+        <label for="materials">재료</label>
+        <select name="materials" id="materials">
+          {% for c in materials %}
+            <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="neck_types_div">
+      <div class="form-group">
+        <label for="neck_types">목 타입</label>
+        <select name="neck_types" id="neck_types">
+          {% for c in neck_types %}
+            <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="fit_types_div">
+      <div class="form-group">
+        <label for="fit_types">핏 타입</label>
+        <select name="fit_types" id="fit_types">
+          {% for c in fit_types %}
+            <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="sleeve_level_div">
+      <div class="form-group">
+        <label for="sleeve_level">sleeve_level</label>
+        <select value name="sleeve_level" id="sleeve_level">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+
+      <div class="form-group" id="length_level_outer_div">
+        <label for="length_level_outer">length_level_outer</label>
+        <select value name="length_level_outer" id="length_level_outer">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+
+      <div class="form-group" id="length_level_bottom_div">
+        <label for="length_level_bottom">length_level_bottom</label>
+        <select value name="length_level_bottom" id="length_level_bottom">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="button_outer_div">
+
+      <div class="form-group">
+        <label for="button_outer">버튼</label>
+        <select value name="button_outer" id="button_outer">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="button_top_div">
+
+      <div class="form-group">
+        <label for="button_top">버튼</label>
+        <select name="button_top" id="button_top">
+          <option value="0">없음</option>
+          <option value="1">있음</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="collar_div">
+
+      <div class="form-group">
+        <label for="collar">카라</label>
+        <select name="collar" id="collar">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="zipper_div">
+
+      <div class="form-group">
+        <label for="zipper">지퍼</label>
+        <select name="zipper" id="zipper">
+          <option value="0">없음</option>
+          <option value="1">있음</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="hat_div">
+
+      <div class="form-group">
+        <label for="hat">모자</label>
+        <select name="hat" id="hat">
+          <option value="0">없음</option>
+          <option value="1">있음</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="padding_div">
+
+      <div class="form-group">
+        <label for="padding">패딩</label>
+        <select name="padding" id="padding">
+          <option value="0">아님</option>
+          <option value="1">맞</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-12" id="size_top_div">
+      <div class="form-group">
+        길이 <input name="length_cm" class="form-control" type="number">
+        어깨 <input name="shoulder_cm" class="form-control" type="number">
+        가슴 <input name="chest_cm" class="form-control" type="number">
+        sleeve <input name="sleeve_cm" class="form-control" type="number">
+        letter <input name="letter" class="form-control">
+      </div>
+    </div>
+
+    <div class="col-md-12" id="size_bottom_div">
+      <div class="form-group">
+        waist_cm <input name="waist_cm" class="form-control" type="number">
+        thigh_cm <input name="thigh_cm" class="form-control" type="number">
+        crotch_cm <input name="crotch_cm" class="form-control" type="number">
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+        <label for="price">가격</label>
+        <input name="price" class="form-control" type="number">
+      </div>
+    </div>
+
+
+   <div class="col-md-12">
+      <div class="form-group">
+        <label for="comment">코맨트</label>
+        <input name="comment" class="form-control">
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="color1">색상1</label>
+        <input class="form-control" type="color" name="color1" id="color1"/>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="color2">색상2</label>
+        <input class="form-control" type="color" name="color2" id="color2"/>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <label for="color3">색상3</label>
+        <input class="form-control" type="color" name="color3" id="color3"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <input type="file" name="file" id="upload_file" value="이미지 선택"
+             class="multi with-preview"
+             multiple>
+    </div>
+
+    <input type="submit" id="send" value="업로드" class="btn btn-primary"/>
+  </form>
+
+{% endblock %}
+{% block script %}
+  <script type='text/javascript'>
+    $(document).ready(function () {
+
+
+      function hide_all(){
+        $("#neck_types_div").hide();
+        $("#fit_types_div").hide();
+        $("#sleeve_level_div").hide();
+        $("#length_level_outer_div").hide();
+        $("#length_level_bottom_div").hide();
+        $("#button_top_div").hide();
+        $("#button_outer_div").hide();
+
+
+        $("#collar_div").hide();
+        $("#zipper_div").hide();
+        $("#hat_div").hide();
+        $("#padding_div").hide();
+
+        $("#size_top_div").hide();
+        $("#size_bottom_div").hide();
+
+      }
+
+      function update_category2(category1) {
+        $("#category2").children("[data-parent-value=\"" + category1 + "\"]").show();
+        $("#category2").children(":not([data-parent-value=\"" + category1 + "\"])").hide();
+
+        hide_all();
+        if(category1 == 0){
+          $("#sleeve_level_div").show();
+          $("#neck_types_div").show();
+          $("#button_top_div").show();
+          $("#zipper_div").show();
+          $("#size_top_div").show();
+
+        }
+        else if(category1 == 1){
+          $("#sleeve_level_div").show();
+          $("#button_outer_div").show();
+          $("#collar_div").show();
+          $("#zipper_div").show();
+          $("#hat_div").show();
+          $("#padding_div").show();
+          $("#length_level_outer_div").show();
+          $("#size_top_div").show();
+
+        }
+        else if(category1 == 2){
+          $("#fit_types_div").show();
+          $("#length_level_bottom_div").show();
+          $("#size_bottom_div").show();
+
+        }
+
+      }
+
+      $("#category1").change(function(e) {
+        update_category2(e.target.value);
+
+        $("#category2").children("[data-parent-value=\"" + e.target.value + "\"]").first().attr("selected", "selected");
+      });
+      update_category2($("#category1").val());
+
+    });
+  </script>
+{% endblock %}

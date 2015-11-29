@@ -1,10 +1,58 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>My Diver</h1>
-
+<h1>당신에 대해 알려주세요 ( ͡° ͜ʖ ͡°)</h1>
 <form method="post">
 {% csrf_token %}
-<input type="submit" name="survey"/>
+<div class="row">
+  <div class="form-group col-md-4">
+    <label for="weight">몸무게(kg)</label>
+    <input id="weight" type="number" class="form-control" value={{user.weight_kg}}>
+  </div>
+  <div class="form-group col-md-4">
+    <label for="height">키(cm)</label>
+    <input id="height" type="number" class="form-control" value={{user.height_cm}}>
+  </div>
+  <div class="form-group col-md-4">
+    <label for="chest">가슴 둘레(cm)</label>
+    <input id="chest" type="number" class="form-control"
+                                    value={{user.chest_size_cm}}>
+  </div>
+  <div class="form-group col-md-4">
+    <label for="waist">허리 둘레(cm)</label>
+    <input id="waist" type="number" class="form-control"
+                                     value={{user.waist_size_cm}}>
+  </div>
+  <div class="form-group col-md-4">
+    <label for="sleeve">팔 길이(cm)</label>
+    <input id="sleeve" type="number" class="form-control"
+                                     value={{user.sleeve_length_cm}}>
+  </div>
+  <div class="form-group col-md-4">
+    <label for="leg">다리 길이(cm)</label>
+    <input id="leg" type="number" class="form-control"
+                                     value={{user.leg_length_cm}}>
+  </div>
+  <div class="form-group col-md-4">
+    <label for="shoes">신발 사이즈(mm)</label>
+    <input id="shoes" type="number" class="form-control"
+                                     value={{user.shoes_size_mm}}>
+  </div>
+  <div class="form-group col-md-8">
+    <label for="bodytype">체형</label>
+    <select class="form-control" id="bodytype">
+      <option value="O">Abdominal obese</option>
+      <option value="M">Muscular</option>
+      <option value="A">Skinny</option>
+      <option value="B">Fat</option>
+      <option value="N">Normal</option>
+    </select>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 col-xs-12 col-lg-12">
+    <input class="btn btn-default" type="submit" name="survey"/>
+  </div>
+</div>
 </form>
 
 {% endblock %}
