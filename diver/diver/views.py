@@ -14,6 +14,7 @@ from django.core.files import storage
 from diver.models import Image
 from diver.models import Item
 from diver.models import Customer
+from diver.models import Match
 from diver.models import ItemPref, Color, Size, Pref
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
@@ -113,15 +114,8 @@ def account(request):
 @survey_required
 def main(request):
     if request.method == 'GET':
-        items = Item.objects.all()
-        if request.session.get('customer_id') is not None:
-            item_ids = [item.id for item in items]
-            item_ids = algo_item.reorder_items(item_ids, request.session['customer_id'], [])
-            items = [Item.get(id=id) for id in item_ids]
-
-        # for item in items:
-        #     print (item.images)
-    return render(request, 'main.html', {'items':items})
+        matches = Match.objects.all()
+    return render(request, 'main.html', {'matches':matches})
 
 def like(request, id, score):
     return (HttpResponse("{} {}".format(id, score)))

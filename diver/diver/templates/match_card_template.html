@@ -1,0 +1,24 @@
+{% load item_filters %}
+<div class="item {{ class_names }}"
+     data-match-id="{{ match.id }}">
+    <img src={{ match.image }}>
+    <div class="col-md-12 col-xs-12 col-lg-12">
+      <span class="star-rating">
+        <input type="radio" name="rating{{match.id}}" value=1
+                            onclick=""><i></i>
+        <input type="radio" name="rating{{match.id}}" value=2
+                            onclick=""><i></i>
+        <input type="radio" name="rating{{match.id}}" value=3
+                            onclick=""><i></i>
+        <input type="radio" name="rating{{match.id}}" value=4
+                            onclick=""><i></i>
+        <input type="radio" name="rating{{match.id}}" value=5
+                            onclick=""><i></i>
+      </span>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-xs-12">
+        <a class="btn btn-link" href="{{match.url}}" target="_blank">Details</a>
+      </div>
+    </div>
+</div>

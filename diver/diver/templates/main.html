@@ -12,8 +12,8 @@
   <div class="container">
     <div class="row">
       {% load item_filters %}
-      {% for item in items %}
-        {% item_card item "col-lg-3 col-md-4 col-xs-6" True %}
+      {% for match in matches %}
+        {% match_card match "col-lg-3 col-md-4 col-xs-6"%}
       {% endfor %}
     </div>
   </div>
