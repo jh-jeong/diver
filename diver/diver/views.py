@@ -63,6 +63,13 @@ def like(request, id, score):
     if request.method == 'GET':
         item = Item.objects.filter(id = id)
         if item != []:
+
+            item_pref = ItemPref.objects.filter(item_id = id, user_id = request.user.id)
+
+            if item_pref != []:
+                # item 값이 벼하는 시점
+                pass
+
             # customer = Customer.objects.filter(user_id = request.user.id)
             # customer.like(Item.objects.filter(id = id), like)
             item_pref = ItemPref(item_id = id, user_id = request.user.id, score = score)
