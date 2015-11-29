@@ -7,10 +7,10 @@ import queue
 import time
 import threading
 from scipy.sparse import dok_matrix
-from low_rank import MatrixCompletion
+from algo.low_rank import MatrixCompletion
 import numpy as np
 import sqlite3 as sql
-import color
+import algo.color
 
 DEFALUT_WEIGHT = (60, 20, 20)
 FLUSH_MIN = 5

@@ -1,4 +1,4 @@
-import os
+import sys,os
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -17,7 +17,13 @@ from diver.models import Customer
 from diver.models import ItemPref, Color, Size
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
+from diver.settings import BASE_DIR
 
+sys.path.append(os.path.join(BASE_DIR, '..'))
+import algo.item as algo_item
+import algo.color as algo_color
+import algo.size as algo_size
+import algo.category as algo_category
 
 __author__ = 'un'
 
@@ -25,7 +31,12 @@ __author__ = 'un'
 def survey_required(function):
     def wrap(request, *args, **kwargs):
 
-        if Customer.objects.filter(user_id=request.user.id) or not request.user.is_authenticated():
+        if request.session.get('customer_id', None) is not None:
+            return function(request, *args, **kwargs)
+        elif Customer.objects.filter(user_id=request.user.id).count() > 0:
+            request.session['customer_id'] = Customer.objects.filter(user_id=request.user.id)[0].id
+            return function(request, *args, **kwargs)
+        elif not request.user.is_authenticated():
             return function(request, *args, **kwargs)
         else:
             return HttpResponseRedirect('/account')
@@ -41,6 +52,17 @@ def account(request):
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
+        customer = Customer(user_id=request.user, height_cm=180,weight_kg=73,
+                            chest_size_cm=50,waist_size_cm=30,sleeve_length_cm=40,
+                            leg_length_cm=30,shoes_size_mm=270
+                            )
+        customer.save()
+        
+        # Initialize personal preference
+        pref = Pref()
+        pref.customer = customer
+        pref.save()
+        algo_item.rating_add_user(customer.id)
 
         # customers = Customer.objects.filter(user_id=request.user.id)
         try:
@@ -78,6 +100,10 @@ def account(request):
 def main(request):
     if request.method == 'GET':
         items = Item.objects.all()
+        if request.session.get('customer_id') is not None:
+            item_ids = [item.id for item in items]
+            item_ids = algo_item.reorder_items(item_ids, request.session['customer_id'], [])
+            items = [Item.get(id=id) for id in item_ids]
 
         # for item in items:
         #     print (item.images)
