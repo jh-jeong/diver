@@ -19,7 +19,7 @@
         </div>
       {% endfor %}
       {% else %}
-      <div class="dummy-color-combination"></div>
+        <div class="dummy-color-combination"></div>
       {% endif %}
     </div>
     <div class="col-md-12 col-xs-12 col-lg-12">
@@ -33,7 +33,7 @@
     </div>
     <div class="row">
       <div class="col-md-9">
-        <p class="btn btn-link ellipsis">{{ item.name }}</p>
+        <p class="btn ellipsis"><a href="{{ item.purchase_url }}" target="_blank">{{ item.name }}</a></p>
       </div>
       <div class="col-md-3">
         <p class="btn btn-link" onclick="">{{ item.price }}</p>
