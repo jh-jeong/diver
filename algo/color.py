@@ -23,7 +23,7 @@ PALETTE = {'beige': (245,245,220), 'black': (0,0,0), 'blue': (0,0,255), 'brown':
 
 COLOR_RGB = [PALETTE[d] for d in COLOR_NAME]
 
-def _get_color(color_id):
+def get_color(color_id):
     cur = get_cursor()
     cur.execute("SELECT color_id1, color_ratio1, color_id2, color_ratio2, color_id3, color_ratio3 \
                 FROM diver_color WHERE id=?", (color_id,))
@@ -39,7 +39,7 @@ def _get_item_id(color_id):
     return item_id
 
 def _get_color_type(color_id):
-    cid, c_ratio = _get_color(color_id)
+    cid, c_ratio = get_color(color_id)
     if c_ratio[0] > COLOR_THRESHOLD:
         vec_c = set([cid[0],])
     elif c_ratio[0] + c_ratio[1] > COLOR_THRESHOLD:

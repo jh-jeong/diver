@@ -75,7 +75,6 @@ def init_category():
     mc.set("mItemSet", list(find_frequent_itemsets(mc.get("MATCH"), 1, True)), 0)
     
 def hanger_complete(hanger, customer_id):
-    mc = get_mc()
     cur = get_cursor()
     i_hanger = hanger
     h_set = set(map(_get_item_type, i_hanger))
