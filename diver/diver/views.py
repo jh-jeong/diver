@@ -14,7 +14,7 @@ from django.core.files import storage
 from diver.models import Image
 from diver.models import Item
 from diver.models import Customer
-from diver.models import ItemPref, Color, Size
+from diver.models import ItemPref, Color, Size, Pref
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
 from diver.settings import BASE_DIR
@@ -57,23 +57,20 @@ def account(request):
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
-        customer = Customer(user_id=request.user, height_cm=180,weight_kg=73,
+        if Customer.objects.filter(user_id=request.user.id).count() == 0:
+            customer = Customer(user_id=request.user.id, height_cm=180,weight_kg=73,
                             chest_size_cm=50,waist_size_cm=30,sleeve_length_cm=40,
                             leg_length_cm=30,shoes_size_mm=270
                             )
-        customer.save()
+            customer.save()
+        else:
+            customer = Customer.objects.get(user_id=request.user.id)
         
         # Initialize personal preference
         pref = Pref()
         pref.customer = customer
         pref.save()
         algo_item.rating_add_user(customer.id)
-
-        # customers = Customer.objects.filter(user_id=request.user.id)
-        try:
-            customer = Customer.objects.get(user_id=request.user.id)
-        except Customer.DoesNotExist:
-            customer = None
 
         height_cm = request.POST['height_cm']
         weight_kg = request.POST['weight_kg']
