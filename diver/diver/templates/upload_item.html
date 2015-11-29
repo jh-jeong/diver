@@ -170,58 +170,49 @@
     </div>
 
     <div class="col-md-1 form-group" id="padding_div">
-        <label for="padding">패딩</label>
-        <select name="padding" id="padding">
-          <option value="0">Yes</option>
-          <option value="1">No</option>
-        </select>
+      <label for="padding">패딩</label>
+      <select name="padding" id="padding">
+        <option value="0">Yes</option>
+        <option value="1">No</option>
+      </select>
     </div>
 
     <div class="row col-md-12" id="size_top_div">
-        <div class="col-md-2 form-group">
-          <label for="length_cm">길이</label>
-          <input name="length_cm" class="form-control" type="number"
-          id="length_cm">
-        </div>
-        <div class="col-md-2 form-group">
-          <label for="shoulder_cm">어깨 길이</label>
-          <input name="shoulder_cm" class="form-control" type="number"
-          id="shoulder_cm">
-        </div>
-        <div class="col-md-2 form-group">
-          <label for="chest_cm">가슴 둘레</label>
-          <input name="chest_cm" class="form-control" type="number"
-          id="chest_cm">
-        </div>
-        <div class="col-md-2 form-group">
-          <label for="sleeve_cm">소매 길이</label>
-          <input name="sleeve_cm" class="form-control" type="number"
-          id="sleeve_cm">
-        </div>
-        <div class="col-md-2 form-group">
-          <label for="letter">라벨</label>
-          <input name="letter" class="form-control" id="letter">
-        <div>
+      <div class="col-md-2 form-group">
+        <label for="length_cm">길이</label>
+        <input name="length_cm" class="form-control" type="number" id="length_cm">
+      </div>
+      <div class="col-md-2 form-group">
+        <label for="shoulder_cm">어깨 길이</label>
+        <input name="shoulder_cm" class="form-control" type="number" id="shoulder_cm">
+      </div>
+      <div class="col-md-2 form-group">
+        <label for="chest_cm">가슴 둘레</label>
+        <input name="chest_cm" class="form-control" type="number" id="chest_cm">
+      </div>
+      <div class="col-md-2 form-group">
+        <label for="sleeve_cm">소매 길이</label>
+        <input name="sleeve_cm" class="form-control" type="number" id="sleeve_cm">
+      </div>
+      <div class="col-md-2 form-group">
+        <label for="letter">라벨</label>
+        <input name="letter" class="form-control" id="letter">
       </div>
     </div>
 
-    <div class="col-md-12" id="size_bottom_div">
-        <div class="col-md-4 form-group">
-          <label for="waist_cm">허리 둘레</label>
-          <input name="waist_cm" class="form-control" type="number"
-          id="waist_cm">
-        </div>
+    <div class="row col-md-12" id="size_bottom_div">
+      <div class="col-md-4 form-group">
+        <label for="waist_cm">허리 둘레</label>
+        <input name="waist_cm" class="form-control" type="number" id="waist_cm">
+      </div>
 
-        <div class="col-md-4 form-group">
-          <label for="thigh_cm">허벅지 둘레</label>
-          <input name="thigh_cm" class="form-control" type="number"
-          id="thigh_cm">
-        </div>
-        <div class="col-md-4 form-group">
-          <label for="crotch_cm">밑위 길이</label>
-          <input name="crotch_cm" class="form-control" type="number"
-          id="crotch_cm">
-        </div>
+      <div class="col-md-4 form-group">
+        <label for="thigh_cm">허벅지 둘레</label>
+        <input name="thigh_cm" class="form-control" type="number" id="thigh_cm">
+      </div>
+      <div class="col-md-4 form-group">
+        <label for="crotch_cm">밑위 길이</label>
+        <input name="crotch_cm" class="form-control" type="number" id="crotch_cm">
       </div>
     </div>
 
@@ -246,13 +237,10 @@
         <label for="price">가격</label>
         <input name="price" class="form-control" type="number">
       </div>
-
-
       <div class="col-md-4 form-group">
         <label for="comment">코멘트</label>
         <input name="comment" class="form-control">
       </div>
-
       <div class="col-md-4 form-group">
         <label for="upload_file">아이템 사진</label>
         <input type="file" name="file" id="upload_file" value="이미지 선택"
@@ -303,7 +291,6 @@
           $("#button_top_div").show();
           $("#zipper_div").show();
           $("#size_top_div").show();
-
         }
         else if(category1 == 1){
           $("#sleeve_level_div").show();
@@ -314,15 +301,12 @@
           $("#padding_div").show();
           $("#length_level_outer_div").show();
           $("#size_top_div").show();
-
         }
         else if(category1 == 2){
           $("#fit_types_div").show();
           $("#length_level_bottom_div").show();
           $("#size_bottom_div").show();
-
         }
-
       }
 
       $("#category1").change(function(e) {
