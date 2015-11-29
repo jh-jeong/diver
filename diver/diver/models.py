@@ -188,6 +188,7 @@ class Item(models.Model):
     )
     fit = models.CharField(max_length=2, choices=FIT_TYPES, null=True)
     get_fit_code = lookup_code(FIT_TYPES)
+    jean_washing = models.IntegerField(null=True)
 
     # For Shoes
     weight_g = models.IntegerField(null=True)
