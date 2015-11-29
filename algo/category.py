@@ -51,7 +51,7 @@ def _get_match_data(match_id):
     return dataSet
 
 def _hanger_getMatch(hanger):
-    i_hanger = map(hanger, color._get_item_id)
+    i_hanger = map(color._get_item_id, hanger)
     h_set = set(map(_get_item_type, i_hanger))
     cand = {}
     for match, sup in mItemSet:
