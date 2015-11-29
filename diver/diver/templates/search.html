@@ -8,10 +8,7 @@
 {% block content %}
 <h1>추천 받기</h1>
 <h3>검색 필터 설정</h3>
-<form method="post" enctype="multipart/form-data" class="form-inline search-form">
-
-
-  {% csrf_token %}
+<form method="get" enctype="multipart/form-data" class="form-inline search-form">
   <div class="form-group">
   <label for="category1">대분류</label>
   <select class="form-control" id="category1">
@@ -128,7 +125,10 @@
     }).done( function(data){
       if(data.result == "ok"){
         hanger_item.removeAttr("data-item-id");
+        hanger_item.removeData("item-id");
         hanger_item.html("<p>NO ITEM</p>");
+      } else {
+        alert("An error occurred while removing the item from hanger.");
       }
     });
   }

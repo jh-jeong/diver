@@ -78,10 +78,9 @@ def search(request):
     specified_lower = None
     specified_upper = None
     search_result = []
-    if request.method == 'POST':
-        category = request.POST['category']
+    if 'category' in request.GET:
+        category = request.GET['category']
 
-        print (category)
         for i in range(len(Item.CATEGORIES)):
             for c,n in Item.CATEGORIES[i][1]:
                 if c == category:
@@ -91,11 +90,11 @@ def search(request):
 
         items = Item.objects.filter(category=category)
         try:
-            specified_lower = int(request.POST['lower'])
+            specified_lower = int(request.GET['lower'])
             items = items.exclude(price__lte=specified_lower)
         except: pass
         try:
-            specified_upper = int(request.POST['upper'])
+            specified_upper = int(request.GET['upper'])
             items = items.exclude(price__gte=specified_upper)
         except: pass
         search_result = items
@@ -124,9 +123,12 @@ def update_hanger(request):
             new_hanger.append(item_id)
             request.session['hanger'] = new_hanger
         elif action == 'REMOVE':
-            new_hanger = request.session['hanger']
-            new_hanger.remove(item_id)
-            request.session['hanger'] = new_hanger
+            if item_id in request.session['hanger']:
+                new_hanger = request.session['hanger']
+                new_hanger.remove(item_id)
+                request.session['hanger'] = new_hanger
+            else:
+                return JsonResponse({"result": "not exist"});
         else:
             raise SuspiciousMultipartForm()
         return JsonResponse({"result": "ok"})
