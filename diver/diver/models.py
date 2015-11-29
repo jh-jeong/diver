@@ -282,14 +282,14 @@ class Size(models.Model):
 
 class Match(models.Model):
     image = models.URLField()
-    rate_count = models.IntegerField()
+    rate_count = models.IntegerField(default=0)
     url = models.URLField()
-    outer1 = models.ForeignKey('Item', related_name='match_for_outer1')
-    outer2 = models.ForeignKey('Item', related_name='match_for_outer2')
-    top1 = models.ForeignKey('Item', related_name='match_for_top1')
-    top2 = models.ForeignKey('Item', related_name='match_for_top2')
-    bottom = models.ForeignKey('Item', related_name='match_for_bottom')
-    shoes = models.ForeignKey('Item', related_name='match_for_shoes')
+    outer1 = models.ForeignKey('Item', related_name='match_for_outer1', null=True)
+    outer2 = models.ForeignKey('Item', related_name='match_for_outer2', null=True)
+    top1 = models.ForeignKey('Item', related_name='match_for_top1', null=True)
+    top2 = models.ForeignKey('Item', related_name='match_for_top2', null=True)
+    bottom = models.ForeignKey('Item', related_name='match_for_bottom', null=True)
+    shoes = models.ForeignKey('Item', related_name='match_for_shoes', null=True)
 
 class Shop(models.Model):
     name = models.CharField(max_length=30)
