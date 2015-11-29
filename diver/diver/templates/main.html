@@ -21,13 +21,12 @@
 
 {% block script %}
   <script>
-    function like(id) {
+    function like(id, score) {
       $.ajax({
         'method': 'get',
         'dataType': 'text',
-        'url': '/like/'+id,
+        'url': '/like/'+id+'/'+score,
         'success': function(res){
-          //console.log("success!!" + reservationID);
           alert(res);
           location.reload();
         },
