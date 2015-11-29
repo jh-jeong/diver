@@ -56,9 +56,10 @@ def _get_color_type(color_id):
 def _get_color_data(match_id):
     global cur
     ColorSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, \
+    cData = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, \
                             top2_id, bottom_id, shoes_id \
-                            FROM diver_match WHERE id=?", (match_id,)):
+                            FROM diver_match WHERE id=?", (match_id,)))
+    for m in cData:
         vec_m = []
         for i in m:
             if i != None:

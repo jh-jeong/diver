@@ -37,9 +37,10 @@ def _get_item_type(item_id):
 def _get_match_data(match_id):
     global cur
     dataSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, \
+    mData = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, \
                             top2_id, bottom_id, shoes_id \
-                            FROM diver_match WHERE match_id=?", (match_id,)):
+                            FROM diver_match WHERE match_id=?", (match_id,)))
+    for m in mData:
         vec_m = []
         for i in m:
             if i != None:
@@ -83,8 +84,8 @@ def hanger_complete(hanger, customer_id):
     global cur
     
     candDict = _hanger_getMatch(hanger)
-    
-    for r, mid in cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)):
+    ratings = list(cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)))
+    for r, mid in ratings:
         s = frozenset(_get_match_data(mid))
         try:
             candDict[s] = candDict[s]*(r+2)/4
