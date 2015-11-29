@@ -38,16 +38,58 @@ def survey_required(function):
 def auth(request):
     return render(request, 'auth.html')
 
+def noneCheck(input):
+    if input == '':
+        return 0
+    return input
+
 def account(request):
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
-        customer = Customer(user_id=request.user, height_cm=180,weight_kg=73,
-                            chest_size_cm=50,waist_size_cm=30,sleeve_length_cm=40,
-                            leg_length_cm=30, shoes_size_mm=260
-        )
-        customer.save()
 
+        # customers = Customer.objects.filter(user_id=request.user.id)
+        try:
+            customer = Customer.objects.get(user_id=request.user.id)
+        except Customer.DoesNotExist:
+            customer = None
+
+        height_cm = request.POST['height_cm']
+        weight_kg = request.POST['weight_kg']
+        chest_size_cm = request.POST['chest_size_cm']
+        waist_size_cm = request.POST['waist_size_cm']
+        sleeve_length_cm = request.POST['sleeve_length_cm']
+        leg_length_cm = request.POST['leg_length_cm']
+        shoes_size_mm = request.POST['shoes_size_mm']
+        body_shape = request.POST.get('body_shape','O')
+
+        height_cm = noneCheck(height_cm)
+        weight_kg = noneCheck(weight_kg)
+        chest_size_cm = noneCheck(chest_size_cm)
+        waist_size_cm = noneCheck(waist_size_cm)
+        sleeve_length_cm = noneCheck(sleeve_length_cm)
+        leg_length_cm = noneCheck(leg_length_cm)
+        shoes_size_mm = noneCheck(shoes_size_mm)
+
+        if customer != None :
+            customer.height_cm = height_cm
+            customer.weight_kg = weight_kg
+            customer.chest_size_cm = chest_size_cm
+            customer.waist_size_cm = waist_size_cm
+            customer.sleeve_length_cm = sleeve_length_cm
+            customer.leg_length_cm = leg_length_cm
+            customer.shoes_size_mm = shoes_size_mm
+            customer.body_shape = body_shape
+
+            customer.save()
+
+        else:
+
+            customer = Customer(user_id=request.user.id, height_cm=height_cm,weight_kg=weight_kg,
+                            chest_size_cm=chest_size_cm,waist_size_cm=waist_size_cm,sleeve_length_cm=sleeve_length_cm,
+                            leg_length_cm=leg_length_cm, shoes_size_mm=shoes_size_mm, body_shape=body_shape
+            )
+            customer.save()
     return render(request, 'account.html')
 
 @survey_required

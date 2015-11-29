@@ -6,6 +6,7 @@ Created on 2015. 11. 10.
 import sqlite3 as sql
 from algo.fp import find_frequent_itemsets
 from algo import color
+from algo.color import init_color
 
 cur = None
 
@@ -23,7 +24,7 @@ mItemSet = None
 
 def _get_item_type(item_id):
     global cur
-    cur.execute("SELECT type, category, pattern, collar, padding FROM diver_item WHERE item_id=?", (item_id,))
+    cur.execute("SELECT type, category, pattern, collar, padding FROM diver_item WHERE id=?", (item_id,))
     temp = cur.fetchone()
     ty = temp[0]
     
@@ -36,9 +37,10 @@ def _get_item_type(item_id):
 def _get_match_data(match_id):
     global cur
     dataSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, \
+    mData = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, \
                             top2_id, bottom_id, shoes_id \
-                            FROM diver_match WHERE match_id=?", (match_id,)):
+                            FROM diver_match WHERE match_id=?", (match_id,)))
+    for m in mData:
         vec_m = []
         for i in m:
             if i != None:
@@ -48,9 +50,7 @@ def _get_match_data(match_id):
     # caching
     return dataSet
 
-def _hanger_getMatch(hanger):
-    i_hanger = map(hanger, color._get_item_id)
-    h_set = set(map(_get_item_type, i_hanger))
+def _hanger_getMatch(h_set):
     cand = {}
     for match, sup in mItemSet:
         if h_set < set(match):
@@ -61,11 +61,12 @@ def _hanger_getMatch(hanger):
 def init_match_data():
     global cur
     dataSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"):
+    mats = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"))
+    for m in mats:
         vec_m = []
         for i in m:
             if i != None and type(i) != str:
-                item_id = color._get_color(i)
+                item_id = color._get_item_id(i)
                 vec_m.append(_get_item_type(item_id))
         dataSet.append(vec_m)
     # caching
@@ -75,24 +76,28 @@ def init_category(cursor_):
     global MATCH, mItemSet, cur
     cur = cursor_
     MATCH = init_match_data()
-    mItemSet = list(find_frequent_itemsets(MATCH, 2, True))
+    mItemSet = list(find_frequent_itemsets(MATCH, 1, True))
     
 def hanger_complete(hanger, customer_id):
     global cur
-    
-    candDict = _hanger_getMatch(hanger)
-    
-    for r, mid in cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)):
+    i_hanger = map(color._get_item_id, hanger)
+    h_set = set(map(_get_item_type, i_hanger))
+    candDict = _hanger_getMatch(h_set)
+    ratings = list(cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)))
+    for r, mid in ratings:
         s = frozenset(_get_match_data(mid))
         try:
             candDict[s] = candDict[s]*(r+2)/4
         except KeyError:
             pass
-    return max(candDict, key=candDict.get)
+    maxMatch = set(max(candDict, key=candDict.get))
+    return frozenset(maxMatch-h_set)
     
 def main():
+    global cur
     conn = sql.connect("../diver/db.sqlite3")
     cur = conn.cursor()
+    init_color(cur)
     init_category(cur)
     
     print("MATCH SET:")

@@ -56,9 +56,10 @@ def _get_color_type(color_id):
 def _get_color_data(match_id):
     global cur
     ColorSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, \
+    cData = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, \
                             top2_id, bottom_id, shoes_id \
-                            FROM diver_match WHERE id=?", (match_id,)):
+                            FROM diver_match WHERE id=?", (match_id,)))
+    for m in cData:
         vec_m = []
         for i in m:
             if i != None:
@@ -87,7 +88,7 @@ def init_color(cursor_):
     global COLOR, cItemSet, cur
     cur = cursor_
     COLOR = _init_color_data()
-    cItemSet = list(find_frequent_itemsets(COLOR, 2, True))
+    cItemSet = list(find_frequent_itemsets(COLOR, 1, True))
     
 def hanger_getColor(hanger):
     h_set = set([])
