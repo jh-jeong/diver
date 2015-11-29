@@ -17,9 +17,9 @@ class DiverConfig(AppConfig):
     def ready(self):
         # Startup code here
         try:
-            category.init_category(connection.cursor())
+            category.init_category()
             size.init_size(connection.cursor())
-            color.init_color(connection.cursor())
-            item.init_rating(connection.cursor())
+            color.init_color()
+            item.init_rating()
         except:
             print("Algorithm initialization failed.")

@@ -94,6 +94,7 @@
         if(data.result == "ok"){
           available_slot.children().first().html('<img src="'+src+'">');
           available_slot.children().first().attr('data-item-id', id);
+          alert(data.match);
         } else if(data.result == "duplicate"){
           alert("The item is already in the hanger!");
         }

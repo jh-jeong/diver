@@ -203,7 +203,12 @@ def update_hanger(request):
                 return JsonResponse({"result": "not exist"});
         else:
             raise SuspiciousMultipartForm()
-        return JsonResponse({"result": "ok"})
+
+        try:
+            matched_items = algo_category.hanger_complete(new_hanger, request.session['customer_id'])
+        except Exception as e:
+            return JsonResponse({"result": "ok", "match": "Error: " + str(e)})
+        return JsonResponse({"result": "ok", "match": str(matched_items)})
     else:
         raise SuspiciousMultipartForm()
 

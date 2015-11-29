@@ -11,30 +11,13 @@ from algo.low_rank import MatrixCompletion
 import numpy as np
 import sqlite3 as sql
 import algo.color
+from algo import get_cursor, get_mc
+from algo.memcachemutex import MemcacheMutex
 
 DEFALUT_WEIGHT = (60, 20, 20)
 FLUSH_MIN = 5
 SLEEP_TIME = 5
 LIKE_MAX = 50
-
-USER_NUM, ITEM_NUM = 0, 0
-USERS = []
-ITEMS = []
-
-RATING = None
-COMP_RATING = None
-LRMC = None
-
-r_mutex = threading.Lock()
-cr_mutex = threading.Lock()
-cr_write = threading.Lock()
-ch_lock = threading.Lock()
-
-cr_read = 0
-ch_count = 0
-
-Q = queue.Queue()
-cur = None
 
 '''
 def add_preference_row(customer_id):
@@ -131,6 +114,7 @@ def _cal_subscore(item_id, customer_id):
     else: 
         return 0
 
+'''
 def _handle_q():
     global Q, RATING, USER_NUM, ITEM_NUM
     while True:
@@ -155,14 +139,23 @@ def _handle_q():
                     RATING[(-1,-1)] = 1
                 
         Q.task_done()
-
+'''
 
 def _rating_refresh():
-    global COMP_RATING, ch_count, LRMC
+    mc = get_mc()
+    COMP_RATING = mc.get("COMP_RATING")
+    LRMC = mc.get("LRMC")
+    ch_count = mc.get("ch_count")
+    cr_read = mc.get("cr_read")
+    r_mutex = MemcacheMutex("r_mutex", mc)
+    cr_write = MemcacheMutex("cr_write", mc)
+    ch_lock = MemcacheMutex("ch_lock", mc)
     with r_mutex:
         LRMC.complete_it("sASD")
+        mc.set("LRMC", LRMC, 0)
     with cr_write:
         COMP_RATING = LRMC.get_optimized_matrix()
+        mc.set("COMP_RATING", COMP_RATING)
     while True:
         time.sleep(SLEEP_TIME)
         with ch_lock:
@@ -171,19 +164,29 @@ def _rating_refresh():
             ch_count = 0
         with r_mutex:
             LRMC.complete_it("sASD")
+            mc.set("LRMC", LRMC, 0)
         with cr_write:
             COMP_RATING = LRMC.get_optimized_matrix()
+            mc.set("COMP_RATING", COMP_RATING)
 
 def _score_item(hanger, user_id, item_id, weight):
-    global cr_read, cr_write, cur, COMP_RATING
-
+    mc = get_mc()
+    USERS = mc.get("USERS")
+    ITEMS = mc.get("ITEMS")
     u_idx = USERS.index(user_id)
     i_idx = ITEMS.index(item_id)
+
+    cur = get_cursor()
+    mc = get_mc()
+    cr_mutex = MemcacheMutex("cr_mutex", mc)
+    cr_write = MemcacheMutex("cr_write", mc)
     with cr_mutex:
         cr_read += 1
         if cr_read == 1:
             cr_write.acquire()
+    COMP_RATING = mc.get("COMP_RATING")
     score = weight[0]* COMP_RATING[u_idx][i_idx]
+    mc.set("COMP_RATING", COMP_RATING, 0)
     with cr_mutex:
         cr_read -= 1
         if cr_read == 0:
@@ -220,39 +223,51 @@ def _score_item(hanger, user_id, item_id, weight):
 
 ''' helper functions '''
 
-def init_rating(cursor_):
-    global cur, RATING, USER_NUM, ITEM_NUM, LRMC
-    cur = cursor_
+def init_rating():
+    cur = get_cursor()
+    mc = get_mc()
     custs = list(cur.execute("SELECT id FROM diver_customer ORDER BY id"))
+    USERS = []
     for r in custs:
         USERS.append(r[0])
+    mc.set("USERS", USERS)
     its = list(cur.execute("SELECT id FROM diver_item ORDER BY id"))
+    ITEMS = []
     for r in its:
         ITEMS.append(r[0])
-    USER_NUM = len(USERS)
-    ITEM_NUM = len(ITEMS)
-    RATING = dok_matrix((USER_NUM+1, ITEM_NUM), dtype=np.float)
+    mc.set("ITEMS", ITEMS)
+    mc.set("USER_NUM", len(USERS), 0)
+    mc.set("ITEM_NUM", len(ITEMS), 0)
+    mc.set("RATING", dok_matrix((len(USERS)+1, len(ITEMS)), dtype=np.float), 0)
     rats = list(cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"))
+    RATING = mc.get("RATING")
     for u_id, i_id, rating in rats:
         RATING[(USERS.index(u_id),ITEMS.index(i_id))] = rating
-    for i in range(ITEM_NUM):
+    for i in range(len(ITEMS)):
         RATING[(-1,i)] = 1
-    LRMC = MatrixCompletion(RATING)
+    mc.set("RATING", RATING, 0)
+    mc.set("LRMC", MatrixCompletion(RATING), 0)
+    mc.set("ch_count", 0, 0)
+    mc.set("cr_read", 0, 0)
+    mc.set("RATING", None, 0)
+    mc.set("COMP_RATING", None, 0)
 
-    th_q = threading.Thread(None, _handle_q, "q_handle")
     th_r = threading.Thread(None, _rating_refresh, "rate_refresh")
-
-    th_q.start()
     th_r.start()
 
 def rating_fill(user_id, item_id, rating):
-    global ch_count
-    Q.put(('r', USERS.index(user_id), ITEMS.index(item_id), rating))
+    mc = get_mc()
+    ch_lock = MemcacheMutex("ch_lock")
+    ch_count = mc.get("ch_count")
+    USERS = mc.get("USERS")
+    ITEMS = mc.get("ITEMS")
+    # Q.put(('r', USERS.index(user_id), ITEMS.index(item_id), rating))
     with ch_lock:
         ch_count += 1
 
 def rating_add_user(user_id):
-    Q.put(('u+', user_id))
+    # Q.put(('u+', user_id))
+    pass
 
 '''
 def rating_remove_user(user_id):
@@ -262,7 +277,8 @@ def rating_remove_user(user_id):
         ch_count += 1
 '''
 def rating_add_item(item_id):
-    Q.put(('i+', item_id))
+    # Q.put(('i+', item_id))
+    pass
 '''
 def rating_remove_item(item_id):
     Q.put(('i-', item_id))
