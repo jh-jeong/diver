@@ -98,7 +98,9 @@
         if(data.result == "ok"){
           available_slot.children().first().html('<img src="'+src+'">');
           available_slot.children().first().attr('data-item-id', id);
-          alert(data.match);
+          if(data.match){
+            addRecommendation(data.match.text);
+          }
         } else if(data.result == "duplicate"){
           alert("The item is already in the hanger!");
         }
@@ -127,6 +129,10 @@
         alert("An error occurred while removing the item from hanger.");
       }
     });
+  }
+
+  function addRecommendation(text){
+    $(".recommendation").append($("<a>").addClass("btn btn-default btn-xs").text(text));
   }
 
 $(document).ready(function () {
