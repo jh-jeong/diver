@@ -1,6 +1,12 @@
 body {
-    background: white;
+  background: white;
 }
+
+body *{
+  font-family: 'Jeju Gothic', sans-serif;
+  font-weight: normal;
+}
+
 .ellipsis {
   width: 100%;
   white-space: nowrap;
