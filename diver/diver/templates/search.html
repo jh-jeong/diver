@@ -8,37 +8,43 @@
 {% block content %}
 <h1>추천 받기</h1>
 <h3>검색 필터 설정</h3>
-<form method="get" enctype="multipart/form-data" class="form-inline search-form">
-  <div class="form-group">
-  <label for="category1">대분류</label>
-  <select class="form-control" id="category1">
-    {% for c in categories %}
-      <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.0 }}</option>
-    {% endfor %}
-  </select>
-  </div>
-
-  <div class="form-group">
-    <label for="category2">소분류</label>
-    <select name="category" class="form-control" id="category2">
-      {% for c1 in categories %}
-        {% for c2 in c1.1 %}
-          <option data-parent-value="{{ forloop.parentloop.counter0 }}" value="{{ c2.0 }}" {% if c2.0 == selected_category2 %}selected="selected"{% endif %}>{{ c2.1 }}</option>
+<form method="get" enctype="multipart/form-data" class="search-form">
+  <div class="row">
+    <div class="form-group col-md-2">
+      <label for="category1">대분류</label>
+      <select class="form-control" id="category1">
+        {% for c in categories %}
+          <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.0 }}</option>
         {% endfor %}
-      {% endfor %}
-    </select>
+      </select>
+    </div>
+
+    <div class="form-group col-md-2">
+      <label for="category2">소분류</label>
+      <select name="category" class="form-control" id="category2">
+        {% for c1 in categories %}
+          {% for c2 in c1.1 %}
+            <option data-parent-value="{{ forloop.parentloop.counter0 }}" value="{{ c2.0 }}" {% if c2.0 == selected_category2 %}selected="selected"{% endif %}>{{ c2.1 }}</option>
+          {% endfor %}
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group col-md-2">
+      <label for="lower">가격 하한</label>
+      <input name="lower" class="form-control" type="number" id="lower" value="{{ lower }}">
+    </div>
+
+    <div class="form-group col-md-2">
+      <label for="upper">가격 상한</label>
+      <input name="upper" class="form-control" type="number" id="upper" value="{{ upper }}">
+    </div>
+    <div class="form-group col-md-2">
+      <br>
+      <input type="submit" id="send" value="검색!" class="btn btn-primary"/>
+    </div>
   </div>
 
-  <div class="form-group">
-    <label for="lower">가격 하한</label>
-    <input name="lower" class="form-control" type="number" id="lower" value="{{ lower }}">
-  </div>
-
-  <div class="form-group">
-    <label for="upper">가격 상한</label>
-    <input name="upper" class="form-control" type="number" id="upper" value="{{ upper }}">
-  </div>
-  <input type="submit" id="send" value="검색!" class="btn btn-primary"/>
 </form>
 
 <div class="row">
@@ -52,7 +58,8 @@
         <img src="{{ item.images }}">
         <div class="row">
           <div class="col-md-12 col-xs-12">
-            <p class="btn btn-link ellipsis">{{ item.name }}</p>
+            <a class="btn btn-link ellipsis" href="{{item.purchase_url}}"
+              target="_blank">{{ item.name }}</a>
           </div>
           <div class="col-md-6 col-xs-6">
             <p class="btn btn-link">{{ item.price }}</p>
@@ -74,17 +81,17 @@
   <div id="hanger" class="panel panel-default">
     <div class="panel-heading">My hanger</div>
       <div class="panel-body">
-      <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
-      <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 1 %}</div>
-      <div style="clear: both;">
-      <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 0 %}</div>
-      <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 1 %}</div>
-      <div style="clear: both;">
-      <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
-      <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
-      <div class="recommendation">
-        <a class="btn btn-default btn-xs">청바지</a>
-      </div>
+        <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
+        <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 1 %}</div>
+        <div style="clear: both;">
+        <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 0 %}</div>
+        <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 1 %}</div>
+        <div style="clear: both;">
+        <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
+        <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
+        <div class="recommendation">
+          <a class="btn btn-default btn-xs">청바지</a>
+        </div>
     </div>
   </div>
 </div>
