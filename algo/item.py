@@ -251,18 +251,19 @@ def rating_fill(user_id, item_id, rating):
 def rating_add_user(user_id):
     Q.put(('u+', user_id))
 
+'''
 def rating_remove_user(user_id):
     global ch_count
     Q.put(('u-', user_id))
     with ch_lock:
         ch_count += 1
-
+'''
 def rating_add_item(item_id):
     Q.put(('i+', item_id))
-
+'''
 def rating_remove_item(item_id):
     Q.put(('i-', item_id))
-
+'''
 def reorder_items(items, user_id, hanger):
     weight = DEFALUT_WEIGHT
     score_dict = {}

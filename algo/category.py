@@ -6,6 +6,7 @@ Created on 2015. 11. 10.
 import sqlite3 as sql
 from algo.fp import find_frequent_itemsets
 from algo import color
+from algo.color import init_color
 
 cur = None
 
@@ -23,7 +24,7 @@ mItemSet = None
 
 def _get_item_type(item_id):
     global cur
-    cur.execute("SELECT type, category, pattern, collar, padding FROM diver_item WHERE item_id=?", (item_id,))
+    cur.execute("SELECT type, category, pattern, collar, padding FROM diver_item WHERE id=?", (item_id,))
     temp = cur.fetchone()
     ty = temp[0]
     
@@ -61,11 +62,12 @@ def _hanger_getMatch(hanger):
 def init_match_data():
     global cur
     dataSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"):
+    mats = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"))
+    for m in mats:
         vec_m = []
         for i in m:
             if i != None and type(i) != str:
-                item_id = color._get_color(i)
+                item_id = color._get_item_id(i)
                 vec_m.append(_get_item_type(item_id))
         dataSet.append(vec_m)
     # caching
@@ -75,7 +77,7 @@ def init_category(cursor_):
     global MATCH, mItemSet, cur
     cur = cursor_
     MATCH = init_match_data()
-    mItemSet = list(find_frequent_itemsets(MATCH, 2, True))
+    mItemSet = list(find_frequent_itemsets(MATCH, 1, True))
     
 def hanger_complete(hanger, customer_id):
     global cur
@@ -91,8 +93,10 @@ def hanger_complete(hanger, customer_id):
     return max(candDict, key=candDict.get)
     
 def main():
+    global cur
     conn = sql.connect("../diver/db.sqlite3")
     cur = conn.cursor()
+    init_color(cur)
     init_category(cur)
     
     print("MATCH SET:")
