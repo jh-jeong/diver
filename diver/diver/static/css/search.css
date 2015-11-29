@@ -58,8 +58,16 @@
   margin: .3em;
 }
 
-#hanger img {
+.hanger-slot img {
   width: 100%;
+}
+
+.panel-heading img {
+  width: 25%;
+}
+
+.panel-heading h6 {
+  display: inline;
 }
 
 #hanger .hanger-slot .hanger-item p {

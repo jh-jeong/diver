@@ -36,16 +36,6 @@
                             onclick="like({{item.id}}, 5)"><i></i>
       </span>
     </div>
-    {% if match %}
-    <div class="row">
-      <div class="col-md-9">
-        <p class="btn ellipsis"><a href="{{ item.purchase_url }}" target="_blank">{{ item.name }}</a></p>
-      </div>
-      <div class="col-md-3">
-        <p class="btn btn-link" onclick="">{{ item.price }}</p>
-      </div>
-    </div>
-    {% else %}
     <div class="row">
       <div class="col-md-12 col-xs-12">
         <a class="btn btn-link ellipsis" href="{{item.purchase_url}}"
@@ -62,6 +52,5 @@
         </p>
       </div>
     </div>
-  {% endif %}
 </div>
 {% endif %}
