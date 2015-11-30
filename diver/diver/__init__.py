@@ -1,1 +1,1 @@
-#default_app_config = 'diver.apps.DiverConfig'
+default_app_config = 'diver.apps.DiverConfig'
