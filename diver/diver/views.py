@@ -15,7 +15,7 @@ from diver.models import Image
 from diver.models import Item
 from diver.models import Customer
 from diver.models import Match
-from diver.models import ItemPref, Color, Size, Pref
+from diver.models import ItemPref, Color, Size, Pref, Rating
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
 from diver.settings import BASE_DIR
@@ -117,23 +117,38 @@ def main(request):
         matches = Match.objects.all()
     return render(request, 'main.html', {'matches':matches})
 
+@survey_required
 def like(request, id, score):
-    return (HttpResponse("{} {}".format(id, score)))
+    # return (HttpResponse("{} {}".format(id, score)))
     if request.method == 'GET':
-        item = Item.objects.filter(id = id)
-        if item != []:
 
-            item_pref = ItemPref.objects.filter(item_id = id, user_id = request.user.id)
-
-            if item_pref != []:
-                # item 값이 벼하는 시점
-                item_pref.scorer = score
-                pass
-            else:
+        item = Item.objects.get(id = id)
+        if ItemPref.objects.filter(item_id = id, user_id = request.user.id).count() != 0:
+            item_pref = ItemPref.objects.get(item_id = id, user_id = request.user.id)
+            item.rate_count-=item_pref.score
+            item_pref.score == score
+            item.rate_count+=item_pref.score
+        else:
                 # customer = Customer.objects.filter(user_id = request.user.id)
                 # customer.like(Item.objects.filter(id = id), like)
-                item_pref = ItemPref(item_id = id, user_id = request.user.id, score = score)
-            item_pref.save()
+            item_pref = ItemPref(item_id = id, user_id = request.user.id, score = score)
+            item.rate_count+=item_pref.score
+        item_pref.save()
+
+    return HttpResponse("recieved" + id)
+
+@survey_required
+def match_like(request, id, score):
+    # return (HttpResponse("{} {}".format(id, score)))
+    if request.method == 'GET':
+
+        customer = Customer.objects.get(user_id=request.user.id)
+        match = Match.objects.get(id = id)
+        if Rating.objects.filter(customer = customer, match = match).count() != 0:
+            rating = Rating(customer=customer, match=match, score=score)
+
+        else:
+
 
     return HttpResponse("recieved" + id)
 
