@@ -169,7 +169,10 @@ def _score_item(hanger, user_id, item_id, weight):
                 break
             color_d += eval_color(points, cid) * ratio / 100
         color_score[sty] = color_d
-    max_sty = max(color_score, key=color_score.get)
+    try:
+        max_sty = max(color_score, key=color_score.get)
+    except ValueError:
+        max_sty = None
     
     if len(hanger) != 0:
         score += weight[1]* color_score[max_sty]
