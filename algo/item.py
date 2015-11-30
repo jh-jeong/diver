@@ -183,7 +183,6 @@ def _score_item(hanger, user_id, item_id, weight):
             cr_write.acquire()
     COMP_RATING = mc.get("COMP_RATING")
     score = weight[0]* COMP_RATING[u_idx][i_idx]
-    mc.set("COMP_RATING", COMP_RATING, 0)
     with cr_mutex:
         cr_read -= 1
         if cr_read == 0:
@@ -243,7 +242,6 @@ def init_rating():
     mc.set("LRMC", MatrixCompletion(RATING), 0)
     mc.set("ch_count", 0, 0)
     mc.set("cr_read", 0, 0)
-    mc.set("RATING", None, 0)
     mc.set("COMP_RATING", None, 0)
 
     th_r = threading.Thread(None, _rating_refresh, "rate_refresh")
