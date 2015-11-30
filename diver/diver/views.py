@@ -213,11 +213,22 @@ def update_hanger(request):
         else:
             raise SuspiciousMultipartForm()
 
-        try:
-            matched_items = algo_category.hanger_complete(new_hanger, request.session['customer_id'])
-        except Exception as e:
-            return JsonResponse({"result": "ok", "match": "Error: " + str(e)})
-        return JsonResponse({"result": "ok", "match": str(matched_items)})
+        matched_categories = []
+        m = None
+        if len(new_hanger) > 0:
+            matches = algo_category.hanger_complete(new_hanger, request.session['customer_id'])
+            if matches:
+                for match in matches:
+                    matched_category = {"type": match[0], 
+                        "text": match[1], 
+                        "category_code": Item.get_category_code(match[1])}
+                    if match[0] == 0: # Top
+                        matched_category["pattern"] = Item.get_pattern_code(match[2])
+                    elif match[0] == 1: # Outer
+                        matched_category["collar"] = match[2]
+                        matched_category["padding"] = match[3]
+                    matched_categories.append(matched_category)
+        return JsonResponse({"result": "ok", "match": matched_categories})
     else:
         raise SuspiciousMultipartForm()
 
