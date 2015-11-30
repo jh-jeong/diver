@@ -20,6 +20,8 @@ from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
 from diver.settings import BASE_DIR
 
+import json
+
 sys.path.append(os.path.join(BASE_DIR, '..'))
 import algo.item as algo_item
 import algo.color as algo_color
@@ -173,6 +175,22 @@ def match_like(request, id, score):
 
     return HttpResponse("recieved" + id)
 
+def get_match_from_hanger(hanger, customer_id):
+    matched_categories = []
+    if len(hanger) > 0:
+        matches = algo_category.hanger_complete(hanger, customer_id)
+        if matches:
+            for match in matches:
+                matched_category = {"type": match[0],
+                                    "text": match[1],
+                                    "category_code": Item.get_category_code(match[1])}
+                if match[0] == 0:  # Top
+                    matched_category["pattern"] = Item.get_pattern_code(match[2])
+                elif match[0] == 1:  # Outer
+                    matched_category["collar"] = match[2]
+                    matched_category["padding"] = match[3]
+                matched_categories.append(matched_category)
+    return matched_categories
 
 @survey_required
 def search(request):
@@ -204,6 +222,7 @@ def search(request):
             pass
         search_result = items
 
+    matched_categories = get_match_from_hanger(request.session.get('hanger', []), request.session['customer_id'])
     return render(request, 'search.html',
                   {'categories': Item.CATEGORIES,
                    'selected_category1': selected_category1,
@@ -211,7 +230,8 @@ def search(request):
                    'lower': specified_lower,
                    'upper': specified_upper,
                    'search_result': search_result,
-                   'hanger': request.session.get('hanger', None)})
+                   'hanger': request.session.get('hanger', None),
+                   'matched_categories': json.dumps(matched_categories)})
 
 
 def update_hanger(request):
@@ -237,22 +257,7 @@ def update_hanger(request):
                 return JsonResponse({"result": "not exist"});
         else:
             raise SuspiciousMultipartForm()
-
-        matched_categories = []
-        m = None
-        if len(new_hanger) > 0:
-            matches = algo_category.hanger_complete(new_hanger, request.session['customer_id'])
-            if matches:
-                for match in matches:
-                    matched_category = {"type": match[0],
-                                        "text": match[1],
-                                        "category_code": Item.get_category_code(match[1])}
-                    if match[0] == 0:  # Top
-                        matched_category["pattern"] = Item.get_pattern_code(match[2])
-                    elif match[0] == 1:  # Outer
-                        matched_category["collar"] = match[2]
-                        matched_category["padding"] = match[3]
-                    matched_categories.append(matched_category)
+        matched_categories = get_match_from_hanger(new_hanger, request.session['customer_id'])
         return JsonResponse({"result": "ok", "match": matched_categories})
     else:
         raise SuspiciousMultipartForm()

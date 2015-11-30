@@ -70,10 +70,10 @@
     <div class="panel-body">
       <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
       <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 1 %}</div>
-      <div style="clear: both;">
+      <div style="clear: both;"></div>
       <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 0 %}</div>
       <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 1 %}</div>
-      <div style="clear: both;">
+      <div style="clear: both;"></div>
       <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
       <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
       <div class="recommendation">
@@ -195,6 +195,8 @@ $(document).ready(function () {
       removeFromHanger(item_id);
     }
   });
+
+  updateRecommendation({% autoescape off %}{{ matched_categories }}{% endautoescape %});
 });
 </script>
 {% endblock %}
