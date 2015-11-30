@@ -45,6 +45,10 @@
     </div>
   </div>
 
+  <input type="hidden" name="pattern"/>
+  <input type="hidden" name="collar"/>
+  <input type="hidden" name="padding"/>
+
 </form>
 
 <div class="row">
@@ -137,7 +141,9 @@
   function addRecommendation(match){
     var recommendation = $("<a>").text(match.text)
       .addClass("btn btn-default btn-xs")
-      .attr("data-category-code", match.category_code);
+      .attr("data-type", match.type)
+      .attr("data-category-code", match.category_code)
+      .click( function() { searchRecommendation($(this)); });
     if(match.type == 0) { // Top
       recommendation.attr("data-pattern", match.pattern);
     } else if(match.type == 1) { // Outer
@@ -145,6 +151,19 @@
       recommendation.attr("data-padding", match.padding);
     }
     $(".recommendation").append(recommendation);
+  }
+
+  function searchRecommendation(recommendation){
+    var type = parseInt(recommendation.data("type"));
+    $("#category1").val(type);
+    $("#category2").val(recommendation.data("category-code"));
+    if(type === 0){ // Top
+      $("[name=pattern]").val(recommendation.data("pattern"));
+    } else if(type === 1){ // Outer
+      $("[name=collar]").val(recommendation.data("collar"));
+      $("[name=padding]").val(recommendation.data("padding"));
+    }
+    $(".search-form").submit();
   }
 
 $(document).ready(function () {
