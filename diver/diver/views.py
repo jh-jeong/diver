@@ -151,6 +151,7 @@ def like(request, id, score):
 def match_like(request, id, score):
     # return (HttpResponse("{} {}".format(id, score)))
     if request.method == 'GET':
+        # print ("asdfasd")
         customer = Customer.objects.get(user_id=request.user.id)
         match = Match.objects.get(id=id)
         if Rating.objects.filter(customer=customer, match=match).count() != 0:
