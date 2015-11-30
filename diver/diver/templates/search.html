@@ -73,7 +73,6 @@
       <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
       <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
       <div class="recommendation">
-        <a class="btn btn-default btn-xs">청바지</a>
       </div>
     </div>
   </div>
@@ -98,9 +97,7 @@
         if(data.result == "ok"){
           available_slot.children().first().html('<img src="'+src+'">');
           available_slot.children().first().attr('data-item-id', id);
-          if(data.match){
-            addRecommendation(data.match.text);
-          }
+          updateRecommendation(data.match);
         } else if(data.result == "duplicate"){
           alert("The item is already in the hanger!");
         }
@@ -125,14 +122,30 @@
         hanger_item.removeAttr("data-item-id");
         hanger_item.removeData("item-id");
         hanger_item.html("<p>NO ITEM</p>");
+        updateRecommendation(data.match);
       } else {
         alert("An error occurred while removing the item from hanger.");
       }
     });
   }
 
-  function addRecommendation(text){
-    $(".recommendation").append($("<a>").addClass("btn btn-default btn-xs").text(text));
+  function updateRecommendation(matches){
+    $(".recommendation").empty();
+    $.each(matches, function() { addRecommendation(this); });
+  }
+
+  function addRecommendation(match){
+    var recommendation = $("<a>").text(match.text)
+      .addClass("btn btn-default btn-xs")
+      .attr("data-category-code", match.category_code);
+    alert(JSON.stringify(match));
+    if(match.type == 0) { // Top
+      recommendation.attr("data-pattern", match.pattern);
+    } else if(match.type == 1) { // Outer
+      recommendation.attr("data-collar", match.collar);
+      recommendation.attr("data-padding", match.padding);
+    }
+    $(".recommendation").append(recommendation);
   }
 
 $(document).ready(function () {
