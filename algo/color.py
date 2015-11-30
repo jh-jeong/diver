@@ -121,6 +121,8 @@ def manhattan_color(cid_1, cid_2):
 
 def eval_color(cid_list, cid):
     min_dist = 1000
+    if len(cid_list) == 0:
+        return 0
     for i in cid_list:
         d = manhattan_color(i, cid)
         if d < min_dist:

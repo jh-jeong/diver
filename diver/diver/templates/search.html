@@ -95,10 +95,10 @@
     <div class="panel-body">
       <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
       <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 1 %}</div>
-      <div style="clear: both;">
+      <div style="clear: both;"></div>
       <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 0 %}</div>
       <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 1 %}</div>
-      <div style="clear: both;">
+      <div style="clear: both;"></div>
       <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
       <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
       <div class="recommendation">
@@ -127,6 +127,7 @@
           available_slot.children().first().html('<img src="'+src+'">');
           available_slot.children().first().attr('data-item-id', id);
           updateRecommendation(data.match);
+          toastr.success('The item has been successfully added to hanger.');
         } else if(data.result == "duplicate"){
           alert("The item is already in the hanger!");
         }
@@ -152,6 +153,7 @@
         hanger_item.removeData("item-id");
         hanger_item.html("<p>NO ITEM</p>");
         updateRecommendation(data.match);
+        toastr.info('The item has been successfully removed from hanger.');
       } else {
         alert("An error occurred while removing the item from hanger.");
       }
@@ -166,7 +168,9 @@
   function addRecommendation(match){
     var recommendation = $("<a>").text(match.text)
       .addClass("btn btn-default btn-xs")
-      .attr("data-category-code", match.category_code);
+      .attr("data-type", match.type)
+      .attr("data-category-code", match.category_code)
+      .click( function() { searchRecommendation($(this)); });
     if(match.type == 0) { // Top
       recommendation.attr("data-pattern", match.pattern);
     } else if(match.type == 1) { // Outer
@@ -176,7 +180,24 @@
     $(".recommendation").append(recommendation);
   }
 
+  function searchRecommendation(recommendation){
+    var type = parseInt(recommendation.data("type"));
+    $("#category1").val(type);
+    $("#category2").val(recommendation.data("category-code"));
+    if(type === 0){ // Top
+      $("[name=pattern]").val(recommendation.data("pattern"));
+    } else if(type === 1){ // Outer
+      $("[name=collar]").val(recommendation.data("collar"));
+      $("[name=padding]").val(recommendation.data("padding"));
+    }
+    $(".search-form").submit();
+  }
+
 $(document).ready(function () {
+  toastr.options.closeButton = true;
+  toastr.options.timeOut = 1500;
+  toastr.options.newestOnTop = false;
+
   function updateCategory2(category1) {
     if (category1 === "0") {
       $("#pattern-div").show();
@@ -220,6 +241,8 @@ $(document).ready(function () {
       removeFromHanger(item_id);
     }
   });
+
+  updateRecommendation({% autoescape off %}{{ matched_categories }}{% endautoescape %});
 });
 </script>
 {% endblock %}
