@@ -189,7 +189,6 @@ def _score_item(hanger, user_id, item_id, weight):
         if cr_read == 0:
             cr_write.release()
             
-    
     if len(hanger) != 0:
         points = hanger_getColor(hanger)
     
@@ -253,55 +252,59 @@ def init_rating():
 def rating_fill(user_id, item_id, rating):
     mc = get_mc()
     ch_lock = MemcacheMutex("ch_lock")
-    ch_count = mc.get("ch_count")
     USERS = mc.get("USERS")
     ITEMS = mc.get("ITEMS")
     r_mutex = MemcacheMutex("r_mutex", mc)
     
     u_idx, i_idx = USERS.index(user_id), ITEMS.index(item_id)
     with r_mutex:
+        RATING = mc.get("RATING")
         RATING[(u_idx,i_idx)] = rating
+        mc.set("RATING", RATING)
     with ch_lock:
+        ch_count = mc.get("ch_count")
         ch_count += 1
+        mc.set("ch_count", ch_count)
 
 def rating_add_user(user_id):
     # Q.put(('u+', user_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
     ITEMS = mc.get("ITEMS")
-    USERS = mc.get("USERS")
-    RATING = mc.get("RATING")
     with r_mutex:
+        USERS = mc.get("USERS")
+        RATING = mc.get("RATING")
         USERS.append(user_id)
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("USERS", USERS)
         mc.set("RATING", RATING)
 
 def rating_remove_user(user_id):
-    global ch_count
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
     ch_lock = MemcacheMutex("ch_lock", mc)
     ITEMS = mc.get("ITEMS")
-    USERS = mc.get("USERS")
-    RATING = mc.get("RATING")
     with r_mutex:
+        USERS = mc.get("USERS")
+        RATING = mc.get("RATING")
         USERS.remove(user_id)
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("USERS", USERS)
         mc.set("RATING", RATING)
     with ch_lock:
+        ch_count = mc.get("ch_count")
         ch_count += 1
+        mc.set("ch_count")
         
 
 def rating_add_item(item_id):
     # Q.put(('i+', item_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
-    ITEMS = mc.get("ITEMS")
     USERS = mc.get("USERS")
-    RATING = mc.get("RATING")
     with r_mutex:
+        ITEMS = mc.get("ITEMS")
+        RATING = mc.get("RATING")
         ITEMS.append(item_id)
         RATING[(0,-1)] = 1
         RATING.resize((len(USERS), len(ITEMS)))
@@ -313,10 +316,10 @@ def rating_remove_item(item_id):
     #Q.put(('i-', item_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
-    ITEMS = mc.get("ITEMS")
     USERS = mc.get("USERS")
-    RATING = mc.get("RATING")
     with r_mutex:
+        ITEMS = mc.get("ITEMS")
+        RATING = mc.get("RATING")
         ITEMS.remove(item_id)
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("ITEMS", ITEMS)
