@@ -4,40 +4,16 @@
 <form method="post">
 {% csrf_token %}
 <div class="row">
-  <div class="form-group col-md-4">
+  <h1>필수 정보</h1>
+  <div class="form-group col-md-3">
     <label for="weight">몸무게(kg)</label>
     <input name= "weight_kg" id="weight" type="number" class="form-control" value={{user.weight_kg}}>
   </div>
-  <div class="form-group col-md-4">
+  <div class="form-group col-md-3">
     <label for="height">키(cm)</label>
     <input name="height_cm" id="height" type="number" class="form-control" value={{user.height_cm}}>
   </div>
-  <div class="form-group col-md-4">
-    <label for="chest">가슴 둘레(cm)</label>
-    <input name="chest_size_cm" id="chest" type="number" class="form-control"
-                                    value={{user.chest_size_cm}}>
-  </div>
-  <div class="form-group col-md-4">
-    <label for="waist">허리 둘레(cm)</label>
-    <input name="waist_size_cm" id="waist" type="number" class="form-control"
-                                     value={{user.waist_size_cm}}>
-  </div>
-  <div class="form-group col-md-4">
-    <label for="sleeve">팔 길이(cm)</label>
-    <input name="sleeve_length_cm" id="sleeve" type="number" class="form-control"
-                                     value={{user.sleeve_length_cm}}>
-  </div>
-  <div class="form-group col-md-4">
-    <label for="leg">다리 길이(cm)</label>
-    <input name="leg_length_cm" id="leg" type="number" class="form-control"
-                                     value={{user.leg_length_cm}}>
-  </div>
-  <div class="form-group col-md-4">
-    <label for="shoes">신발 사이즈(mm)</label>
-    <input name="shoes_size_mm" id="shoes" type="number" class="form-control"
-                                     value={{user.shoes_size_mm}}>
-  </div>
-  <div class="form-group col-md-8">
+  <div class="form-group col-md-6">
     <label for="bodytype">체형</label>
     <select name="bodytype" class="form-control" id="bodytype">
       <option value="O">Abdominal obese</option>
@@ -46,6 +22,34 @@
       <option value="B">Fat</option>
       <option value="N">Normal</option>
     </select>
+  </div>
+</div>
+<div class="row">
+  <h1>선택 정보</h1>
+  <div class="form-group col-md-2">
+    <label for="chest">가슴 둘레(cm)</label>
+    <input name="chest_size_cm" id="chest" type="number" class="form-control"
+                                    value={{user.chest_size_cm}}>
+  </div>
+  <div class="form-group col-md-2">
+    <label for="waist">허리 둘레(cm)</label>
+    <input name="waist_size_cm" id="waist" type="number" class="form-control"
+                                     value={{user.waist_size_cm}}>
+  </div>
+  <div class="form-group col-md-2">
+    <label for="sleeve">팔 길이(cm)</label>
+    <input name="sleeve_length_cm" id="sleeve" type="number" class="form-control"
+                                     value={{user.sleeve_length_cm}}>
+  </div>
+  <div class="form-group col-md-3">
+    <label for="leg">다리 길이(cm)</label>
+    <input name="leg_length_cm" id="leg" type="number" class="form-control"
+                                     value={{user.leg_length_cm}}>
+  </div>
+  <div class="form-group col-md-3">
+    <label for="shoes">신발 사이즈(mm)</label>
+    <input name="shoes_size_mm" id="shoes" type="number" class="form-control"
+                                     value={{user.shoes_size_mm}}>
   </div>
 </div>
 <div class="row">

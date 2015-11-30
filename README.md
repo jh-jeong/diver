@@ -17,11 +17,13 @@ memcached -d -p 20404
 
 ### Initial data installation
 ```
-diver/manage.py migrate
-diver/manage.py loaddata diver/data.json
+cd diver
+./manage.py migrate
+./manage.py loaddata data.json
 ```
 
 ### Run test server
 ```
-diver/manage.py runserver 0.0.0.0:8080
+cd diver
+./manage.py runserver 0.0.0.0:8080
 ```
