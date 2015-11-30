@@ -158,15 +158,18 @@ def _score_item(hanger, user_id, item_id, weight):
     points = []
     if len(hanger) != 0:
         points = hanger_getColor(hanger)
-        color_list = get_color_list(item_id)
-        color_score = {}
-        for sty in color_list:
-            cids, c_ratios = get_color(sty)
-            color_d = 0
-            for cid, ratio in zip(cids, c_ratios):
-                color_d += eval_color(points, cid) * ratio / 100
-            color_score[sty] = color_d
-        max_sty = max(color_score, key=color_score.get)
+    
+    color_list = get_color_list(item_id)   
+    color_score = {}
+    for sty in color_list:
+        cids, c_ratios = get_color(sty)
+        color_d = 0
+        for cid, ratio in zip(cids, c_ratios):
+            color_d += eval_color(points, cid) * ratio / 100
+        color_score[sty] = color_d
+    max_sty = max(color_score, key=color_score.get)
+    
+    if len(hanger) != 0:
         score += weight[1]* color_score[max_sty]
     else:
         score += weight[1]
