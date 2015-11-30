@@ -138,7 +138,6 @@
     var recommendation = $("<a>").text(match.text)
       .addClass("btn btn-default btn-xs")
       .attr("data-category-code", match.category_code);
-    alert(JSON.stringify(match));
     if(match.type == 0) { // Top
       recommendation.attr("data-pattern", match.pattern);
     } else if(match.type == 1) { // Outer
