@@ -169,7 +169,7 @@ def _score_item(hanger, user_id, item_id, weight):
     mc = get_mc()
     USERS = mc.get("USERS")
     ITEMS = mc.get("ITEMS")
-    u_idx = USERS.index(user_id) + 1
+    u_idx = USERS.index(user_id)
     i_idx = ITEMS.index(item_id)
 
     cur = get_cursor()
@@ -224,7 +224,7 @@ def init_rating():
     cur = get_cursor()
     mc = get_mc()
     custs = list(cur.execute("SELECT id FROM diver_customer ORDER BY id"))
-    USERS = []
+    USERS = [-1]
     for r in custs:
         USERS.append(r[0])
     mc.set("USERS", USERS)
@@ -233,13 +233,11 @@ def init_rating():
     for r in its:
         ITEMS.append(r[0])
     mc.set("ITEMS", ITEMS)
-    mc.set("USER_NUM", len(USERS), 0)
-    mc.set("ITEM_NUM", len(ITEMS), 0)
-    mc.set("RATING", dok_matrix((len(USERS)+1, len(ITEMS)), dtype=np.float), 0)
+    mc.set("RATING", dok_matrix((len(USERS), len(ITEMS)), dtype=np.float), 0)
     rats = list(cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"))
     RATING = mc.get("RATING")
     for u_id, i_id, rating in rats:
-        RATING[(USERS.index(u_id)+1,ITEMS.index(i_id))] = rating
+        RATING[(USERS.index(u_id),ITEMS.index(i_id))] = rating
     for i in range(len(ITEMS)):
         RATING[(0,i)] = 1
     mc.set("RATING", RATING, 0)
@@ -260,7 +258,7 @@ def rating_fill(user_id, item_id, rating):
     ITEMS = mc.get("ITEMS")
     r_mutex = MemcacheMutex("r_mutex", mc)
     
-    u_idx, i_idx = USERS.index(user_id) + 1, ITEMS.index(item_id)
+    u_idx, i_idx = USERS.index(user_id), ITEMS.index(item_id)
     with r_mutex:
         RATING[(u_idx,i_idx)] = rating
     with ch_lock:
@@ -270,13 +268,13 @@ def rating_add_user(user_id):
     # Q.put(('u+', user_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
-    ITEM_NUM = mc.get("ITEM_NUM")
-    USER_NUM = mc.get("USER_NUM")
+    ITEMS = mc.get("ITEMS")
+    USERS = mc.get("USERS")
     RATING = mc.get("RATING")
     with r_mutex:
-        USER_NUM += 1
-        RATING.resize((USER_NUM, ITEM_NUM))
-        mc.set("USER_NUM", USER_NUM)
+        USERS.append(user_id)
+        RATING.resize((len(USERS), len(ITEMS)))
+        mc.set("USERS", USERS)
         mc.set("RATING", RATING)
 
 def rating_remove_user(user_id):
@@ -284,13 +282,13 @@ def rating_remove_user(user_id):
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
     ch_lock = MemcacheMutex("ch_lock", mc)
-    ITEM_NUM = mc.get("ITEM_NUM")
-    USER_NUM = mc.get("USER_NUM")
+    ITEMS = mc.get("ITEMS")
+    USERS = mc.get("USERS")
     RATING = mc.get("RATING")
     with r_mutex:
-        USER_NUM += 1
-        RATING.resize((USER_NUM, ITEM_NUM))
-        mc.set("USER_NUM", USER_NUM)
+        USERS.remove(user_id)
+        RATING.resize((len(USERS), len(ITEMS)))
+        mc.set("USERS", USERS)
         mc.set("RATING", RATING)
     with ch_lock:
         ch_count += 1
@@ -300,14 +298,14 @@ def rating_add_item(item_id):
     # Q.put(('i+', item_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
-    ITEM_NUM = mc.get("ITEM_NUM")
-    USER_NUM = mc.get("USER_NUM")
+    ITEMS = mc.get("ITEMS")
+    USERS = mc.get("USERS")
     RATING = mc.get("RATING")
     with r_mutex:
-        ITEM_NUM += 1
+        ITEMS.append(item_id)
         RATING[(0,-1)] = 1
-        RATING.resize((USER_NUM, ITEM_NUM))
-        mc.set("ITEM_NUM", USER_NUM)
+        RATING.resize((len(USERS), len(ITEMS)))
+        mc.set("ITEMS", ITEMS)
         mc.set("RATING", RATING)
 
 
@@ -315,13 +313,13 @@ def rating_remove_item(item_id):
     #Q.put(('i-', item_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
-    ITEM_NUM = mc.get("ITEM_NUM")
-    USER_NUM = mc.get("USER_NUM")
+    ITEMS = mc.get("ITEMS")
+    USERS = mc.get("USERS")
     RATING = mc.get("RATING")
     with r_mutex:
-        ITEM_NUM -= 1
-        RATING.resize((USER_NUM, ITEM_NUM))
-        mc.set("ITEM_NUM", USER_NUM)
+        ITEMS.remove(item_id)
+        RATING.resize((len(USERS), len(ITEMS)))
+        mc.set("ITEMS", ITEMS)
         mc.set("RATING", RATING)
     
 def reorder_items(items, user_id, hanger):

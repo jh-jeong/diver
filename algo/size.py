@@ -42,7 +42,7 @@ def size_filter_bottom(items, leg, waist, hip, thigh):
     for item_id in items:
         temp = cur.execute("SELECT length_level FROM diver_item WHERE item_id=?", (item_id,))
         level = temp.fetchone()[0]
-        for legnth_, crotch_, waist_, thigh_, hip_ in \
+        for length_, crotch_, waist_, thigh_, hip_ in \
                 list(cur.execute("SELECT length_cm, crotch_cm, waist_cm,\
                 thigh_cm, hip_cm FROM diver_size WHERE item_id=?", (item_id,))):
             if (level == 4) and (waist_ != -1):
@@ -138,8 +138,7 @@ def complete_size(height, weight, body_shape, \
         leg_=None, chest_=None, waist_=None, hip_=None, thigh_=None):
 
     size_list = []
-    clf = linear_model.LinearRegression()
-
+    clf = linear_model.Ridge(alpha=.1)
     if body_shape == 'O': #蹂듬�鍮꾨쭔�삎
         #size_list.append(Size(160, 58, 67, 88, 78, 89, 42)) #SO
         size_list.append(Size(165, 63, 68, 90, 80, 91, 43)) #MO
