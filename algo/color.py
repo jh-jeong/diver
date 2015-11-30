@@ -5,14 +5,10 @@ Created on 2015. 11. 19.
 '''
 import sqlite3 as sql
 from algo.fp import find_frequent_itemsets
+from algo import get_cursor, get_mc
 
-cur = None
-
-COLOR = []
 COLOR_THRESHOLD = 0.7
 COLOR_DMAX = 765
-
-cItemSet= None
 
 COLOR_NAME = ["beige", "black", "blue", "brown", "gold", "green", "grey", "khaki",
               "mint", "navy", "orange", "pink", "red", "skyblue", "white", "yellow",
@@ -27,8 +23,8 @@ PALETTE = {'beige': (245,245,220), 'black': (0,0,0), 'blue': (0,0,255), 'brown':
 
 COLOR_RGB = [PALETTE[d] for d in COLOR_NAME]
 
-def _get_color(color_id):
-    global cur
+def get_color(color_id):
+    cur = get_cursor()
     cur.execute("SELECT color_id1, color_ratio1, color_id2, color_ratio2, color_id3, color_ratio3 \
                 FROM diver_color WHERE id=?", (color_id,))
     temp = cur.fetchone()
@@ -36,14 +32,14 @@ def _get_color(color_id):
     return cid, c_ratio
 
 def _get_item_id(color_id):
-    global cur
+    cur = get_cursor()
     cur.execute("SELECT item_id \
                 FROM diver_color WHERE id=?", (color_id,))
     item_id, = cur.fetchone()
     return item_id
 
 def _get_color_type(color_id):
-    cid, c_ratio = _get_color(color_id)
+    cid, c_ratio = get_color(color_id)
     if c_ratio[0] > COLOR_THRESHOLD:
         vec_c = set([cid[0],])
     elif c_ratio[0] + c_ratio[1] > COLOR_THRESHOLD:
@@ -54,11 +50,12 @@ def _get_color_type(color_id):
     return vec_c
 
 def _get_color_data(match_id):
-    global cur
+    cur = get_cursor()
     ColorSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, \
+    cData = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, \
                             top2_id, bottom_id, shoes_id \
-                            FROM diver_match WHERE id=?", (match_id,)):
+                            FROM diver_match WHERE id=?", (match_id,)))
+    for m in cData:
         vec_m = []
         for i in m:
             if i != None:
@@ -68,7 +65,7 @@ def _get_color_data(match_id):
     return ColorSet
 
 def _init_color_data():
-    global cur
+    cur = get_cursor()
     colorSet = []
     vec_c = None
     rows = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"))
@@ -83,17 +80,19 @@ def _init_color_data():
 
 ''' Helper '''
 
-def init_color(cursor_):
-    global COLOR, cItemSet, cur
-    cur = cursor_
+def init_color():
+    mc = get_mc()
     COLOR = _init_color_data()
-    cItemSet = list(find_frequent_itemsets(COLOR, 2, True))
+    mc.set("COLOR", COLOR, 0)
+    mc.set("cItemSet", list(find_frequent_itemsets(COLOR, 1, True)), 0)
     
 def hanger_getColor(hanger):
     h_set = set([])
     for c in map(_get_color_type, hanger):
         h_set |= c
     cand = {}
+    mc = get_mc()
+    cItemSet = mc.get("cItemSet")
     for match, sup in cItemSet:
         if h_set < set(match):
             cand[frozenset(match)]=sup
@@ -105,7 +104,7 @@ def hanger_getColor(hanger):
 
 
 def get_color_list(item_id):
-    global cur
+    cur = get_cursor()
     cid_list = []
     for sty_id, in cur.excute("SELECT id FROM diver_color WHERE item_id=?", (item_id,)):
         cid_list.append(sty_id)
@@ -141,14 +140,15 @@ def find_cid(r,g,b):
 def main():
     conn = sql.connect("../diver/db.sqlite3")
     cur = conn.cursor()
-    init_color(cur)
+    init_color()
     
+    mc = get_mc()
     print("MATCH SET:")
-    print(COLOR)
+    print(mc.get("COLOR"))
     
     print()
     print("Caculated Item sets:")
-    print(cItemSet)
+    print(mc.get("cItemSet"))
     
     
 if __name__ == '__main__':

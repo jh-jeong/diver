@@ -1,4 +1,4 @@
-import os
+import sys,os
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -14,10 +14,17 @@ from django.core.files import storage
 from diver.models import Image
 from diver.models import Item
 from diver.models import Customer
-from diver.models import ItemPref, Color, Size
+from diver.models import Match
+from diver.models import ItemPref, Color, Size, Pref
 from diver.settings import IMAGE_DIR
 from diver.settings import STATIC_ROOT
+from diver.settings import BASE_DIR
 
+sys.path.append(os.path.join(BASE_DIR, '..'))
+import algo.item as algo_item
+import algo.color as algo_color
+import algo.size as algo_size
+import algo.category as algo_category
 
 __author__ = 'un'
 
@@ -25,7 +32,12 @@ __author__ = 'un'
 def survey_required(function):
     def wrap(request, *args, **kwargs):
 
-        if Customer.objects.filter(user_id=request.user.id) or not request.user.is_authenticated():
+        if request.session.get('customer_id', None) is not None:
+            return function(request, *args, **kwargs)
+        elif Customer.objects.filter(user_id=request.user.id).count() > 0:
+            request.session['customer_id'] = Customer.objects.filter(user_id=request.user.id)[0].id
+            return function(request, *args, **kwargs)
+        elif not request.user.is_authenticated():
             return function(request, *args, **kwargs)
         else:
             return HttpResponseRedirect('/account')
@@ -46,12 +58,20 @@ def account(request):
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
-
-        # customers = Customer.objects.filter(user_id=request.user.id)
-        try:
+        if Customer.objects.filter(user_id=request.user.id).count() == 0:
+            customer = Customer(user_id=request.user.id, height_cm=180,weight_kg=73,
+                            chest_size_cm=50,waist_size_cm=30,sleeve_length_cm=40,
+                            leg_length_cm=30,shoes_size_mm=270
+                            )
+            customer.save()
+        else:
             customer = Customer.objects.get(user_id=request.user.id)
-        except Customer.DoesNotExist:
-            customer = None
+        
+        # Initialize personal preference
+        pref = Pref()
+        pref.customer = customer
+        pref.save()
+        algo_item.rating_add_user(customer.id)
 
         height_cm = request.POST['height_cm']
         weight_kg = request.POST['weight_kg']
@@ -94,11 +114,8 @@ def account(request):
 @survey_required
 def main(request):
     if request.method == 'GET':
-        items = Item.objects.all()
-
-        # for item in items:
-        #     print (item.images)
-    return render(request, 'main.html', {'items':items})
+        matches = Match.objects.all()
+    return render(request, 'main.html', {'matches':matches})
 
 def like(request, id, score):
     return (HttpResponse("{} {}".format(id, score)))
@@ -180,7 +197,12 @@ def update_hanger(request):
                 return JsonResponse({"result": "not exist"});
         else:
             raise SuspiciousMultipartForm()
-        return JsonResponse({"result": "ok"})
+
+        try:
+            matched_items = algo_category.hanger_complete(new_hanger, request.session['customer_id'])
+        except Exception as e:
+            return JsonResponse({"result": "ok", "match": "Error: " + str(e)})
+        return JsonResponse({"result": "ok", "match": str(matched_items)})
     else:
         raise SuspiciousMultipartForm()
 

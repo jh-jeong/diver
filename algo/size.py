@@ -43,9 +43,9 @@ def size_filter_bottom(items, leg, waist, hip, thigh):
         temp = cur.execute("SELECT length_level FROM diver_item WHERE item_id=?", (item_id,))
         level = temp.fetchone()[0]
         for legnth_, crotch_, waist_, thigh_, hip_ in \
-                cur.execute("SELECT length_cm, crotch_cm, waist_cm,\
-                thigh_cm, hip_cm FROM diver_size WHERE item_id=?", (item_id,)):
-            if (level == 4) and (waist_cm != -1):
+                list(cur.execute("SELECT length_cm, crotch_cm, waist_cm,\
+                thigh_cm, hip_cm FROM diver_size WHERE item_id=?", (item_id,))):
+            if (level == 4) and (waist_ != -1):
                 if (leg < (length_ - crotch_)) and \
                    (waist < waist_) and (hip < hip_) and (thigh < thigh_):
                     filtered_list.append(item_id)
@@ -55,7 +55,7 @@ def size_filter_bottom(items, leg, waist, hip, thigh):
                    (hip < hip_) and (thigh < thigh_):
                     filtered_list.append(item_id)
                     break
-            elif waist_cm != -1:
+            elif waist_ != -1:
                 if (waist < waist_) and (hip < hip_) and (thigh < thigh_):
                     filtered_list.append(item_id)
                     break
@@ -85,7 +85,8 @@ def size_filter_bottom(items, leg, waist, hip, thigh):
 def size_filter_top(items, chest):
     filtered_list = []
     for item_id in items:
-        for chest_, in cur.execute("SELECT chest_cm FROM diver_size WHERE item_id=?", item_id):
+        for chest_, in list(cur.execute("SELECT chest_cm FROM diver_size WHERE \
+            item_id=?", item_id)):
             if chest < chest_:
                 filtered_list.append(item_id)
                 break
@@ -93,20 +94,21 @@ def size_filter_top(items, chest):
     return filtered_list
 
 
-def size_filter(items, user_id, class_):
-    height, weight, body_shape, leg, chest, waist, hip, thigh, shoes = \
-            cur.execute("SELECT height_cm, weight_kg, body_shape, size_leg, \
+def size_filter(items, user_id, type_):
+    cur.execute("SELECT height_cm, weight_kg, body_shape, size_leg, \
             size_chest, size_waist, size_hip, size_thigh, shoes_size_mm \
             FROM diver_customer WHERE user_id=%d"%user_id)
+    height, weight, body_shape, leg, chest, waist, hip, thigh, shoes = \
+            cur.fetchone()
     height, weight, body_shape, leg, chest, waist, hip, thigh = \
             complete_size(height, weight, body_shape, leg, chest, waist, hip, thigh)
 
-    if class_ in ['outer', 'top']:
-        filtered_list = size_filter_top(items, chest, class_)
-    elif class_ == 'bottom':
+    #if class_ in ['outer', 'top']:
+    #    filtered_list = size_filter_top(items, chest, class_)
+    if type_ == 2:
         filtered_list = size_filter_bottom(items, leg, waist, hip, thigh)
     else:
-        filtered_list = size_filter_sheos(items, shoes)
+        filtered_list = items #size_filter_sheos(items, shoes)
 
     return filtered_list
 

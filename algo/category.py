@@ -4,10 +4,12 @@ Created on 2015. 11. 10.
 @author: biscuit
 '''
 import sqlite3 as sql
+
 from algo.fp import find_frequent_itemsets
 from algo import color
-
-cur = None
+from algo.color import init_color
+from algo import get_cursor, get_mc
+from algo.memcachemutex import MemcacheMutex
 
 category_top = ["t-shirt", "crew", "knit", "shirt", "hood", "sleeveless"] 
 category_outer = ["stadium jumper", "blouson", "jumper", "denim", "jacket", "coat", "vest", "cardigan"]
@@ -16,14 +18,9 @@ pattern = ["none", "multicolors", "checked", "printed", "striped",
            "snowflake", "floral", "camoflage", "gradation", "twisted"]
 collar = [0, 1, 2, 3]
 
-MATCH = []
-COLOR = []
-
-mItemSet = None
-
 def _get_item_type(item_id):
-    global cur
-    cur.execute("SELECT type, category, pattern, collar, padding FROM diver_item WHERE item_id=?", (item_id,))
+    cur = get_cursor()
+    cur.execute("SELECT type, category, pattern, collar, padding FROM diver_item WHERE id=?", (item_id,))
     temp = cur.fetchone()
     ty = temp[0]
     
@@ -34,11 +31,12 @@ def _get_item_type(item_id):
     return vec_i
 
 def _get_match_data(match_id):
-    global cur
+    cur = get_cursor()
     dataSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, \
+    mData = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, \
                             top2_id, bottom_id, shoes_id \
-                            FROM diver_match WHERE match_id=?", (match_id,)):
+                            FROM diver_match WHERE match_id=?", (match_id,)))
+    for m in mData:
         vec_m = []
         for i in m:
             if i != None:
@@ -48,59 +46,65 @@ def _get_match_data(match_id):
     # caching
     return dataSet
 
-def _hanger_getMatch(hanger):
-    i_hanger = map(hanger, color._get_item_id)
-    h_set = set(map(_get_item_type, i_hanger))
+def _hanger_getMatch(h_set):
+    mc = get_mc()
     cand = {}
-    for match, sup in mItemSet:
+    for match, sup in mc.get("mItemSet"):
         if h_set < set(match):
             cand[frozenset(match)]=sup
     return cand
 
 
 def init_match_data():
-    global cur
+    cur = get_cursor()
     dataSet = []
-    for m in cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"):
+    mats = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, top2_id, bottom_id, shoes_id FROM diver_match"))
+    for m in mats:
         vec_m = []
         for i in m:
             if i != None and type(i) != str:
-                item_id = color._get_color(i)
+                item_id = color._get_item_id(i)
                 vec_m.append(_get_item_type(item_id))
         dataSet.append(vec_m)
     # caching
     return dataSet
 
-def init_category(cursor_):
-    global MATCH, mItemSet, cur
-    cur = cursor_
-    MATCH = init_match_data()
-    mItemSet = list(find_frequent_itemsets(MATCH, 2, True))
+def init_category():
+    mc = get_mc()
+    mc.set("MATCH", init_match_data(), 0)
+    mc.set("mItemSet", list(find_frequent_itemsets(mc.get("MATCH"), 1, True)), 0)
     
 def hanger_complete(hanger, customer_id):
-    global cur
-    
-    candDict = _hanger_getMatch(hanger)
-    
-    for r, mid in cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)):
+    cur = get_cursor()
+    i_hanger = hanger
+    h_set = set(map(_get_item_type, i_hanger))
+    candDict = _hanger_getMatch(h_set)
+    if len(candDict) == 0:
+        return None
+    ratings = list(cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)))
+    for r, mid in ratings:
         s = frozenset(_get_match_data(mid))
         try:
             candDict[s] = candDict[s]*(r+2)/4
         except KeyError:
             pass
-    return max(candDict, key=candDict.get)
+    maxMatch = set(max(candDict, key=candDict.get))
+    return frozenset(maxMatch-h_set)
     
 def main():
+    cur = get_cursor()
     conn = sql.connect("../diver/db.sqlite3")
     cur = conn.cursor()
-    init_category(cur)
+    init_color()
+    init_category()
     
+    mc = get_mc()
     print("MATCH SET:")
-    print(MATCH)
+    print(mc.get("MATCH"))
     
     print()
     print("Caculated Item sets:")
-    print(mItemSet)
+    print(mc.get("mItemSet"))
     
 if __name__ == '__main__':
     main()
