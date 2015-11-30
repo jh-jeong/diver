@@ -165,6 +165,8 @@ def _score_item(hanger, user_id, item_id, weight):
         cids, c_ratios = get_color(sty)
         color_d = 0
         for cid, ratio in zip(cids, c_ratios):
+            if ratio == 0:
+                break
             color_d += eval_color(points, cid) * ratio / 100
         color_score[sty] = color_d
     max_sty = max(color_score, key=color_score.get)
