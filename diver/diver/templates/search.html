@@ -102,6 +102,7 @@
           available_slot.children().first().html('<img src="'+src+'">');
           available_slot.children().first().attr('data-item-id', id);
           updateRecommendation(data.match);
+          toastr.success('The item has been successfully added to hanger.');
         } else if(data.result == "duplicate"){
           alert("The item is already in the hanger!");
         }
@@ -127,6 +128,7 @@
         hanger_item.removeData("item-id");
         hanger_item.html("<p>NO ITEM</p>");
         updateRecommendation(data.match);
+        toastr.info('The item has been successfully removed from hanger.');
       } else {
         alert("An error occurred while removing the item from hanger.");
       }
@@ -167,6 +169,10 @@
   }
 
 $(document).ready(function () {
+  toastr.options.closeButton = true;
+  toastr.options.timeOut = 1500;
+  toastr.options.newestOnTop = false;
+
   function updateCategory2(category1) {
     $("#category2").children("[data-parent-value=\"" + category1 + "\"]").show();
     $("#category2").children(":not([data-parent-value=\"" + category1 + "\"])").hide();
