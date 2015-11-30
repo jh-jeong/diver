@@ -1,0 +1,24 @@
+{% load item_filters %}
+<div class="item {{ class_names }}"
+     data-match-id="{{ match.id }}">
+    <img src={{ match.image }}>
+    <div class="col-md-12 col-xs-12 col-lg-12">
+      <span class="star-rating">
+        <input type="radio" name="rating{{match.id}}" value=1
+                            onclick="like_match({{match.id}}, 1)"><i></i>
+        <input type="radio" name="rating{{match.id}}" value=2
+                            onclick="like_match({{match.id}}, 2)"><i></i>
+        <input type="radio" name="rating{{match.id}}" value=3
+                            onclick="like_match({{match.id}}, 3)"><i></i>
+        <input type="radio" name="rating{{match.id}}" value=4
+                            onclick="like_match({{match.id}}, 4)"><i></i>
+        <input type="radio" name="rating{{match.id}}" value=5
+                            onclick="like_match({{match.id}}, 5)"><i></i>
+      </span>
+    </div>
+    <div class="row">
+      <div class="col-lg-12 col-md-12 col-xs-12">
+        <a class="btn btn-link" href="{{match.url}}" target="_blank">Details</a>
+      </div>
+    </div>
+</div>
