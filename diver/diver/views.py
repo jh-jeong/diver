@@ -147,7 +147,7 @@ def match_like(request, id, score):
         if Rating.objects.filter(customer = customer, match = match).count() != 0:
             rating = Rating(customer=customer, match=match, score=score)
 
-        else:
+#        else:
 
 
     return HttpResponse("recieved" + id)
