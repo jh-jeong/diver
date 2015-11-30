@@ -302,6 +302,7 @@ class Rating(models.Model):
     customer = models.ForeignKey('Customer')
     match = models.ForeignKey('Match', null=True)
     item = models.ForeignKey('Item', null=True)
+    score = models.IntegerField()
 
     def rating_range_validator(rating):
         if not (-2 <= RAting <= 2):

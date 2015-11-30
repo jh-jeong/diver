@@ -1,4 +1,4 @@
-import sys,os
+import sys, os
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -42,31 +42,34 @@ def survey_required(function):
         else:
             return HttpResponseRedirect('/account')
 
-    wrap.__doc__=function.__doc__
-    wrap.__name__=function.__name__
+    wrap.__doc__ = function.__doc__
+    wrap.__name__ = function.__name__
     return wrap
+
 
 def auth(request):
     return render(request, 'auth.html')
+
 
 def noneCheck(input):
     if input == '':
         return 0
     return input
 
+
 def account(request):
     if request.method == 'GET':
         pass
     elif request.method == 'POST':
         if Customer.objects.filter(user_id=request.user.id).count() == 0:
-            customer = Customer(user_id=request.user.id, height_cm=180,weight_kg=73,
-                            chest_size_cm=50,waist_size_cm=30,sleeve_length_cm=40,
-                            leg_length_cm=30,shoes_size_mm=270
-                            )
+            customer = Customer(user_id=request.user.id, height_cm=180, weight_kg=73,
+                                chest_size_cm=50, waist_size_cm=30, sleeve_length_cm=40,
+                                leg_length_cm=30, shoes_size_mm=270
+            )
             customer.save()
         else:
             customer = Customer.objects.get(user_id=request.user.id)
-        
+
         # Initialize personal preference
         pref = Pref()
         pref.customer = customer
@@ -80,7 +83,7 @@ def account(request):
         sleeve_length_cm = request.POST['sleeve_length_cm']
         leg_length_cm = request.POST['leg_length_cm']
         shoes_size_mm = request.POST['shoes_size_mm']
-        body_shape = request.POST.get('body_shape','O')
+        body_shape = request.POST.get('body_shape', 'O')
 
         height_cm = noneCheck(height_cm)
         weight_kg = noneCheck(weight_kg)
@@ -90,7 +93,7 @@ def account(request):
         leg_length_cm = noneCheck(leg_length_cm)
         shoes_size_mm = noneCheck(shoes_size_mm)
 
-        if customer != None :
+        if customer != None:
             customer.height_cm = height_cm
             customer.weight_kg = weight_kg
             customer.chest_size_cm = chest_size_cm
@@ -104,36 +107,43 @@ def account(request):
 
         else:
 
-            customer = Customer(user_id=request.user.id, height_cm=height_cm,weight_kg=weight_kg,
-                            chest_size_cm=chest_size_cm,waist_size_cm=waist_size_cm,sleeve_length_cm=sleeve_length_cm,
-                            leg_length_cm=leg_length_cm, shoes_size_mm=shoes_size_mm, body_shape=body_shape
+            customer = Customer(user_id=request.user.id, height_cm=height_cm, weight_kg=weight_kg,
+                                chest_size_cm=chest_size_cm, waist_size_cm=waist_size_cm,
+                                sleeve_length_cm=sleeve_length_cm,
+                                leg_length_cm=leg_length_cm, shoes_size_mm=shoes_size_mm, body_shape=body_shape
             )
             customer.save()
     return render(request, 'account.html')
+
 
 @survey_required
 def main(request):
     if request.method == 'GET':
         matches = Match.objects.all()
-    return render(request, 'main.html', {'matches':matches})
+    return render(request, 'main.html', {'matches': matches})
+
+def item_rerating(item ,score, user_id):
+    if ItemPref.objects.filter(item_id=item.id, user_id=user_id).count() != 0:
+        item_pref = ItemPref.objects.get(item_id=id, user_id=user_id)
+        item.rate_count -= item_pref.score
+        item_pref.score == score
+        item.rate_count += item_pref.score
+    else:
+        item_pref = ItemPref(item_id=item.id, user_id=user_id, score=score)
+        item.rate_count += item_pref.score
+    item_pref.save()
+
+def match_rating(color, score, user_id):
+    if color.item != None:
+        item_rerating(color.item,score,user_id)
 
 @survey_required
 def like(request, id, score):
     # return (HttpResponse("{} {}".format(id, score)))
     if request.method == 'GET':
 
-        item = Item.objects.get(id = id)
-        if ItemPref.objects.filter(item_id = id, user_id = request.user.id).count() != 0:
-            item_pref = ItemPref.objects.get(item_id = id, user_id = request.user.id)
-            item.rate_count-=item_pref.score
-            item_pref.score == score
-            item.rate_count+=item_pref.score
-        else:
-                # customer = Customer.objects.filter(user_id = request.user.id)
-                # customer.like(Item.objects.filter(id = id), like)
-            item_pref = ItemPref(item_id = id, user_id = request.user.id, score = score)
-            item.rate_count+=item_pref.score
-        item_pref.save()
+        item = Item.objects.get(id=id)
+        item_rerating(item, score, request.user.id)
 
     return HttpResponse("recieved" + id)
 
@@ -141,16 +151,27 @@ def like(request, id, score):
 def match_like(request, id, score):
     # return (HttpResponse("{} {}".format(id, score)))
     if request.method == 'GET':
-
         customer = Customer.objects.get(user_id=request.user.id)
-        match = Match.objects.get(id = id)
-        if Rating.objects.filter(customer = customer, match = match).count() != 0:
+        match = Match.objects.get(id=id)
+        if Rating.objects.filter(customer=customer, match=match).count() != 0:
             rating = Rating(customer=customer, match=match, score=score)
+            rating.save()
+            match.rate_count += score
 
-#        else:
+        else:
+            rating = Rating.objects.get(customer=customer, match=match)
+            match.rate_count -= rating.score
+            rating.score = score
+            match.rate_count += score
 
+        match_rating(match.outer1.item,score,request.user.id)
+        match_rating(match.outer2.item,score,request.user.id)
+        match_rating(match.top1.item,score,request.user.id)
+        match_rating(match.top2.item,score,request.user.id)
+        match_rating(match.bottom.item,score,request.user.id)
 
     return HttpResponse("recieved" + id)
+
 
 @survey_required
 def search(request):
@@ -163,7 +184,7 @@ def search(request):
         category = request.GET['category']
 
         for i in range(len(Item.CATEGORIES)):
-            for c,n in Item.CATEGORIES[i][1]:
+            for c, n in Item.CATEGORIES[i][1]:
                 if c == category:
                     selected_category1 = i
                     selected_category2 = c
@@ -173,11 +194,13 @@ def search(request):
         try:
             specified_lower = int(request.GET['lower'])
             items = items.exclude(price__lte=specified_lower)
-        except: pass
+        except:
+            pass
         try:
             specified_upper = int(request.GET['upper'])
             items = items.exclude(price__gte=specified_upper)
-        except: pass
+        except:
+            pass
         search_result = items
 
     return render(request, 'search.html',
@@ -188,6 +211,7 @@ def search(request):
                    'upper': specified_upper,
                    'search_result': search_result,
                    'hanger': request.session.get('hanger', None)})
+
 
 def update_hanger(request):
     if request.method == 'POST':
@@ -219,12 +243,12 @@ def update_hanger(request):
             matches = algo_category.hanger_complete(new_hanger, request.session['customer_id'])
             if matches:
                 for match in matches:
-                    matched_category = {"type": match[0], 
-                        "text": match[1], 
-                        "category_code": Item.get_category_code(match[1])}
-                    if match[0] == 0: # Top
+                    matched_category = {"type": match[0],
+                                        "text": match[1],
+                                        "category_code": Item.get_category_code(match[1])}
+                    if match[0] == 0:  # Top
                         matched_category["pattern"] = Item.get_pattern_code(match[2])
-                    elif match[0] == 1: # Outer
+                    elif match[0] == 1:  # Outer
                         matched_category["collar"] = match[2]
                         matched_category["padding"] = match[3]
                     matched_categories.append(matched_category)
@@ -232,22 +256,22 @@ def update_hanger(request):
     else:
         raise SuspiciousMultipartForm()
 
+
 @survey_required
 def upload(request):
     if request.method == 'POST':
-        #filename = request.POST["filename"]
+        # filename = request.POST["filename"]
 
         if 'file' in request.FILES:
             file = request.FILES['file']
             filename = file._name
 
-            image_dir = os.path.join(IMAGE_DIR,filename)
-            print (image_dir)
+            image_dir = os.path.join(IMAGE_DIR, filename)
+            print(image_dir)
             # for python3
-            fp = open('%s' % (image_dir) , 'wb')
+            fp = open('%s' % (image_dir), 'wb')
             for chunk in file.chunks():
                 fp.write(chunk)
-
 
             fp.close()
 
@@ -266,7 +290,6 @@ def upload(request):
 
 
 def upload_item(request):
-
     selected_category1 = 0
     selected_category2 = Item.CATEGORIES[0][1][0][0]
     specified_lower = None
@@ -275,39 +298,37 @@ def upload_item(request):
     if request.method == 'POST':
         category = request.POST['category']
         for i in range(len(Item.CATEGORIES)):
-            for c,n in Item.CATEGORIES[i][1]:
+            for c, n in Item.CATEGORIES[i][1]:
                 if c == category:
                     selected_category1 = i
                     selected_category2 = c
                     break
 
-
         if 'file' in request.FILES:
             file = request.FILES['file']
             filename = file._name
-            filename.replace (" ", "_")
+            filename.replace(" ", "_")
 
-            image_dir = os.path.join(IMAGE_DIR,filename)
-            print (image_dir)
+            image_dir = os.path.join(IMAGE_DIR, filename)
+            print(image_dir)
             # for python3
-            fp = open('%s' % (image_dir) , 'wb')
+            fp = open('%s' % (image_dir), 'wb')
             for chunk in file.chunks():
                 fp.write(chunk)
 
             fp.close()
-
 
         patterns = request.POST['patterns']
         materials = request.POST['materials']
         price = request.POST['price']
         comment = request.POST['comment']
 
-        item = Item(pattern= patterns,material=materials, comment=comment,
-                    category = category, price = price, images="http://localhost:8000/static/images/"+filename)
+        item = Item(pattern=patterns, material=materials, comment=comment,
+                    category=category, price=price, images="http://localhost:8000/static/images/" + filename)
 
         size = Size()
 
-        if(selected_category1 == 0):
+        if (selected_category1 == 0):
             item.type = 0
             item.sleeve_level = request.POST['sleeve_level']
             item.neck = request.POST['neck_types']
@@ -320,7 +341,7 @@ def upload_item(request):
             size.sleeve_cm = request.POST['sleeve_cm']
             size.letter = request.POST['letter']
 
-        elif(selected_category1 == 1):
+        elif (selected_category1 == 1):
             item.type = 1
             item.sleeve_level = request.POST['sleeve_level']
             item.button_outer = request.POST['button_outer']
@@ -336,7 +357,7 @@ def upload_item(request):
             size.sleeve_cm = request.POST['sleeve_cm']
             size.letter = request.POST['letter']
 
-        elif(selected_category1 == 2):
+        elif (selected_category1 == 2):
             item.type = 2
             item.length_level = request.POST['length_level_bottom']
             item.fit = request.POST['fit_types']
