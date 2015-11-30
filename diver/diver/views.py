@@ -178,6 +178,9 @@ def match_like(request, id, score):
 def search(request):
     selected_category1 = 0
     selected_category2 = Item.CATEGORIES[0][1][0][0]
+    pattern = 0
+    collar = 0
+    padding = 0
     specified_lower = None
     specified_upper = None
     search_result = []
@@ -202,10 +205,24 @@ def search(request):
             items = items.exclude(price__gte=specified_upper)
         except:
             pass
+
+        if selected_category1 == 0:
+            pattern = request.GET['pattern']
+            items = items.filter(pattern=pattern)
+
+        if selected_category1 == 1:
+            collar = request.GET['collar']
+            padding = request.GET['padding']
+            items = items.filter(collar=collar, padding=padding)
+
         search_result = items
 
     return render(request, 'search.html',
                   {'categories': Item.CATEGORIES,
+                   'patterns': Item.PATTERNS,
+                   'selected_pattern': pattern,
+                   'selected_collar': collar,
+                   'selected_padding': padding,
                    'selected_category1': selected_category1,
                    'selected_category2': selected_category2,
                    'lower': specified_lower,

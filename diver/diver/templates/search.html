@@ -7,9 +7,9 @@
 
 {% block content %}
 <h1>추천 받기</h1>
-<h3>검색 필터 설정</h3>
+<h3>공통 검색 필터</h3>
 <form method="get" enctype="multipart/form-data" class="search-form">
-  <div class="row">
+  <div class="row col-lg-12 col-md-12 col-xs-12">
     <div class="form-group col-md-2">
       <label for="category1">대분류</label>
       <select class="form-control" id="category1">
@@ -39,12 +39,41 @@
       <label for="upper">가격 상한</label>
       <input name="upper" class="form-control" type="number" id="upper" value="{{ upper }}">
     </div>
+  </div>
+  <div id="optional-filter" class="row col-lg-12 col-md-12 col-xs-12">
+    <h3>추가 검색 필터</h3>
+    <div class="form-group col-md-2" id="pattern-div" hidden>
+      <label for="pattern">패턴</label>
+      <select name="pattern" class="form-control" id="pattern">
+        {% for pattern in patterns %}
+        <option value="{{pattern.0}}"
+                {% if pattern.0 == selected_pattern %}selected{% endif %}>
+        {{ pattern.1 }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group col-md-2" id="collar-div" hidden>
+      <label for="collar">카라</label>
+      <select name="collar" class="form-control" id="collar">
+        <option value=0 {% if selected_collar == "0" %}selected{% endif %}>None</option>
+        <option value=1 {% if selected_collar == "1" %}selected{% endif %}>Normal</option>
+        <option value=2 {% if selected_collar == "2" %}selected{% endif %}>Tailored</option>
+        <option value=3 {% if selected_collar == "3" %}selected{% endif %}>Wide</option>
+        <option value=4 {% if selected_collar == "4" %}selected{% endif %}>Turtle</option>
+      </select>
+    </div>
+    <div class="form-group col-md-2" id="padding-div" hidden>
+      <label for="padding">패딩</label>
+      <select name="padding" class="form-control" id="padding">
+        <option value=0 {% if selected_padding == "0" %}selected{% endif %}>No</option>
+        <option value=1 {% if selected_padding == "1" %}selected{% endif %}>Yes</option>
+      </select>
+    </div>
     <div class="form-group col-md-2">
       <br>
       <input type="submit" id="send" value="검색!" class="btn btn-primary"/>
     </div>
   </div>
-
 </form>
 
 <div class="row">
@@ -149,6 +178,21 @@
 
 $(document).ready(function () {
   function updateCategory2(category1) {
+    if (category1 === "0") {
+      $("#pattern-div").show();
+      $("#collar-div").hide();
+      $("#padding-div").hide();
+    }
+    else if (category1 === "1") {
+      $("#pattern-div").hide();
+      $("#collar-div").show();
+      $("#padding-div").show();
+    }
+    else {
+      $("#pattern-div").hide();
+      $("#collar-div").hide();
+      $("#padding-div").hide();
+    }
     $("#category2").children("[data-parent-value=\"" + category1 + "\"]").show();
     $("#category2").children(":not([data-parent-value=\"" + category1 + "\"])").hide();
   }
