@@ -18,10 +18,13 @@ FLUSH_MIN = 5
 SLEEP_TIME = 5
 LIKE_MAX = 50
 
+
 #update_preference
 #items : list of item_id
 #rating : -2~2
 def update_preference(customer_id, item_id, new_rating, prev_rating=0):
+
+
     cur = get_cursor()
     rating = new_rating - prev_rating
     cur.execute("SELECT type FROM diver_item WHERE id=?", (item_id,))
@@ -38,7 +41,7 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
         cur.execute("UPDATE diver_pref SET pattern_%d=?, neck_%d=?,\
                     sleeveT_%d=? WHERE customer_id=?" % (p, n, s),
                 (o_p + rating, o_n + rating, o_s + rating, customer_id))
-            
+
     # outer
     elif type_ == 1:
         # zipper, button, hat, length
@@ -55,7 +58,7 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
         # fit
         cur.execute("SELECT fit FROM diver_item WHERE id=?", (item_id,))
         f, = cur.fetchone()
-        
+
         cur.execute("SELECT fit_%d FROM diver_pref WHERE customer_id=?"%f,
                 (customer_id,))
         o_f, = cur.fetchone()
@@ -97,13 +100,13 @@ def _cal_subscore(item_id, customer_id):
         # color, fit
         cur.execute("SELECT fit FROM diver_item WHERE id=?", (item_id,))
         f, = cur.fetchone()
-            
+
         cur.execute("SELECT fit_%d FROM diver_pref WHERE customer_id=?"%f, (customer_id,))
         o_f, = cur.fetchone()
 
         return  1.2**o_f
 
-    else: 
+    else:
         return 0
 
 def _rating_refresh():
@@ -154,12 +157,12 @@ def _score_item(hanger, user_id, item_id, weight):
         cr_read -= 1
         if cr_read == 0:
             cr_write.release()
-            
+
     points = []
     if len(hanger) != 0:
         points = hanger_getColor(hanger)
-    
-    color_list = get_color_list(item_id)   
+
+    color_list = get_color_list(item_id)
     color_score = {}
     for sty in color_list:
         cids, c_ratios = get_color(sty)
@@ -173,7 +176,7 @@ def _score_item(hanger, user_id, item_id, weight):
         max_sty = max(color_score, key=color_score.get)
     except ValueError:
         max_sty = None
-    
+
     if len(hanger) != 0:
         score += weight[1]* color_score[max_sty]
     else:
@@ -226,7 +229,7 @@ def rating_fill(user_id, item_id, rating):
     USERS = mc.get("USERS")
     ITEMS = mc.get("ITEMS")
     r_mutex = MemcacheMutex("r_mutex", mc)
-    
+
     u_idx, i_idx = USERS.index(user_id), ITEMS.index(item_id)
     with r_mutex:
         RATING = mc.get("RATING")
@@ -266,7 +269,7 @@ def rating_remove_user(user_id):
         ch_count = mc.get("ch_count")
         ch_count += 1
         mc.set("ch_count")
-        
+
 
 def rating_add_item(item_id):
     # Q.put(('i+', item_id))
@@ -295,7 +298,7 @@ def rating_remove_item(item_id):
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("ITEMS", ITEMS)
         mc.set("RATING", RATING)
-    
+
 def reorder_items(items, user_id, hanger):
     weight = DEFALUT_WEIGHT
     score_dict = {}
@@ -311,14 +314,14 @@ def reorder_items(items, user_id, hanger):
             sub_max = sb_sc
         score_dict[i]= sc
         sub_scores[i]= sb_sc
-        sty_dict[i] = max_sty    
-    
+        sty_dict[i] = max_sty
+
     return sorted(items, key= lambda x: score_dict[x]+ weight[3]*((sub_scores[x]-sub_min) / (sub_max-sub_min))
                   ,reverse = True), sty_dict
 
 
 def main():
-    
+
     conn = sql.connect("../diver/db.sqlite3")
     cur = conn.cursor()
     init_rating(cur)
@@ -335,6 +338,6 @@ def main():
     print("################################## AFTER")
     print(C)
     '''
-    
+
 if __name__ == '__main__':
     main()

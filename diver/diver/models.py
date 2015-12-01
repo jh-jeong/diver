@@ -111,7 +111,7 @@ class Item(models.Model):
     # Material code should be 2 chars.
     MATERIALS = (
         ('AC', "Acrylic"),
-        ('CD', "Corduroy"), 
+        ('CD', "Corduroy"),
         ('CT', "Cotton"),
         ('LN', "Linen"),
         ('NP', "Neoprene"),
@@ -137,8 +137,8 @@ class Item(models.Model):
         ('GR', 'Gradation'),
         ('LG', 'Logo'),
         ('MC', 'MultiCOLors'),
-        ('NO', 'None'), 
-        ('PR', 'Printed'), 
+        ('NO', 'None'),
+        ('PR', 'Printed'),
         ('SF', 'Snowflake'),
         ('ST', 'Striped'),
         ('TW', 'Twisted'),
@@ -311,25 +311,25 @@ class Rating(models.Model):
 
 class Pref(models.Model):
     customer = models.ForeignKey(Customer)
-    pattern_0 = models.IntegerField(default=0)
-    pattern_1 = models.IntegerField(default=0)
-    pattern_2 = models.IntegerField(default=0)
-    pattern_3 = models.IntegerField(default=0)
-    pattern_4 = models.IntegerField(default=0)
-    pattern_5 = models.IntegerField(default=0)
-    pattern_6 = models.IntegerField(default=0)
-    pattern_7 = models.IntegerField(default=0)
-    pattern_8 = models.IntegerField(default=0)
-    pattern_9 = models.IntegerField(default=0)
-    pattern_10 = models.IntegerField(default=0)
-    neck_0 = models.IntegerField(default=0)
-    neck_1 = models.IntegerField(default=0)
-    neck_2 = models.IntegerField(default=0)
-    neck_3 = models.IntegerField(default=0)
-    neck_4 = models.IntegerField(default=0)
-    neck_5 = models.IntegerField(default=0)
-    neck_6 = models.IntegerField(default=0)
-    neck_7 = models.IntegerField(default=0)
+    pattern_CM = models.IntegerField(default=0)
+    pattern_CH = models.IntegerField(default=0)
+    pattern_FL = models.IntegerField(default=0)
+    pattern_GR = models.IntegerField(default=0)
+    pattern_LG = models.IntegerField(default=0)
+    pattern_MC = models.IntegerField(default=0)
+    pattern_NO = models.IntegerField(default=0)
+    pattern_PR = models.IntegerField(default=0)
+    pattern_SF = models.IntegerField(default=0)
+    pattern_ST = models.IntegerField(default=0)
+    pattern_VS = models.IntegerField(default=0)
+    neck_RN = models.IntegerField(default=0)
+    neck_HR = models.IntegerField(default=0)
+    neck_HT = models.IntegerField(default=0)
+    neck_VN = models.IntegerField(default=0)
+    neck_ST = models.IntegerField(default=0)
+    neck_TT = models.IntegerField(default=0)
+    neck_CL = models.IntegerField(default=0)
+    neck_CH = models.IntegerField(default=0)
     sleeveT_0 = models.IntegerField(default=0)
     sleeveT_1 = models.IntegerField(default=0)
     sleeveT_2 = models.IntegerField(default=0)
@@ -350,9 +350,9 @@ class Pref(models.Model):
     outer_button_3 = models.IntegerField(default=0)
     outer_button_4 = models.IntegerField(default=0)
     outer_button_5 = models.IntegerField(default=0)
-    fit_0 = models.IntegerField(default=0)
-    fit_1 = models.IntegerField(default=0)
-    fit_2 = models.IntegerField(default=0)
-    fit_3 = models.IntegerField(default=0)
-    fit_4 = models.IntegerField(default=0)
-    fit_5 = models.IntegerField(default=0)
+    fit_ST = models.IntegerField(default=0)
+    fit_SL = models.IntegerField(default=0)
+    fit_BG = models.IntegerField(default=0)
+    fit_SK = models.IntegerField(default=0)
+    fit_WD = models.IntegerField(default=0)
+    fit_TP = models.IntegerField(default=0)
