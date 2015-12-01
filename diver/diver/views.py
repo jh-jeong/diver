@@ -327,19 +327,24 @@ def upload_item(request):
                     selected_category2 = c
                     break
 
+        # default image
+        filename = "no_image.gif"
+
         if 'file' in request.FILES:
             file = request.FILES['file']
-            filename = file._name
-            filename.replace(" ", "_")
+            if file != '':
 
-            image_dir = os.path.join(IMAGE_DIR, filename)
-            print(image_dir)
-            # for python3
-            fp = open('%s' % (image_dir), 'wb')
-            for chunk in file.chunks():
-                fp.write(chunk)
+                filename = file._name
+                filename.replace(" ", "_")
 
-            fp.close()
+                image_dir = os.path.join(IMAGE_DIR, filename)
+                print(image_dir)
+                # for python3
+                fp = open('%s' % (image_dir), 'wb')
+                for chunk in file.chunks():
+                    fp.write(chunk)
+
+                fp.close()
 
         patterns = request.POST['patterns']
         materials = request.POST['materials']
