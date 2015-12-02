@@ -112,29 +112,28 @@ def _cal_subscore(item_id, customer_id):
 
 def _rating_refresh():
     mc = get_mc()
-    LRMC = mc.get("LRMC")
     ch_count = mc.get("ch_count")
-    r_mutex = MemcacheMutex("r_mutex", mc)
     cr_write = MemcacheMutex("cr_write", mc)
     ch_lock = MemcacheMutex("ch_lock", mc)
-    with r_mutex:
-        LRMC.complete_it("sASD")
-        mc.set("LRMC", LRMC, 0)
+    RATING = mc.get("RATING")
+    LRMC = MatrixCompletion(RATING)
+    LRMC.complete_it("sASD")
     with cr_write:
         COMP_RATING = LRMC.get_optimized_matrix()
         mc.set("COMP_RATING", COMP_RATING)
     while True:
         time.sleep(SLEEP_TIME)
+        RATING = mc.get("RATING")
+        LRMC = MatrixCompletion(RATING)
+        ch_count = mc.get("ch_count")
         with ch_lock:
             if ch_count < FLUSH_MIN:
                 continue
             ch_count = 0
-        with r_mutex:
-            LRMC.complete_it("sASD")
-            mc.set("LRMC", LRMC, 0)
-        with cr_write:
-            COMP_RATING = LRMC.get_optimized_matrix()
-            mc.set("COMP_RATING", COMP_RATING)
+            mc.set("ch_count")
+        LRMC.complete_it("sASD")
+        COMP_RATING = LRMC.get_optimized_matrix()
+        mc.set("COMP_RATING", COMP_RATING)
 
 def _score_item(hanger, user_id, item_id, weight):
     mc = get_mc()
@@ -153,7 +152,10 @@ def _score_item(hanger, user_id, item_id, weight):
         if cr_read == 1:
             cr_write.acquire()
     COMP_RATING = mc.get("COMP_RATING")
-    score = weight[0]* COMP_RATING[u_idx][i_idx]
+    try:
+        score = weight[0]* COMP_RATING[u_idx][i_idx]
+    except IndexError:
+        score = 0
     with cr_mutex:
         cr_read -= 1
         if cr_read == 0:
@@ -216,7 +218,6 @@ def init_rating():
     for i in range(len(ITEMS)):
         RATING[(0,i)] = 1
     mc.set("RATING", RATING, 0)
-    mc.set("LRMC", MatrixCompletion(RATING), 0)
     mc.set("ch_count", 0, 0)
     mc.set("cr_read", 0, 0)
     mc.set("COMP_RATING", None, 0)
