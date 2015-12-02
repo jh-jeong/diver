@@ -153,7 +153,7 @@ def _score_item(hanger, user_id, item_id, weight):
             cr_write.acquire()
     COMP_RATING = mc.get("COMP_RATING")
     try:
-        score = weight[0]* COMP_RATING[u_idx][i_idx]
+        score = weight[0]* ( COMP_RATING[u_idx][i_idx] + 2 )/ 4
     except IndexError:
         score = 0
     with cr_mutex:
