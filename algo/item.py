@@ -89,7 +89,7 @@ def _cal_subscore(item_id, customer_id):
         # zipper, button, hat, length
         cur.execute("SELECT zipper, button, hat, length_level FROM diver_item WHERE id=?", (item_id,))
         z, b, h, l = cur.fetchone()
-        cur.execute("SELECT zipperO_{}, outer_button_{}, hatO_{}, out_len_{} \
+        cur.execute("SELECT zipperO_{}, outer_button_{}, hatO_{}, outer_len_{} \
                     FROM diver_pref WHERE customer_id=?".format(z,b,h,l), (customer_id,))
         o_z, o_b, o_h, o_l = cur.fetchone()
 
