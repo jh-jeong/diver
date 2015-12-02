@@ -130,7 +130,7 @@ def _rating_refresh():
             if ch_count < FLUSH_MIN:
                 continue
             ch_count = 0
-            mc.set("ch_count")
+            mc.set("ch_count", ch_count)
         LRMC.complete_it("sASD")
         COMP_RATING = LRMC.get_optimized_matrix()
         mc.set("COMP_RATING", COMP_RATING)
@@ -272,7 +272,7 @@ def rating_remove_user(user_id):
     with ch_lock:
         ch_count = mc.get("ch_count")
         ch_count += FLUSH_MIN
-        mc.set("ch_count")
+        mc.set("ch_count", ch_count)
 
 
 def rating_add_item(item_id):
