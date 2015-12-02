@@ -109,6 +109,23 @@
 {% endblock %}
 {% block script %}
 <script type='text/javascript'>
+
+  function like(id, score) {
+      $.ajax({
+        'method': 'get',
+        'dataType': 'text',
+        'url': '/like/'+id+'/'+score,
+        'success': function(res){
+          alert(res);
+          location.reload();
+        },
+        'error': function(request,status,error){
+          console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+        }
+      });
+    }
+
+
   function toHanger(id, cat1, src) {
     var category = cat1.toUpperCase();
     var available_slot = $(".hanger-slot[data-accepts="+category+"]").has("p").first();
