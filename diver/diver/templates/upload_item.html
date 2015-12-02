@@ -13,7 +13,7 @@
     <div class="col-md-3">
       <div class="form-group">
         <label for="category1">대분류</label>
-        <select id="category1">
+        <select class="form-control" id="category1">
           {% for c in categories %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.0 }}</option>
           {% endfor %}
@@ -24,7 +24,7 @@
     <div class="col-md-3">
       <div class="form-group">
         <label for="category2">소분류</label>
-        <select name="category" id="category2">
+        <select class="form-control" name="category" id="category2">
           {% for c1 in categories %}
             {% for c2 in c1.1 %}
               <option data-parent-value="{{ forloop.parentloop.counter0 }}" value="{{ c2.0 }}" {% if c2.0 == selected_category2 %}selected="selected"{% endif %}>{{ c2.1 }}</option>
@@ -37,7 +37,7 @@
     <div class="col-md-3">
       <div class="form-group">
         <label for="patterns">패턴</label>
-        <select name="patterns" id="patterns">
+        <select class="form-control" name="patterns" id="patterns">
           {% for c in patterns %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
           {% endfor %}
@@ -48,7 +48,7 @@
     <div class="col-md-3">
       <div class="form-group">
         <label for="materials">재료</label>
-        <select name="materials" id="materials">
+        <select class="form-control" name="materials" id="materials">
           {% for c in materials %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
           {% endfor %}
@@ -60,7 +60,7 @@
       <div class="form-group">
         <label for="neck_types">목 타입</label>
         <br>
-        <select name="neck_types" id="neck_types">
+        <select class="form-control" name="neck_types" id="neck_types">
           {% for c in neck_types %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
           {% endfor %}
@@ -72,7 +72,7 @@
       <div class="form-group">
         <label for="fit_types">핏 타입</label>
         <br>
-        <select name="fit_types" id="fit_types">
+        <select class="form-control" name="fit_types" id="fit_types">
           {% for c in fit_types %}
             <option value="{{ forloop.counter0 }}" {% if forloop.counter0 == selected_category1 %}selected="selected"{% endif %}>{{ c.1 }}</option>
           {% endfor %}
@@ -84,7 +84,7 @@
       <div class="form-group">
         <label for="sleeve_level">소매 길이</label>
         <br>
-        <select value name="sleeve_level" id="sleeve_level">
+        <select class="form-control" name="sleeve_level" id="sleeve_level">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -98,7 +98,7 @@
       <div class="form-group">
         <label for="length_level_outer">아우터 길이</label>
         <br>
-        <select value name="length_level_outer" id="length_level_outer">
+        <select class="form-control" name="length_level_outer" id="length_level_outer">
           <option value="0">0</option>
           <option value="1">1</option>
           <option value="2">2</option>
@@ -112,7 +112,7 @@
       <div class="form-group">
         <label for="length_level_bottom">하의 길이</label>
         <br>
-        <select value name="length_level_bottom" id="length_level_bottom">
+        <select class="form-control" name="length_level_bottom" id="length_level_bottom">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
@@ -124,7 +124,7 @@
     <div class="col-md-2 form-group" id="button_outer_div">
       <label for="button_outer">버튼 종류</label>
       <br>
-      <select value name="button_outer" id="button_outer">
+      <select class="form-contrl" name="button_outer" id="button_outer">
         <option value="0">0</option>
         <option value="1">1</option>
         <option value="2">2</option>
@@ -136,7 +136,7 @@
 
     <div class="col-md-1 form-group" id="button_top_div">
       <label for="button_top">버튼</label>
-      <select name="button_top" id="button_top">
+      <select class="form-control" name="button_top" id="button_top">
         <option value="0">없음</option>
         <option value="1">있음</option>
       </select>
@@ -144,7 +144,7 @@
 
     <div class="col-md-1 form-group" id="collar_div">
       <label for="collar">카라</label>
-      <select name="collar" id="collar">
+      <select class="form-control" name="collar" id="collar">
         <option value="0">0</option>
         <option value="1">1</option>
         <option value="2">2</option>
@@ -155,7 +155,7 @@
 
     <div class="col-md-1 form-group" id="zipper_div">
       <label for="zipper">지퍼</label>
-      <select name="zipper" id="zipper">
+      <select class="form-control" name="zipper" id="zipper">
         <option value="0">없음</option>
         <option value="1">있음</option>
       </select>
@@ -163,7 +163,7 @@
 
     <div class="col-md-1 form-group" id="hat_div">
       <label for="hat">모자</label>
-      <select name="hat" id="hat">
+      <select class="form-control" name="hat" id="hat">
         <option value="0">없음</option>
         <option value="1">있음</option>
       </select>
@@ -171,7 +171,7 @@
 
     <div class="col-md-1 form-group" id="padding_div">
       <label for="padding">패딩</label>
-      <select name="padding" id="padding">
+      <select class="form-control" name="padding" id="padding">
         <option value="0">Yes</option>
         <option value="1">No</option>
       </select>
