@@ -48,6 +48,12 @@
     <input name="leg_length_cm" id="leg" type="number" class="form-control"
       {% if customer.leg_length_cm != 0 %}value={{customer.leg_length_cm}}{% endif %}>
   </div>
+
+  <div class="form-group col-md-3">
+    <label for="leg">엉덩이 둘레(cm)</label>
+    <input name="hip_cm" id="hip" type="number" class="form-control"
+      {% if customer.hip_cm != 0 %}value={{customer.hip_cm}}{% endif %}>
+  </div>
   <div class="form-group col-md-3">
     <label for="shoes">신발 사이즈(mm)</label>
     <input name="shoes_size_mm" id="shoes" type="number" class="form-control"

@@ -85,6 +85,7 @@ def account(request):
         sleeve_length_cm = request.POST['sleeve_length_cm']
         leg_length_cm = request.POST['leg_length_cm']
         shoes_size_mm = request.POST['shoes_size_mm']
+        hip_cm = request.POST['hip_cm']
         body_shape = request.POST.get('body_shape', 'O')
 
         height_cm = noneCheck(height_cm)
@@ -94,7 +95,9 @@ def account(request):
         sleeve_length_cm = noneCheck(sleeve_length_cm)
         leg_length_cm = noneCheck(leg_length_cm)
         shoes_size_mm = noneCheck(shoes_size_mm)
+        hip_cm  = noneCheck(hip_cm)
 
+        algo_size.complete_size(height_cm,waist_size_cm,body_shape,leg_length_cm,chest_size_cm,waist_size_cm,hip_cm)
         if customer != None:
             customer.height_cm = height_cm
             customer.weight_kg = weight_kg
@@ -104,7 +107,7 @@ def account(request):
             customer.leg_length_cm = leg_length_cm
             customer.shoes_size_mm = shoes_size_mm
             customer.body_shape = body_shape
-
+            customer.hip_cm = hip_cm
             customer.save()
 
         else:
