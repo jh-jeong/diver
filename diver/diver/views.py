@@ -247,15 +247,18 @@ def search(request):
         if selected_category1 == 0:
             if 'pattern' in request.GET:
                 pattern = request.GET['pattern']
-                items = items.filter(pattern=pattern)
+                if pattern != "ALL":
+                    items = items.filter(pattern=pattern)
 
         if selected_category1 == 1:
             if 'collar' in request.GET:
                 collar = request.GET['collar']
-                items = items.filter(collar=collar)
+                if collar != "ALL":
+                    items = items.filter(collar=collar)
             if 'padding' in request.GET:
                 padding = request.GET['padding']
-                items = items.filter(padding=padding)
+                if padding != "ALL":
+                    items = items.filter(padding=padding)
 
         ordered_item_ids, styles = algo_item.reorder_items(
                 [item.id for item in items],

@@ -45,6 +45,7 @@
     <div class="form-group col-md-2" id="pattern-div" hidden>
       <label for="pattern">패턴</label>
       <select name="pattern" class="form-control" id="pattern">
+        <option value="ALL" {% if selected_pattern == "ALL" %}selected{% endif %}>All</option>
         {% for pattern in patterns %}
         <option value="{{pattern.0}}"
                 {% if pattern.0 == selected_pattern %}selected{% endif %}>
@@ -55,6 +56,7 @@
     <div class="form-group col-md-2" id="collar-div" hidden>
       <label for="collar">카라</label>
       <select name="collar" class="form-control" id="collar">
+        <option value="ALL" {% if selected_pattern == "ALL" %}selected{% endif %}>All</option>
         <option value=0 {% if selected_collar == "0" %}selected{% endif %}>None</option>
         <option value=1 {% if selected_collar == "1" %}selected{% endif %}>Normal</option>
         <option value=2 {% if selected_collar == "2" %}selected{% endif %}>Tailored</option>
@@ -65,6 +67,7 @@
     <div class="form-group col-md-2" id="padding-div" hidden>
       <label for="padding">패딩</label>
       <select name="padding" class="form-control" id="padding">
+        <option value="ALL" {% if selected_pattern == "ALL" %}selected{% endif %}>All</option>
         <option value=0 {% if selected_padding == "0" %}selected{% endif %}>No</option>
         <option value=1 {% if selected_padding == "1" %}selected{% endif %}>Yes</option>
       </select>
