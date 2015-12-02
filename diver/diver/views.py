@@ -124,13 +124,15 @@ def main(request):
     return render(request, 'main.html', {'matches': matches})
 
 def item_rerating(item, score, user_id):
-    if ItemPref.objects.filter(item_id=item.id, user_id=user_id).count() != 0:
-        item_pref = ItemPref.objects.get(item_id=item.id, user_id=user_id)
+
+    customer = Customer.objects.get(user_id = user_id)
+    if ItemPref.objects.filter(item_id=item, customer=customer).count() != 0:
+        item_pref = ItemPref.objects.get(item_id=item, customer=customer)
         item.rate_count -= item_pref.score
         item_pref.score == score
         item.rate_count += item_pref.score
     else:
-        item_pref = ItemPref(item_id=item.id, user_id=user_id, score=score)
+        item_pref = ItemPref(item_id=item.id, customer=customer, score=score)
         item.rate_count += item_pref.score
     item_pref.save()
 
@@ -143,10 +145,8 @@ def match_rating(match, score, user_id):
 def like(request, id, score):
     # return (HttpResponse("{} {}".format(id, score)))
     if request.method == 'GET':
-
         item = Item.objects.get(id=id)
-        item_rerating(item, score, request.user.id)
-
+        item_rerating(item, int(score), request.user.id)
     return HttpResponse("recieved" + id)
 
 @survey_required
