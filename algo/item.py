@@ -15,7 +15,7 @@ from algo.memcachemutex import MemcacheMutex
 
 DEFALUT_WEIGHT = (40, 20, 10, 30)
 FLUSH_MIN = 5
-SLEEP_TIME = 5
+SLEEP_TIME = 2
 LIKE_MAX = 50
 
 
@@ -245,6 +245,7 @@ def rating_add_user(user_id):
     # Q.put(('u+', user_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
+    ch_lock = MemcacheMutex("ch_lock", mc)
     ITEMS = mc.get("ITEMS")
     with r_mutex:
         USERS = mc.get("USERS")
@@ -253,6 +254,10 @@ def rating_add_user(user_id):
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("USERS", USERS)
         mc.set("RATING", RATING)
+    with ch_lock:
+        ch_count = mc.get("ch_count")
+        ch_count += FLUSH_MIN
+        mc.set("ch_count", ch_count)
 
 def rating_remove_user(user_id):
     mc = get_mc()
@@ -268,7 +273,7 @@ def rating_remove_user(user_id):
         mc.set("RATING", RATING)
     with ch_lock:
         ch_count = mc.get("ch_count")
-        ch_count += 1
+        ch_count += FLUSH_MIN
         mc.set("ch_count")
 
 
@@ -276,6 +281,7 @@ def rating_add_item(item_id):
     # Q.put(('i+', item_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
+    ch_lock = MemcacheMutex("ch_lock", mc)
     USERS = mc.get("USERS")
     with r_mutex:
         ITEMS = mc.get("ITEMS")
@@ -285,12 +291,17 @@ def rating_add_item(item_id):
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("ITEMS", ITEMS)
         mc.set("RATING", RATING)
+    with ch_lock:
+        ch_count = mc.get("ch_count")
+        ch_count += FLUSH_MIN
+        mc.set("ch_count", ch_count)
 
 
 def rating_remove_item(item_id):
     #Q.put(('i-', item_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
+    ch_lock = MemcacheMutex("ch_lock", mc)
     USERS = mc.get("USERS")
     with r_mutex:
         ITEMS = mc.get("ITEMS")
@@ -299,6 +310,10 @@ def rating_remove_item(item_id):
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("ITEMS", ITEMS)
         mc.set("RATING", RATING)
+    with ch_lock:
+        ch_count = mc.get("ch_count")
+        ch_count += FLUSH_MIN
+        mc.set("ch_count", ch_count)
 
 def reorder_items(items, user_id, hanger):
     weight = DEFALUT_WEIGHT
