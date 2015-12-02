@@ -33,13 +33,12 @@ __author__ = 'un'
 
 def survey_required(function):
     def wrap(request, *args, **kwargs):
-
-        if request.session.get('customer_id', None) is not None:
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect('/auth')
+        elif request.session.get('customer_id') is not None:
             return function(request, *args, **kwargs)
         elif Customer.objects.filter(user_id=request.user.id).count() > 0:
             request.session['customer_id'] = Customer.objects.filter(user_id=request.user.id)[0].id
-            return function(request, *args, **kwargs)
-        elif not request.user.is_authenticated():
             return function(request, *args, **kwargs)
         else:
             return HttpResponseRedirect('/account')
@@ -61,13 +60,14 @@ def noneCheck(input):
 
 def account(request):
     if request.method == 'GET':
-        pass
+        customer = None
+        if Customer.objects.filter(user_id=request.user.id).count() != 0:
+            customer = Customer.objects.get(user_id=request.user.id)
     elif request.method == 'POST':
         if Customer.objects.filter(user_id=request.user.id).count() == 0:
             customer = Customer(user_id=request.user.id, height_cm=180, weight_kg=73,
                                 chest_size_cm=50, waist_size_cm=30, sleeve_length_cm=40,
-                                leg_length_cm=30, shoes_size_mm=270
-            )
+                                leg_length_cm=30, shoes_size_mm=270)
             customer.save()
         else:
             customer = Customer.objects.get(user_id=request.user.id)
@@ -108,14 +108,13 @@ def account(request):
             customer.save()
 
         else:
-
             customer = Customer(user_id=request.user.id, height_cm=height_cm, weight_kg=weight_kg,
                                 chest_size_cm=chest_size_cm, waist_size_cm=waist_size_cm,
                                 sleeve_length_cm=sleeve_length_cm,
                                 leg_length_cm=leg_length_cm, shoes_size_mm=shoes_size_mm, body_shape=body_shape
             )
             customer.save()
-    return render(request, 'account.html')
+    return render(request, 'account.html', {'customer': customer})
 
 
 @survey_required
@@ -124,9 +123,9 @@ def main(request):
         matches = Match.objects.all()
     return render(request, 'main.html', {'matches': matches})
 
-def item_rerating(item ,score, user_id):
+def item_rerating(item, score, user_id):
     if ItemPref.objects.filter(item_id=item.id, user_id=user_id).count() != 0:
-        item_pref = ItemPref.objects.get(item_id=id, user_id=user_id)
+        item_pref = ItemPref.objects.get(item_id=item.id, user_id=user_id)
         item.rate_count -= item_pref.score
         item_pref.score == score
         item.rate_count += item_pref.score
@@ -135,9 +134,10 @@ def item_rerating(item ,score, user_id):
         item.rate_count += item_pref.score
     item_pref.save()
 
-def match_rating(color, score, user_id):
-    if color.item != None:
-        item_rerating(color.item,score,user_id)
+def match_rating(match, score, user_id):
+    for color in [match.outer1, match.outer2, match.top1, match.top2, match.bottom]:
+        if color is not None:
+            item_rerating(color.item, score, user_id)
 
 @survey_required
 def like(request, id, score):
@@ -150,30 +150,31 @@ def like(request, id, score):
     return HttpResponse("recieved" + id)
 
 @survey_required
-def match_like(request, id, score):
-    # return (HttpResponse("{} {}".format(id, score)))
+def match_like(request, match_id, score):
+    # 범위를 -2 ~ 2로 맞추어 줌
+    match_id, score = int(match_id), int(score) - 3
+
     if request.method == 'GET':
-        # print ("asdfasd")
         customer = Customer.objects.get(user_id=request.user.id)
-        match = Match.objects.get(id=id)
-        if Rating.objects.filter(customer=customer, match=match).count() != 0:
+        match = Match.objects.get(id=match_id)
+
+        # Rating 없을 시 만들어줌
+        if Rating.objects.filter(customer=customer, match=match).count() == 0:
             rating = Rating(customer=customer, match=match, score=score)
             rating.save()
             match.rate_count += score
 
+        # Rating 존재 시 rate_count 업데이트
         else:
             rating = Rating.objects.get(customer=customer, match=match)
             match.rate_count -= rating.score
             rating.score = score
             match.rate_count += score
 
-        match_rating(match.outer1.item,score,request.user.id)
-        match_rating(match.outer2.item,score,request.user.id)
-        match_rating(match.top1.item,score,request.user.id)
-        match_rating(match.top2.item,score,request.user.id)
-        match_rating(match.bottom.item,score,request.user.id)
+        # 매치 내의 아이템들에 점수 반영
+        match_rating(match, score, request.user.id)
 
-    return HttpResponse("recieved" + id)
+    return HttpResponse("매치{}의 점수: {}".format(match_id, score))
 
 def get_match_from_hanger(hanger, customer_id):
     matched_categories = []
@@ -234,10 +235,13 @@ def search(request):
             items = items.filter(collar=collar, padding=padding)
 
         search_result = items
-        ordered_item_ids, styles = algo_item.reorder_items([item.id for item in items], request.user.id, request.session.get('hanger', [])) 
+        ordered_item_ids, styles = algo_item.reorder_items([item.id for item in items], request.user.id, request.session.get('hanger', []))
         search_result = [Item.objects.get(id=item_id) for item_id in ordered_item_ids]
 
-    matched_categories = get_match_from_hanger(request.session.get('hanger', []), request.session['customer_id'])
+    matched_categories = get_match_from_hanger(
+            request.session.get('hanger', []),
+            request.session['customer_id'])
+
     return render(request, 'search.html',
                   {'categories': Item.CATEGORIES,
                    'patterns': Item.PATTERNS,
@@ -313,7 +317,7 @@ def upload(request):
         return redirect('/upload/')
     return render(request, 'upload.html')
 
-
+@survey_required
 def upload_item(request):
     selected_category1 = 0
     selected_category2 = Item.CATEGORIES[0][1][0][0]

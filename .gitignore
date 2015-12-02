@@ -68,4 +68,4 @@ venv/
 */.DS_Store
 .idea/
 *.iml
-*.sqlite3
+diver/*.sqlite3

@@ -38,14 +38,13 @@
   </script>
 
   <script>
-    function like_match(id, score) {
+    function match_like(id, score) {
       $.ajax({
         'method': 'get',
         'dataType': 'text',
-        'url': '/like_match/'+id+'/'+score,
+        'url': '/match_like/'+id+'/'+score,
         'success': function(res){
           alert(res);
-          location.reload();
         },
         'error': function(request,status,error){
           console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
