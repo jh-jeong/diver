@@ -42,7 +42,7 @@ def _get_match_data(match_id):
             if i != None:
                 item_id = color._get_item_id(i)
                 vec_m.append(_get_item_type(item_id))
-        dataSet.append(vec_m)
+        dataSet.append(frozenset(vec_m))
     # caching
     return dataSet
 
@@ -65,7 +65,7 @@ def init_match_data():
             if i != None and type(i) != str:
                 item_id = color._get_item_id(i)
                 vec_m.append(_get_item_type(item_id))
-        dataSet.append(vec_m)
+        dataSet.append(frozenset(vec_m))
     # caching
     return dataSet
 
