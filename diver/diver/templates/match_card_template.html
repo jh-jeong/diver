@@ -5,15 +5,20 @@
     <div class="col-md-12 col-xs-12 col-lg-12">
       <span class="star-rating">
         <input type="radio" name="rating{{match.id}}" value=1
-                            onclick="match_like({{match.id}}, 1)"><i></i>
+                            onclick="match_like({{match.id}}, 1)"
+                            {% if score == -2 %} checked{% endif %}><i></i>
         <input type="radio" name="rating{{match.id}}" value=2
-                            onclick="match_like({{match.id}}, 2)"><i></i>
+                            onclick="match_like({{match.id}}, 2)"
+                            {% if score == -1 %} checked{% endif %}><i></i>
         <input type="radio" name="rating{{match.id}}" value=3
-                            onclick="match_like({{match.id}}, 3)"><i></i>
+                            onclick="match_like({{match.id}}, 3)"
+                            {% if score == -0 %} checked{% endif %}><i></i>
         <input type="radio" name="rating{{match.id}}" value=4
-                            onclick="match_like({{match.id}}, 4)"><i></i>
+                            onclick="match_like({{match.id}}, 4)"
+                            {% if score == 1 %} checked{% endif %}><i></i>
         <input type="radio" name="rating{{match.id}}" value=5
-                            onclick="match_like({{match.id}}, 5)"><i></i>
+                            onclick="match_like({{match.id}}, 5)"
+                            {% if score == 2 %} checked{% endif %}><i></i>
       </span>
     </div>
     <div class="row">

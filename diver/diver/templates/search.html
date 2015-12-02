@@ -79,8 +79,8 @@
 <div class="row">
   {% load item_filters %}
   {% if search_result %}
-    {% for item in search_result %}
-      {% item_card item "col-lg-3 col-md-4 col-xs-6" %}
+    {% for item, score in search_result %}
+      {% item_card item score "col-lg-3 col-md-4 col-xs-6" %}
     {% endfor %}
   {% endif %}
 </div>
@@ -109,22 +109,18 @@
 {% endblock %}
 {% block script %}
 <script type='text/javascript'>
-
   function like(id, score) {
-      $.ajax({
-        'method': 'get',
-        'dataType': 'text',
-        'url': '/like/'+id+'/'+score,
-        'success': function(res){
-          alert(res);
-          location.reload();
-        },
-        'error': function(request,status,error){
-          console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
-        }
-      });
-    }
-
+    $.ajax({
+      'method': 'get',
+      'dataType': 'text',
+      'url': '/like/'+id+'/'+score,
+      'success': function(res){
+      },
+      'error': function(request,status,error){
+        console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      }
+    });
+  }
 
   function toHanger(id, cat1, src) {
     var category = cat1.toUpperCase();

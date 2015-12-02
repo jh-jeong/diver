@@ -13,12 +13,12 @@ def hex_code(color_id):
     return "#%02X%02X%02X" % Color.COLOR_VALUES[color_id][1]
 
 @register.inclusion_tag('item_card_template.html')
-def item_card(item, class_names):
-    return {'item': item, 'class_names': class_names}
+def item_card(item, score, class_names):
+    return {'item': item, 'score': score, 'class_names': class_names}
 
 @register.inclusion_tag('match_card_template.html')
-def match_card(match, class_names):
-    return {'match': match, 'class_names': class_names}
+def match_card(match, score, class_names):
+    return {'match': match, 'score': score, 'class_names': class_names}
 
 @register.inclusion_tag('hanger_item_template.html')
 def hanger_item(item_ids, category1, slot_number):
