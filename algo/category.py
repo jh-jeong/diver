@@ -81,7 +81,7 @@ def hanger_complete(hanger, customer_id):
     candDict = _hanger_getMatch(h_set)
     if len(candDict) == 0:
         return None
-    ratings = list(cur.execute("SELECT rating, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)))
+    ratings = list(cur.execute("SELECT score, match_id FROM diver_rating WHERE customer_id=?", (customer_id,)))
     for r, mid in ratings:
         s = frozenset(_get_match_data(mid))
         try:

@@ -235,7 +235,7 @@ def search(request):
             items = items.filter(collar=collar, padding=padding)
 
         search_result = items
-        ordered_item_ids, styles = algo_item.reorder_items([item.id for item in items], request.user.id, request.session.get('hanger', []))
+        ordered_item_ids, styles = algo_item.reorder_items([item.id for item in items], request.session['customer_id'], request.session.get('hanger', []))
         search_result = [Item.objects.get(id=item_id) for item_id in ordered_item_ids]
 
     matched_categories = get_match_from_hanger(
