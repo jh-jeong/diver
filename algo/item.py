@@ -35,7 +35,7 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
         cur.execute("SELECT pattern, neck, sleeve_level \
                     FROM diver_item WHERE id=?", (item_id,))
         p, n, s = cur.fetchone()
-        cur.execute("SLELCT pattern_{}, neck_{}, sleeveT_{} FROM diver_pref \
+        cur.execute("SELECT pattern_{}, neck_{}, sleeveT_{} FROM diver_pref \
                     WHERE customer_id=?".format(p, n, s),(customer_id,))
         o_p, o_n, o_s = cur.fetchone()
         cur.execute("UPDATE diver_pref SET pattern_{}=?, neck_{}=?,\
@@ -153,7 +153,7 @@ def _score_item(hanger, user_id, item_id, weight):
             cr_write.acquire()
     COMP_RATING = mc.get("COMP_RATING")
     try:
-        score = weight[0]* COMP_RATING[u_idx][i_idx]
+        score = weight[0]* ( COMP_RATING[u_idx][i_idx] + 2 )/ 4
     except IndexError:
         score = 0
     with cr_mutex:
@@ -177,12 +177,9 @@ def _score_item(hanger, user_id, item_id, weight):
         color_score[sty] = color_d
     try:
         max_sty = max(color_score, key=color_score.get)
+        score += weight[1]* color_score[max_sty]
     except ValueError:
         max_sty = None
-
-    if len(hanger) != 0:
-        score += weight[1]* color_score[max_sty]
-    else:
         score += weight[1]
 
     cur.execute("SELECT rate_count FROM diver_item WHERE id=?",(item_id,))
@@ -227,7 +224,7 @@ def init_rating():
 
 def rating_fill(user_id, item_id, rating):
     mc = get_mc()
-    ch_lock = MemcacheMutex("ch_lock")
+    ch_lock = MemcacheMutex("ch_lock", mc)
     USERS = mc.get("USERS")
     ITEMS = mc.get("ITEMS")
     r_mutex = MemcacheMutex("r_mutex", mc)

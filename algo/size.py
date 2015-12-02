@@ -134,8 +134,7 @@ def size2array(size_list):
     return tuple(return_list)
 
 
-def complete_size(height, weight, body_shape, \
-        leg_=None, chest_=None, waist_=None, hip_=None, thigh_=None):
+def complete_size(height, weight, body_shape, leg_, chest_, waist_, hip_, thigh_):
 
     size_list = []
     clf = linear_model.Ridge(alpha=.1)
@@ -167,31 +166,31 @@ def complete_size(height, weight, body_shape, \
 
     X, y_leg, y_chest, y_waist, y_hip, y_thigh = \
             size2array(size_list)
-    if leg_ == None:
+    if leg_ == 0:
         clf.fit(X, y_leg)
         leg, = clf.predict([[height, weight]])
     else:
         leg = leg_
 
-    if chest_ == None:
+    if chest_ == 0:
         clf.fit(X, y_chest)
         chest, = clf.predict([[height, weight]])
     else:
         chest = chest_
 
-    if waist_ == None:
+    if waist_ == 0:
         clf.fit(X, y_waist)
         waist, = clf.predict([[height, weight]])
     else:
         waist = waist_
 
-    if hip_ == None:
+    if hip_ == 0:
         clf.fit(X, y_hip)
         hip, = clf.predict([[height, weight]])
     else:
         hip = hip_
 
-    if thigh_ == None:
+    if thigh_ == 0:
         clf.fit(X, y_thigh)
         thigh, = clf.predict([[height, weight]])
     else:
