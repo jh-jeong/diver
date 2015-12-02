@@ -109,14 +109,19 @@
 <script type='text/javascript'>
   function like(id, score) {
     $.ajax({
-      'method': 'get',
-      'dataType': 'text',
-      'url': '/like/'+id+'/'+score,
-      'success': function(res){
-      },
-      'error': function(request,status,error){
-        console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+      'method': 'post',
+      'url': '/like/' + id,
+      'data': {
+        score: score,
+        csrfmiddlewaretoken: '{{ csrf_token }}'
       }
+    }).done( function(res){
+      if(res.result === 'fail'){
+        toastr.error("Rating failed: " + res.error);
+        $("[name=rating" + id + "]").attr("checked", false);
+      }
+    }).fail( function(jqXHR, textStatus, errorThrown){
+      console.log("code:"+textStatus+"\n"+"message:"+errorThrown);
     });
   }
 

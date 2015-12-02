@@ -151,11 +151,14 @@ def match_rating(match, score, user_id):
             item_rerating(color.item, score, user_id)
 
 @survey_required
-def like(request, id, score):
-    if request.method == 'GET':
+def like(request, id):
+    try:
+        score = int(request.POST['score'])
         item = Item.objects.get(id=id)
-        item_rerating(item, int(score), request.user.id)
-    return HttpResponse("recieved" + id)
+        item_rerating(item, score, request.user.id)
+        return JsonResponse({'result': 'ok'})
+    except Exception as e:
+        return JsonResponse({'result': 'fail', 'error': str(e)})
 
 @survey_required
 def match_like(request, match_id, score):
@@ -194,7 +197,7 @@ def get_match_from_hanger(hanger, customer_id):
                                     "text": match[1],
                                     "category_code": Item.get_category_code(match[1])}
                 if match[0] == 0:  # Top
-                    matched_category["pattern"] = Item.get_pattern_code(match[2])
+                    matched_category["pattern"] = match[2]
                 elif match[0] == 1:  # Outer
                     matched_category["collar"] = match[2]
                     matched_category["padding"] = match[3]
