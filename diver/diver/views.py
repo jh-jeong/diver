@@ -121,10 +121,19 @@ def account(request):
 def main(request):
     if request.method == 'GET':
         matches = Match.objects.all()
-    return render(request, 'main.html', {'matches': matches})
+
+    pairs = []
+    customer_id = Customer.objects.get(user_id=request.user.id)
+    for match in matches:
+        try:
+            score = Rating.objects.get(match=match, customer_id=customer_id).score
+        except:
+            score = None
+        pairs.append((match, score))
+
+    return render(request, 'main.html', {'pairs': pairs})
 
 def item_rerating(item, score, user_id):
-
     customer = Customer.objects.get(user_id = user_id)
     if ItemPref.objects.filter(item_id=item, customer=customer).count() != 0:
         item_pref = ItemPref.objects.get(item_id=item, customer=customer)
@@ -143,7 +152,6 @@ def match_rating(match, score, user_id):
 
 @survey_required
 def like(request, id, score):
-    # return (HttpResponse("{} {}".format(id, score)))
     if request.method == 'GET':
         item = Item.objects.get(id=id)
         item_rerating(item, int(score), request.user.id)
@@ -203,6 +211,8 @@ def search(request):
     specified_lower = None
     specified_upper = None
     search_result = []
+    customer_id = request.session['customer_id']
+
     if 'category' in request.GET:
         category = request.GET['category']
 
@@ -234,9 +244,23 @@ def search(request):
             padding = request.GET['padding']
             items = items.filter(collar=collar, padding=padding)
 
-        search_result = items
-        ordered_item_ids, styles = algo_item.reorder_items([item.id for item in items], request.session['customer_id'], request.session.get('hanger', []))
-        search_result = [Item.objects.get(id=item_id) for item_id in ordered_item_ids]
+        ordered_item_ids, styles = algo_item.reorder_items(
+                [item.id for item in items],
+                request.session['customer_id'],
+                request.session.get('hanger', []))
+
+        print(ordered_item_ids)
+
+        for item_id in ordered_item_ids:
+            item = Item.objects.get(id=item_id)
+            try:
+                score = ItemPref.objects.get(item=item,
+                        customer_id=request.session['customer_id']).score
+            except:
+                score = None
+            search_result.append((item, score))
+
+    print (search_result)
 
     matched_categories = get_match_from_hanger(
             request.session.get('hanger', []),

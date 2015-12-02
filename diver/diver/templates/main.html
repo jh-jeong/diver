@@ -12,8 +12,8 @@
   <div class="container">
     <div class="row">
       {% load item_filters %}
-      {% for match in matches %}
-        {% match_card match "col-lg-3 col-md-4 col-xs-6"%}
+      {% for match, score in pairs %}
+        {% match_card match score "col-lg-3 col-md-4 col-xs-6"%}
       {% endfor %}
     </div>
   </div>
@@ -27,8 +27,6 @@
         'dataType': 'text',
         'url': '/like/'+id+'/'+score,
         'success': function(res){
-          alert(res);
-          location.reload();
         },
         'error': function(request,status,error){
           console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
@@ -44,7 +42,6 @@
         'dataType': 'text',
         'url': '/match_like/'+id+'/'+score,
         'success': function(res){
-          alert(res);
         },
         'error': function(request,status,error){
           console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
