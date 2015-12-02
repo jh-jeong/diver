@@ -189,7 +189,7 @@ class Item(models.Model):
         ('BG', "Baggy"),
         ('SK', "Skinny"),
         ('WD', "Wide"),
-        ('TP', "Tappered"),
+        ('TP', "Tapered"),
     )
     fit = models.CharField(max_length=2, choices=FIT_TYPES, null=True)
     get_fit_code = lookup_code(FIT_TYPES)
