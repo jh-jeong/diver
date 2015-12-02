@@ -133,7 +133,7 @@ def main(request):
 
     return render(request, 'main.html', {'pairs': pairs})
 
-def item_rerating(item, score, customer_id):
+def item_rerating(item, score, user_id):
     customer = Customer.objects.get(user_id = user_id)
     if ItemPref.objects.filter(item_id=item, customer=customer).count() != 0:
         item_pref = ItemPref.objects.get(item_id=item, customer=customer)
@@ -152,7 +152,6 @@ def match_rating(match, score, user_id):
 
 @survey_required
 def like(request, id, score):
-    # return (HttpResponse("{} {}".format(id, score)))
     if request.method == 'GET':
         item = Item.objects.get(id=id)
         item_rerating(item, int(score), request.user.id)
@@ -247,17 +246,21 @@ def search(request):
 
         ordered_item_ids, styles = algo_item.reorder_items(
                 [item.id for item in items],
-                customer_id,
+                request.session['customer_id'],
                 request.session.get('hanger', []))
+
+        print(ordered_item_ids)
 
         for item_id in ordered_item_ids:
             item = Item.objects.get(id=item_id)
             try:
-                score = ItemPref.objects.get(item=item, customer_id=customer_id).score
+                score = ItemPref.objects.get(item=item,
+                        customer_id=request.session['customer_id']).score
             except:
                 score = None
-
             search_result.append((item, score))
+
+    print (search_result)
 
     matched_categories = get_match_from_hanger(
             request.session.get('hanger', []),
