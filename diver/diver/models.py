@@ -12,8 +12,8 @@ def lookup_code(mapping):
     return lookup
 
 class ItemPref(models.Model):
-    user_id = models.IntegerField()
-    item_id = models.IntegerField()
+    customer = models.ForeignKey('Customer', null=True)
+    item = models.ForeignKey('Item', null=True)
     score = models.IntegerField()
 
 class Customer(models.Model):
@@ -301,13 +301,11 @@ class Shop(models.Model):
 class Rating(models.Model):
     customer = models.ForeignKey('Customer')
     match = models.ForeignKey('Match', null=True)
-    item = models.ForeignKey('Item', null=True)
-    score = models.IntegerField()
 
-    def rating_range_validator(rating):
-        if not (-2 <= RAting <= 2):
+    def score_range_validator(score):
+        if not (-2 <= score <= 2):
             raise ValidationError("Rating should be between -2 and 2, inclusively.")
-    rating = models.SmallIntegerField(default=0, validators=[rating_range_validator])
+    score = models.SmallIntegerField(default=0, validators=[score_range_validator])
 
 class Pref(models.Model):
     customer = models.ForeignKey(Customer)

@@ -13,7 +13,7 @@ from algo import get_cursor, get_mc
 from algo.color import get_color, get_color_list, hanger_getColor, eval_color, init_color
 from algo.memcachemutex import MemcacheMutex
 
-DEFALUT_WEIGHT = (60, 20, 20)
+DEFALUT_WEIGHT = (40, 20, 10, 30)
 FLUSH_MIN = 5
 SLEEP_TIME = 5
 LIKE_MAX = 50
@@ -35,11 +35,11 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
         cur.execute("SELECT pattern, neck, sleeve_level \
                     FROM diver_item WHERE id=?", (item_id,))
         p, n, s = cur.fetchone()
-        cur.execute("SLELCT pattern_%d, neck_%d, sleeveT_%d FROM diver_pref \
-                    WHERE customer_id=?" % (p, n, s),(customer_id,))
+        cur.execute("SLELCT pattern_{}, neck_{}, sleeveT_{} FROM diver_pref \
+                    WHERE customer_id=?".format(p, n, s),(customer_id,))
         o_p, o_n, o_s = cur.fetchone()
-        cur.execute("UPDATE diver_pref SET pattern_%d=?, neck_%d=?,\
-                    sleeveT_%d=? WHERE customer_id=?" % (p, n, s),
+        cur.execute("UPDATE diver_pref SET pattern_{}=?, neck_{}=?,\
+                    sleeveT_{}=? WHERE customer_id=?".format(p, n, s),
                 (o_p + rating, o_n + rating, o_s + rating, customer_id))
 
     # outer
@@ -47,11 +47,11 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
         # zipper, button, hat, length
         cur.execute("SELECT zipper, button, hat, length_level FROM diver_item WHERE id=?", (item_id,))
         z, b, h, l = cur.fetchone()
-        cur.execute("SELECT zipperO_%d, outer_button_%d, hatO_%d, out_len_%d \
-                    FROM diver_pref WHERE customer_id=?"%(z,b,h,l), (customer_id,))
+        cur.execute("SELECT zipperO_{}, outer_button_{}, hatO_{}, out_len_{} \
+                    FROM diver_pref WHERE customer_id=?".format(z,b,h,l), (customer_id,))
         o_z, o_b, o_h, o_l = cur.fetchone()
-        cur.execute("UPDATE diver_pref SET zipperO_%d=?, outer_button_%d=?, \
-                    hatO_%d=?, out_len_%d=? WHERE customer_id=?"%(z,b,h,l),
+        cur.execute("UPDATE diver_pref SET zipperO_{}=?, outer_button_{}=?, \
+                    hatO_{}=?, out_len_{}=? WHERE customer_id=?".format(z,b,h,l),
                     (o_z+rating, o_b+rating, o_h+rating, o_l+rating, customer_id))
     # bottom
     elif type_ == 2:
@@ -59,11 +59,11 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
         cur.execute("SELECT fit FROM diver_item WHERE id=?", (item_id,))
         f, = cur.fetchone()
 
-        cur.execute("SELECT fit_%d FROM diver_pref WHERE customer_id=?"%f,
-                (customer_id,))
+        cur.execute("SELECT fit_{} FROM diver_pref WHERE \
+                customer_id=?".format(f),(customer_id,))
         o_f, = cur.fetchone()
-        cur.execute("UPDATE diver_pref SET fit_%d=? WHERE customer_id=?"%f,
-                (o_f+rating, customer_id))
+        cur.execute("UPDATE diver_pref SET fit_{}=? WHERE \
+                customer_id=?".format(f),(o_f+rating, customer_id))
 
 
 def _cal_subscore(item_id, customer_id):
@@ -77,8 +77,8 @@ def _cal_subscore(item_id, customer_id):
                     FROM diver_item WHERE id=?", (item_id,))
         p, n, s = cur.fetchone()
 
-        cur.execute("SELECT pattern_%d, neck_%d, sleeveT_%d FROM diver_pref WHERE customer_id=?"%(p, n, s)
-                    ,(customer_id,))
+        cur.execute("SELECT pattern_{}, neck_{}, sleeveT_{} FROM diver_pref \
+                WHERE customer_id=?".format(p, n, s),(customer_id,))
 
         o_p, o_n, o_s = cur.fetchone()
 
@@ -89,8 +89,8 @@ def _cal_subscore(item_id, customer_id):
         # zipper, button, hat, length
         cur.execute("SELECT zipper, button, hat, length_level FROM diver_item WHERE id=?", (item_id,))
         z, b, h, l = cur.fetchone()
-        cur.execute("SELECT zipperO_%d, outer_button_%d, hatO_%d, out_len_%d \
-                    FROM diver_pref WHERE customer_id=?" % (z,b,h,l), (customer_id,))
+        cur.execute("SELECT zipperO_{}, outer_button_{}, hatO_{}, out_len_{} \
+                    FROM diver_pref WHERE customer_id=?".format(z,b,h,l), (customer_id,))
         o_z, o_b, o_h, o_l = cur.fetchone()
 
         return 1.2**o_z + 1.2**o_b + 1.2**o_h + 1.2**o_l
@@ -101,7 +101,8 @@ def _cal_subscore(item_id, customer_id):
         cur.execute("SELECT fit FROM diver_item WHERE id=?", (item_id,))
         f, = cur.fetchone()
 
-        cur.execute("SELECT fit_%d FROM diver_pref WHERE customer_id=?"%f, (customer_id,))
+        cur.execute("SELECT fit_{} FROM diver_pref WHERE \
+                customer_id=?".format(f), (customer_id,))
         o_f, = cur.fetchone()
 
         return  1.2**o_f
@@ -208,7 +209,7 @@ def init_rating():
         ITEMS.append(r[0])
     mc.set("ITEMS", ITEMS)
     mc.set("RATING", dok_matrix((len(USERS), len(ITEMS)), dtype=np.float), 0)
-    rats = list(cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"))
+    rats = list(cur.execute("SELECT customer_id, item_id, score FROM diver_itempref"))
     RATING = mc.get("RATING")
     for u_id, i_id, rating in rats:
         RATING[(USERS.index(u_id),ITEMS.index(i_id))] = rating
@@ -316,7 +317,7 @@ def reorder_items(items, user_id, hanger):
         sub_scores[i]= sb_sc
         sty_dict[i] = max_sty
 
-    return sorted(items, key= lambda x: score_dict[x]+ weight[3]*((sub_scores[x]-sub_min) / (sub_max-sub_min))
+    return sorted(items, key= lambda x: score_dict[x]+ weight[3]*((sub_scores[x]-sub_min) / (sub_max - sub_min + 1))
                   ,reverse = True), sty_dict
 
 
