@@ -12,8 +12,8 @@ def lookup_code(mapping):
     return lookup
 
 class ItemPref(models.Model):
-    user_id = models.IntegerField()
-    item_id = models.IntegerField()
+    customer = models.ForeignKey('Customer', null=True)
+    item = models.ForeignKey('Item', null=True)
     score = models.IntegerField()
 
 class Customer(models.Model):

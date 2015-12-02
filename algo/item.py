@@ -208,7 +208,7 @@ def init_rating():
         ITEMS.append(r[0])
     mc.set("ITEMS", ITEMS)
     mc.set("RATING", dok_matrix((len(USERS), len(ITEMS)), dtype=np.float), 0)
-    rats = list(cur.execute("SELECT customer_id, item_id, rating FROM diver_rating"))
+    rats = list(cur.execute("SELECT customer_id, item_id, score FROM diver_itempref"))
     RATING = mc.get("RATING")
     for u_id, i_id, rating in rats:
         RATING[(USERS.index(u_id),ITEMS.index(i_id))] = rating
