@@ -60,13 +60,14 @@ def noneCheck(input):
 
 def account(request):
     if request.method == 'GET':
-        pass
+        customer = None
+        if Customer.objects.filter(user_id=request.user.id).count() != 0:
+            customer = Customer.objects.get(user_id=request.user.id)
     elif request.method == 'POST':
         if Customer.objects.filter(user_id=request.user.id).count() == 0:
             customer = Customer(user_id=request.user.id, height_cm=180, weight_kg=73,
                                 chest_size_cm=50, waist_size_cm=30, sleeve_length_cm=40,
-                                leg_length_cm=30, shoes_size_mm=270
-            )
+                                leg_length_cm=30, shoes_size_mm=270)
             customer.save()
         else:
             customer = Customer.objects.get(user_id=request.user.id)
@@ -113,7 +114,7 @@ def account(request):
                                 leg_length_cm=leg_length_cm, shoes_size_mm=shoes_size_mm, body_shape=body_shape
             )
             customer.save()
-    return render(request, 'account.html')
+    return render(request, 'account.html', {'customer': customer})
 
 
 @survey_required

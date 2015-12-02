@@ -7,20 +7,22 @@
   <h1>필수 정보</h1>
   <div class="form-group col-md-3">
     <label for="weight">몸무게(kg)</label>
-    <input name= "weight_kg" id="weight" type="number" class="form-control" value={{user.weight_kg}}>
+    <input name= "weight_kg" id="weight" type="number" class="form-control"
+      {% if customer %}value={{customer.weight_kg}}{% endif %}>
   </div>
   <div class="form-group col-md-3">
     <label for="height">키(cm)</label>
-    <input name="height_cm" id="height" type="number" class="form-control" value={{user.height_cm}}>
+    <input name="height_cm" id="height" type="number" class="form-control"
+      {% if customer %}value={{customer.height_cm}}{% endif %}>
   </div>
   <div class="form-group col-md-6">
-    <label for="bodytype">체형</label>
-    <select name="bodytype" class="form-control" id="bodytype">
-      <option value="O">Abdominal obese</option>
-      <option value="M">Muscular</option>
-      <option value="A">Skinny</option>
-      <option value="B">Fat</option>
-      <option value="N">Normal</option>
+    <label for="body_shape">체형</label>
+    <select name="body_shape" class="form-control" id="body_shape">
+      <option value="O"{% if customer.body_shape == 'O'%} selected{% endif %}>Abdominal obese</option>
+      <option value="M"{% if customer.body_shape == 'M'%} selected{% endif %}>Muscular</option>
+      <option value="A"{% if customer.body_shape == 'A'%} selected{% endif %}>Skinny</option>
+      <option value="B"{% if customer.body_shape == 'B'%} selected{% endif %}>Fat</option>
+      <option value="N"{% if customer.body_shape == 'N'%} selected{% endif %}>Normal</option>
     </select>
   </div>
 </div>
@@ -29,27 +31,27 @@
   <div class="form-group col-md-2">
     <label for="chest">가슴 둘레(cm)</label>
     <input name="chest_size_cm" id="chest" type="number" class="form-control"
-                                    value={{user.chest_size_cm}}>
+      {% if customer.chest_size_cm != 0 %}value={{customer.chest_size_cm}}{% endif %}>
   </div>
   <div class="form-group col-md-2">
     <label for="waist">허리 둘레(cm)</label>
     <input name="waist_size_cm" id="waist" type="number" class="form-control"
-                                     value={{user.waist_size_cm}}>
+      {% if customer.waist_size_cm != 0 %}value={{customer.waist_size_cm}}{% endif %}>
   </div>
   <div class="form-group col-md-2">
     <label for="sleeve">팔 길이(cm)</label>
     <input name="sleeve_length_cm" id="sleeve" type="number" class="form-control"
-                                     value={{user.sleeve_length_cm}}>
+      {% if customer.sleeve_length_cm != 0 %}value={{customer.sleeve_length_cm}}{% endif %}>
   </div>
   <div class="form-group col-md-3">
     <label for="leg">다리 길이(cm)</label>
     <input name="leg_length_cm" id="leg" type="number" class="form-control"
-                                     value={{user.leg_length_cm}}>
+      {% if customer.leg_length_cm != 0 %}value={{customer.leg_length_cm}}{% endif %}>
   </div>
   <div class="form-group col-md-3">
     <label for="shoes">신발 사이즈(mm)</label>
     <input name="shoes_size_mm" id="shoes" type="number" class="form-control"
-                                     value={{user.shoes_size_mm}}>
+      {% if customer.shoes_size_mm != 0 %}value={{customer.shoes_size_mm}}{% endif %}>
   </div>
 </div>
 <div class="row">
