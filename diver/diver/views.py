@@ -135,15 +135,20 @@ def main(request):
 
 def item_rerating(item, score, user_id):
     customer = Customer.objects.get(user_id = user_id)
+    prev_score = 0
     if ItemPref.objects.filter(item_id=item, customer=customer).count() != 0:
         item_pref = ItemPref.objects.get(item_id=item, customer=customer)
+        prev_score = item_pref.score
         item.rate_count -= item_pref.score
-        item_pref.score == score
+        item_pref.score = score
         item.rate_count += item_pref.score
     else:
         item_pref = ItemPref(item_id=item.id, customer=customer, score=score)
         item.rate_count += item_pref.score
+    item.save()
     item_pref.save()
+    algo_item.rating_fill(customer.id, item.id, score)
+    algo_item.update_preference(customer.id, item.id, score, prev_score)
 
 def match_rating(match, score, user_id):
     for color in [match.outer1, match.outer2, match.top1, match.top2, match.bottom]:
@@ -181,6 +186,7 @@ def match_like(request, match_id, score):
             match.rate_count -= rating.score
             rating.score = score
             match.rate_count += score
+            match.save()
 
         # 매치 내의 아이템들에 점수 반영
         match_rating(match, score, request.user.id)
