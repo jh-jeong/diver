@@ -262,8 +262,6 @@ def search(request):
                 request.session['customer_id'],
                 request.session.get('hanger', []))
 
-        print(ordered_item_ids)
-
         for item_id in ordered_item_ids:
             item = Item.objects.get(id=item_id)
             try:
@@ -272,8 +270,6 @@ def search(request):
             except:
                 score = None
             search_result.append((item, score))
-
-    print (search_result)
 
     matched_categories = get_match_from_hanger(
             request.session.get('hanger', []),
