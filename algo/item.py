@@ -14,7 +14,7 @@ from algo.color import get_color, get_color_list, hanger_getColor, eval_color, i
 from algo.memcachemutex import MemcacheMutex
 
 DEFALUT_WEIGHT = (40, 20, 10, 30)
-FLUSH_MIN = 5
+FLUSH_MIN = 1
 SLEEP_TIME = 2
 LIKE_MAX = 50
 
