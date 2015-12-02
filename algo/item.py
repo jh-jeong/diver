@@ -177,12 +177,9 @@ def _score_item(hanger, user_id, item_id, weight):
         color_score[sty] = color_d
     try:
         max_sty = max(color_score, key=color_score.get)
+        score += weight[1]* color_score[max_sty]
     except ValueError:
         max_sty = None
-
-    if len(hanger) != 0:
-        score += weight[1]* color_score[max_sty]
-    else:
         score += weight[1]
 
     cur.execute("SELECT rate_count FROM diver_item WHERE id=?",(item_id,))
