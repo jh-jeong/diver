@@ -317,7 +317,7 @@ def reorder_items(items, user_id, hanger):
         sub_scores[i]= sb_sc
         sty_dict[i] = max_sty
 
-    return sorted(items, key= lambda x: score_dict[x]+ weight[3]*((sub_scores[x]-sub_min) / (sub_max-sub_min))
+    return sorted(items, key= lambda x: score_dict[x]+ weight[3]*((sub_scores[x]-sub_min) / (sub_max - sub_min + 1))
                   ,reverse = True), sty_dict
 
 
