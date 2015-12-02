@@ -13,7 +13,7 @@ from algo import get_cursor, get_mc
 from algo.color import get_color, get_color_list, hanger_getColor, eval_color, init_color
 from algo.memcachemutex import MemcacheMutex
 
-DEFALUT_WEIGHT = (60, 20, 20)
+DEFALUT_WEIGHT = (40, 20, 10, 30)
 FLUSH_MIN = 5
 SLEEP_TIME = 5
 LIKE_MAX = 50
@@ -317,7 +317,7 @@ def reorder_items(items, user_id, hanger):
         sub_scores[i]= sb_sc
         sty_dict[i] = max_sty
 
-    return sorted(items, key= lambda x: score_dict[x]+ weight[3]*((sub_scores[x]-sub_min) / (sub_max-sub_min))
+    return sorted(items, key= lambda x: score_dict[x]+ weight[3]*((sub_scores[x]-sub_min) / (sub_max - sub_min + 1))
                   ,reverse = True), sty_dict
 
 
