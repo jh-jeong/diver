@@ -14,8 +14,8 @@ from algo.color import get_color, get_color_list, hanger_getColor, eval_color, i
 from algo.memcachemutex import MemcacheMutex
 
 DEFALUT_WEIGHT = (40, 20, 10, 30)
-FLUSH_MIN = 5
-SLEEP_TIME = 5
+FLUSH_MIN = 1
+SLEEP_TIME = 2
 LIKE_MAX = 50
 
 
@@ -35,7 +35,7 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
         cur.execute("SELECT pattern, neck, sleeve_level \
                     FROM diver_item WHERE id=?", (item_id,))
         p, n, s = cur.fetchone()
-        cur.execute("SLELCT pattern_{}, neck_{}, sleeveT_{} FROM diver_pref \
+        cur.execute("SELECT pattern_{}, neck_{}, sleeveT_{} FROM diver_pref \
                     WHERE customer_id=?".format(p, n, s),(customer_id,))
         o_p, o_n, o_s = cur.fetchone()
         cur.execute("UPDATE diver_pref SET pattern_{}=?, neck_{}=?,\
@@ -112,29 +112,28 @@ def _cal_subscore(item_id, customer_id):
 
 def _rating_refresh():
     mc = get_mc()
-    LRMC = mc.get("LRMC")
     ch_count = mc.get("ch_count")
-    r_mutex = MemcacheMutex("r_mutex", mc)
     cr_write = MemcacheMutex("cr_write", mc)
     ch_lock = MemcacheMutex("ch_lock", mc)
-    with r_mutex:
-        LRMC.complete_it("sASD")
-        mc.set("LRMC", LRMC, 0)
+    RATING = mc.get("RATING")
+    LRMC = MatrixCompletion(RATING)
+    LRMC.complete_it("sASD")
     with cr_write:
         COMP_RATING = LRMC.get_optimized_matrix()
         mc.set("COMP_RATING", COMP_RATING)
     while True:
         time.sleep(SLEEP_TIME)
+        RATING = mc.get("RATING")
+        LRMC = MatrixCompletion(RATING)
+        ch_count = mc.get("ch_count")
         with ch_lock:
             if ch_count < FLUSH_MIN:
                 continue
             ch_count = 0
-        with r_mutex:
-            LRMC.complete_it("sASD")
-            mc.set("LRMC", LRMC, 0)
-        with cr_write:
-            COMP_RATING = LRMC.get_optimized_matrix()
-            mc.set("COMP_RATING", COMP_RATING)
+            mc.set("ch_count")
+        LRMC.complete_it("sASD")
+        COMP_RATING = LRMC.get_optimized_matrix()
+        mc.set("COMP_RATING", COMP_RATING)
 
 def _score_item(hanger, user_id, item_id, weight):
     mc = get_mc()
@@ -153,7 +152,10 @@ def _score_item(hanger, user_id, item_id, weight):
         if cr_read == 1:
             cr_write.acquire()
     COMP_RATING = mc.get("COMP_RATING")
-    score = weight[0]* COMP_RATING[u_idx][i_idx]
+    try:
+        score = weight[0]* ( COMP_RATING[u_idx][i_idx] + 2 )/ 4
+    except IndexError:
+        score = 0
     with cr_mutex:
         cr_read -= 1
         if cr_read == 0:
@@ -175,12 +177,9 @@ def _score_item(hanger, user_id, item_id, weight):
         color_score[sty] = color_d
     try:
         max_sty = max(color_score, key=color_score.get)
+        score += weight[1]* color_score[max_sty]
     except ValueError:
         max_sty = None
-
-    if len(hanger) != 0:
-        score += weight[1]* color_score[max_sty]
-    else:
         score += weight[1]
 
     cur.execute("SELECT rate_count FROM diver_item WHERE id=?",(item_id,))
@@ -216,7 +215,6 @@ def init_rating():
     for i in range(len(ITEMS)):
         RATING[(0,i)] = 1
     mc.set("RATING", RATING, 0)
-    mc.set("LRMC", MatrixCompletion(RATING), 0)
     mc.set("ch_count", 0, 0)
     mc.set("cr_read", 0, 0)
     mc.set("COMP_RATING", None, 0)
@@ -226,7 +224,7 @@ def init_rating():
 
 def rating_fill(user_id, item_id, rating):
     mc = get_mc()
-    ch_lock = MemcacheMutex("ch_lock")
+    ch_lock = MemcacheMutex("ch_lock", mc)
     USERS = mc.get("USERS")
     ITEMS = mc.get("ITEMS")
     r_mutex = MemcacheMutex("r_mutex", mc)
@@ -245,6 +243,7 @@ def rating_add_user(user_id):
     # Q.put(('u+', user_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
+    ch_lock = MemcacheMutex("ch_lock", mc)
     ITEMS = mc.get("ITEMS")
     with r_mutex:
         USERS = mc.get("USERS")
@@ -253,6 +252,10 @@ def rating_add_user(user_id):
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("USERS", USERS)
         mc.set("RATING", RATING)
+    with ch_lock:
+        ch_count = mc.get("ch_count")
+        ch_count += FLUSH_MIN
+        mc.set("ch_count", ch_count)
 
 def rating_remove_user(user_id):
     mc = get_mc()
@@ -268,7 +271,7 @@ def rating_remove_user(user_id):
         mc.set("RATING", RATING)
     with ch_lock:
         ch_count = mc.get("ch_count")
-        ch_count += 1
+        ch_count += FLUSH_MIN
         mc.set("ch_count")
 
 
@@ -276,6 +279,7 @@ def rating_add_item(item_id):
     # Q.put(('i+', item_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
+    ch_lock = MemcacheMutex("ch_lock", mc)
     USERS = mc.get("USERS")
     with r_mutex:
         ITEMS = mc.get("ITEMS")
@@ -285,12 +289,17 @@ def rating_add_item(item_id):
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("ITEMS", ITEMS)
         mc.set("RATING", RATING)
+    with ch_lock:
+        ch_count = mc.get("ch_count")
+        ch_count += FLUSH_MIN
+        mc.set("ch_count", ch_count)
 
 
 def rating_remove_item(item_id):
     #Q.put(('i-', item_id))
     mc = get_mc()
     r_mutex = MemcacheMutex("r_mutex", mc)
+    ch_lock = MemcacheMutex("ch_lock", mc)
     USERS = mc.get("USERS")
     with r_mutex:
         ITEMS = mc.get("ITEMS")
@@ -299,6 +308,10 @@ def rating_remove_item(item_id):
         RATING.resize((len(USERS), len(ITEMS)))
         mc.set("ITEMS", ITEMS)
         mc.set("RATING", RATING)
+    with ch_lock:
+        ch_count = mc.get("ch_count")
+        ch_count += FLUSH_MIN
+        mc.set("ch_count", ch_count)
 
 def reorder_items(items, user_id, hanger):
     weight = DEFALUT_WEIGHT
