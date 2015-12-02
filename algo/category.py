@@ -11,10 +11,10 @@ from algo.color import init_color
 from algo import get_cursor, get_mc
 from algo.memcachemutex import MemcacheMutex
 
-category_top = ["t-shirt", "crew", "knit", "shirt", "hood", "sleeveless"] 
+category_top = ["t-shirt", "crew", "knit", "shirt", "hood", "sleeveless"]
 category_outer = ["stadium jumper", "blouson", "jumper", "denim", "jacket", "coat", "vest", "cardigan"]
 category_bottom = ["jean", "cotton", "jogger", "baggy", "slacks"]
-pattern = ["none", "multicolors", "checked", "printed", "striped", 
+pattern = ["none", "multicolors", "checked", "printed", "striped",
            "snowflake", "floral", "camoflage", "gradation", "twisted"]
 collar = [0, 1, 2, 3]
 
@@ -23,10 +23,10 @@ def _get_item_type(item_id):
     cur.execute("SELECT type, category, pattern, collar, padding FROM diver_item WHERE id=?", (item_id,))
     temp = cur.fetchone()
     ty = temp[0]
-    
-    vec_i = [(0, temp[1], temp[2]), 
-             (1, temp[1], temp[3], temp[4]), 
-             (2, temp[1]), 
+
+    vec_i = [(0, temp[1], temp[2]),
+             (1, temp[1], temp[3], temp[4]),
+             (2, temp[1]),
              (3, temp[1])][ty]
     return vec_i
 
@@ -35,14 +35,14 @@ def _get_match_data(match_id):
     dataSet = []
     mData = list(cur.execute("SELECT outer1_id, outer2_id, top1_id, \
                             top2_id, bottom_id, shoes_id \
-                            FROM diver_match WHERE match_id=?", (match_id,)))
+                            FROM diver_match WHERE id=?", (match_id,)))
     for m in mData:
         vec_m = []
         for i in m:
             if i != None:
                 item_id = color._get_item_id(i)
                 vec_m.append(_get_item_type(item_id))
-        dataSet.append(vec_m)
+        dataSet.append(frozenset(vec_m))
     # caching
     return dataSet
 
@@ -65,7 +65,7 @@ def init_match_data():
             if i != None and type(i) != str:
                 item_id = color._get_item_id(i)
                 vec_m.append(_get_item_type(item_id))
-        dataSet.append(vec_m)
+        dataSet.append(frozenset(vec_m))
     # caching
     return dataSet
 
@@ -73,7 +73,7 @@ def init_category():
     mc = get_mc()
     mc.set("MATCH", init_match_data(), 0)
     mc.set("mItemSet", list(find_frequent_itemsets(mc.get("MATCH"), 1, True)), 0)
-    
+
 def hanger_complete(hanger, customer_id):
     cur = get_cursor()
     i_hanger = hanger
@@ -90,22 +90,22 @@ def hanger_complete(hanger, customer_id):
             pass
     maxMatch = set(max(candDict, key=candDict.get))
     return frozenset(maxMatch-h_set)
-    
+
 def main():
     cur = get_cursor()
     conn = sql.connect("../diver/db.sqlite3")
     cur = conn.cursor()
     init_color()
     init_category()
-    
+
     mc = get_mc()
     print("MATCH SET:")
     print(mc.get("MATCH"))
-    
+
     print()
     print("Caculated Item sets:")
     print(mc.get("mItemSet"))
-    
+
 if __name__ == '__main__':
     main()
 
