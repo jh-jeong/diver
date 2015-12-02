@@ -31,33 +31,36 @@
   <div class="form-group col-md-2">
     <label for="chest">가슴 둘레(cm)</label>
     <input name="chest_size_cm" id="chest" type="number" class="form-control"
-      {% if customer.chest_size_cm != 0 %}value={{customer.chest_size_cm}}{% endif %}>
+      {% if customer.chest_size_cm != 0 %}value={{customer.chest_size_cm|floatformat:1 }}{% endif %}>
   </div>
   <div class="form-group col-md-2">
     <label for="waist">허리 둘레(cm)</label>
     <input name="waist_size_cm" id="waist" type="number" class="form-control"
-      {% if customer.waist_size_cm != 0 %}value={{customer.waist_size_cm}}{% endif %}>
+      {% if customer.waist_size_cm != 0 %}value={{customer.waist_size_cm|floatformat}}{% endif %}>
   </div>
-  <div class="form-group col-md-2">
-    <label for="sleeve">팔 길이(cm)</label>
-    <input name="sleeve_length_cm" id="sleeve" type="number" class="form-control"
-      {% if customer.sleeve_length_cm != 0 %}value={{customer.sleeve_length_cm}}{% endif %}>
-  </div>
+
   <div class="form-group col-md-3">
     <label for="leg">다리 길이(cm)</label>
     <input name="leg_length_cm" id="leg" type="number" class="form-control"
-      {% if customer.leg_length_cm != 0 %}value={{customer.leg_length_cm}}{% endif %}>
+      {% if customer.leg_length_cm != 0 %}value={{customer.leg_length_cm|floatformat }}{% endif %}>
   </div>
 
   <div class="form-group col-md-3">
     <label for="leg">엉덩이 둘레(cm)</label>
     <input name="hip_cm" id="hip" type="number" class="form-control"
-      {% if customer.hip_cm != 0 %}value={{customer.hip_cm}}{% endif %}>
+      {% if customer.hip_cm != 0 %}value={{customer.hip_cm|floatformat }}{% endif %}>
   </div>
+
+  <div class="form-group col-md-3">
+    <label for="leg">허벅지 둘레(cm)</label>
+    <input name="thigh_cm" id="thigh" type="number" class="form-control"
+      {% if customer.thigh_cm != 0 %}value={{customer.thigh_cm|floatformat }}{% endif %}>
+  </div>
+
   <div class="form-group col-md-3">
     <label for="shoes">신발 사이즈(mm)</label>
     <input name="shoes_size_mm" id="shoes" type="number" class="form-control"
-      {% if customer.shoes_size_mm != 0 %}value={{customer.shoes_size_mm}}{% endif %}>
+      {% if customer.shoes_size_mm != 0 %}value={{customer.shoes_size_mm|floatformat }}{% endif %}>
   </div>
 </div>
 <div class="row">

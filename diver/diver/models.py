@@ -27,11 +27,13 @@ class Customer(models.Model):
     weight_kg = models.FloatField()
     chest_size_cm = models.FloatField()
     waist_size_cm = models.FloatField()
-    sleeve_length_cm = models.FloatField()
+    ########
+    sleeve_length_cm = models.IntegerField(null=True)
+
     leg_length_cm = models.FloatField()
     shoes_size_mm = models.FloatField()
-    hip_cm = models.FloatField()
-    thigh_cm = models.FloatField()
+    hip_cm = models.FloatField(null=True)
+    thigh_cm = models.FloatField(null=True)
 
     BODY_SHAPES = (
         ('O', 'Abdominal obese'),
