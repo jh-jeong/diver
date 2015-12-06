@@ -83,7 +83,7 @@
   {% load item_filters %}
   {% if search_result %}
     {% for item, score in search_result %}
-      {% item_card item score "col-lg-3 col-md-4 col-xs-6" %}
+      {% item_card item score "col-lg-3 col-md-3 col-xs-4" %}
     {% endfor %}
   {% endif %}
 </div>
@@ -91,7 +91,8 @@
   <div id="hanger-handle">&lt;</div>
   <div id="hanger" class="panel panel-default">
     <div class="panel-heading">
-      <h6>My Hanger</h3>
+      <img src="{% static 'images/hanger.png' %}" alt="Hanger">
+      <h6>My Hanger</h6>
     </div>
     <div class="panel-body">
       <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
