@@ -214,7 +214,7 @@ def get_match_from_hanger(hanger, customer_id):
             for match in matches:
                 matched_category = {"type": match[0],
                                     "text": match[1],
-                                    "category_code": Item.get_category_code(match[1])}
+                                    "category_code": match[1]}
                 if match[0] == 0:  # Top
                     matched_category["pattern"] = match[2]
                 elif match[0] == 1:  # Outer
