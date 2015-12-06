@@ -51,7 +51,7 @@ def update_preference(customer_id, item_id, new_rating, prev_rating=0):
                     FROM diver_pref WHERE customer_id=?".format(z,b,h,l), (customer_id,))
         o_z, o_b, o_h, o_l = cur.fetchone()
         cur.execute("UPDATE diver_pref SET zipperO_{}=?, outer_button_{}=?, \
-                    hatO_{}=?, out_len_{}=? WHERE customer_id=?".format(z,b,h,l),
+                    hatO_{}=?, outer_len_{}=? WHERE customer_id=?".format(z,b,h,l),
                     (o_z+rating, o_b+rating, o_h+rating, o_l+rating, customer_id))
     # bottom
     elif type_ == 2:

@@ -202,7 +202,7 @@ def match_like(request, match_id, score):
             match.save()
 
         # 매치 내의 아이템들에 점수 반영
-        match_rating(match, score, request.user.id)
+        match_rating(match, score+3, request.user.id)
 
     return HttpResponse("매치{}의 점수: {}".format(match_id, score))
 
