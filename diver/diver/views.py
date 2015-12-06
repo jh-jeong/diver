@@ -61,16 +61,16 @@ def noneCheck(input):
 def account(request):
     if request.method == 'GET':
         customer = None
-        if Customer.objects.filter(user_id=request.user.id).count() != 0:
-            customer = Customer.objects.get(user_id=request.user.id)
+        if Customer.objects.filter(user=request.user).count() != 0:
+            customer = Customer.objects.get(user=request.user)
     elif request.method == 'POST':
-        if Customer.objects.filter(user_id=request.user.id).count() == 0:
-            customer = Customer(user_id=request.user.id, height_cm=180, weight_kg=73,
-                                chest_size_cm=50, waist_size_cm=30, sleeve_length_cm=40,
-                                leg_length_cm=30, shoes_size_mm=270)
+        if Customer.objects.filter(user=request.user).count() == 0:
+            customer = Customer(user=request.user, height_cm=180, weight_kg=73,
+                                chest_size_cm=50, waist_size_cm=30,
+                                leg_length_cm=30, shoes_size_mm=270, hip_cm=30, thigh_cm=30)
             customer.save()
         else:
-            customer = Customer.objects.get(user_id=request.user.id)
+            customer = Customer.objects.get(user=request.user)
 
         # Initialize personal preference
         pref = Pref()
@@ -82,35 +82,48 @@ def account(request):
         weight_kg = request.POST['weight_kg']
         chest_size_cm = request.POST['chest_size_cm']
         waist_size_cm = request.POST['waist_size_cm']
-        sleeve_length_cm = request.POST['sleeve_length_cm']
         leg_length_cm = request.POST['leg_length_cm']
         shoes_size_mm = request.POST['shoes_size_mm']
+        hip_cm = request.POST['hip_cm']
+        thigh_cm = request.POST['thigh_cm']
+
         body_shape = request.POST.get('body_shape', 'O')
 
-        height_cm = noneCheck(height_cm)
-        weight_kg = noneCheck(weight_kg)
-        chest_size_cm = noneCheck(chest_size_cm)
-        waist_size_cm = noneCheck(waist_size_cm)
-        sleeve_length_cm = noneCheck(sleeve_length_cm)
-        leg_length_cm = noneCheck(leg_length_cm)
-        shoes_size_mm = noneCheck(shoes_size_mm)
+        height_cm = float(noneCheck(height_cm))
+        weight_kg = float(noneCheck(weight_kg))
+        chest_size_cm = float(noneCheck(chest_size_cm))
+        waist_size_cm = float(noneCheck(waist_size_cm))
+        leg_length_cm = float(noneCheck(leg_length_cm))
+        shoes_size_mm = float(noneCheck(shoes_size_mm))
+        thigh_cm = float(noneCheck(thigh_cm))
+        hip_cm  = float(noneCheck(hip_cm))
+
+        tmp_tuple = algo_size.complete_size(height_cm,weight_kg,body_shape,leg_length_cm,chest_size_cm,waist_size_cm,hip_cm,thigh_cm)
+
+        height_cm= float(tmp_tuple[0])
+        weight_kg=float(tmp_tuple[1])
+        leg_length_cm= float(tmp_tuple[2])
+        chest_size_cm= float(tmp_tuple[3])
+        waist_size_cm =float(tmp_tuple[4])
+        hip_cm = float(tmp_tuple[5])
+        thigh_cm = float(tmp_tuple[6])
 
         if customer != None:
+            customer.user = request.user
             customer.height_cm = height_cm
             customer.weight_kg = weight_kg
             customer.chest_size_cm = chest_size_cm
             customer.waist_size_cm = waist_size_cm
-            customer.sleeve_length_cm = sleeve_length_cm
             customer.leg_length_cm = leg_length_cm
             customer.shoes_size_mm = shoes_size_mm
             customer.body_shape = body_shape
-
+            customer.hip_cm = hip_cm
+            customer.thigh_cm = thigh_cm
             customer.save()
 
         else:
-            customer = Customer(user_id=request.user.id, height_cm=height_cm, weight_kg=weight_kg,
-                                chest_size_cm=chest_size_cm, waist_size_cm=waist_size_cm,
-                                sleeve_length_cm=sleeve_length_cm,
+            customer = Customer(user=request.user, height_cm=height_cm, weight_kg=weight_kg,
+                                chest_size_cm=chest_size_cm, waist_size_cm=waist_size_cm, hip_cm = hip_cm, thigh_cm = thigh_cm,
                                 leg_length_cm=leg_length_cm, shoes_size_mm=shoes_size_mm, body_shape=body_shape
             )
             customer.save()
@@ -189,7 +202,7 @@ def match_like(request, match_id, score):
             match.save()
 
         # 매치 내의 아이템들에 점수 반영
-        match_rating(match, score, request.user.id)
+        match_rating(match, score+3, request.user.id)
 
     return HttpResponse("매치{}의 점수: {}".format(match_id, score))
 

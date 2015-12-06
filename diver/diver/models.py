@@ -23,13 +23,18 @@ class Customer(models.Model):
     user = models.ForeignKey('auth.User')
 
     # Body dimensions
-    height_cm = models.IntegerField()
-    weight_kg = models.IntegerField()
-    chest_size_cm = models.IntegerField()
-    waist_size_cm = models.IntegerField()
-    sleeve_length_cm = models.IntegerField()
-    leg_length_cm = models.IntegerField()
-    shoes_size_mm = models.IntegerField()
+    height_cm = models.FloatField()
+    weight_kg = models.FloatField()
+    chest_size_cm = models.FloatField()
+    waist_size_cm = models.FloatField()
+    ########
+    sleeve_length_cm = models.IntegerField(null=True)
+
+    leg_length_cm = models.FloatField()
+    shoes_size_mm = models.FloatField()
+    hip_cm = models.FloatField(null=True)
+    thigh_cm = models.FloatField(null=True)
+
     BODY_SHAPES = (
         ('O', 'Abdominal obese'),
         ('M', 'Muscular'),
