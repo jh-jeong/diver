@@ -323,6 +323,7 @@ class Pref(models.Model):
     pattern_PR = models.IntegerField(default=0)
     pattern_SF = models.IntegerField(default=0)
     pattern_ST = models.IntegerField(default=0)
+    pattern_TW = models.IntegerField(default=0)
     pattern_VS = models.IntegerField(default=0)
     neck_RN = models.IntegerField(default=0)
     neck_HR = models.IntegerField(default=0)
