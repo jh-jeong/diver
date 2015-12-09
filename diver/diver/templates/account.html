@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 {% block content %}
 <h1>당신에 대해 알려주세요 ( ͡° ͜ʖ ͡°)</h1>
 <form method="post">
@@ -69,5 +70,29 @@
   </div>
 </div>
 </form>
-
+{% if not customer %}
+<div class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <img src="{% static 'images/welcome.jpg' %}" alt="환영합니다!">
+        <h3>다입어에 오신 것을 환영합니다.</h3>
+        <p>먼저, 저희가 여러분에 대해 알 수 있게 기본적인 정보와 취향을
+        알려주세요!</p>
+        <p>놀라지 마세요. 신체정보는 키와 몸무게, 체형만으로 충분합니다.</p>
+        <p>물론 더 많은 정보를 입력하시면 더 정확한 추천결과를 받아볼 수
+        있어요!</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default"
+          data-dismiss="modal">알겠습니다 :P</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endif %}
+<script>
+$('.modal').modal('show');
+</script>
 {% endblock %}
