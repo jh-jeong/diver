@@ -305,6 +305,8 @@ def search(request):
                    'hanger': request.session.get('hanger', None),
                    'matched_categories': json.dumps(matched_categories)})
 
+def hanger(request):
+    return render(request, 'hanger.html', {'hanger': request.session.get('hanger', [])})
 
 def update_hanger(request):
     if request.method == 'POST':

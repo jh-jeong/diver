@@ -90,24 +90,25 @@
 <div id="hanger-panel">
   <div id="hanger-handle">&lt;</div>
   <div id="hanger" class="panel panel-default">
-    <div class="panel-heading">
+    <div class="panel-heading" id="hanger-heading">
       <img src="{% static 'images/hanger.png' %}" alt="Hanger">
       <h6>My Hanger</h6>
     </div>
     <div class="panel-body">
-      <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 0 %}</div>
-      <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item hanger "OUTER" 1 %}</div>
+      <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item_small hanger "OUTER" 0 %}</div>
+      <div class="hanger-slot outer-slot" data-accepts="OUTER">{% hanger_item_small hanger "OUTER" 1 %}</div>
       <div style="clear: both;"></div>
-      <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 0 %}</div>
-      <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item hanger "TOP" 1 %}</div>
+      <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item_small hanger "TOP" 0 %}</div>
+      <div class="hanger-slot top-slot" data-accepts="TOP">{% hanger_item_small hanger "TOP" 1 %}</div>
       <div style="clear: both;"></div>
-      <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item hanger "BOTTOM" 0 %}</div>
-      <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item hanger "SHOE" 0 %}</div>
+      <div class="hanger-slot bottom-slot" data-accepts="BOTTOM">{% hanger_item_small hanger "BOTTOM" 0 %}</div>
+      <div class="hanger-slot shoes-slot" data-accepts="SHOE">{% hanger_item_small hanger "SHOE" 0 %}</div>
       <div class="recommendation">
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
 {% block script %}
 <script type='text/javascript'>
@@ -260,6 +261,23 @@ $(document).ready(function () {
     if(confirm("Are you sure you want to remove the item from hanger?")){
       removeFromHanger(item_id);
     }
+  });
+
+  $("#hanger-heading").click( function(e) {
+    if($("#hanger-modal").length === 0){
+      $("body").append('<div id="hanger-modal" class="modal fade"></div>');
+    }
+    $("#hanger-modal").load('/hanger/');
+    $("#hanger-modal").modal({show: true, keyboard: true});
+    setTimeout( function() {
+      $("#hanger-large .hanger-item img").click( function(e) {
+        item_id = $(this).parent().data("item-id");
+        if(!item_id) return;
+        if(confirm("Are you sure you want to remove the item from hanger?")){
+          removeFromHanger(item_id);
+        }
+      });
+    }, 1000);
   });
 
   updateRecommendation({% autoescape off %}{{ matched_categories }}{% endautoescape %});

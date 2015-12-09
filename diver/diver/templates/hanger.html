@@ -1,0 +1,30 @@
+{% load item_filters %}
+<div id="hanger-large" class="modal-dialog">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <h4 class="modal-title">Hanger</h4>
+    </div>
+    <div class="modal-body">
+      <div id="outer-slots" class="item-slots">
+        <h3>Outer</h3>
+        <div class="item-slot outer-slot">{% hanger_item_large hanger "OUTER" 0 %}</div>
+        <div class="item-slot outer-slot">{% hanger_item_large hanger "OUTER" 1 %}</div>
+      </div>
+      <div id="top-slots" class="item-slots">
+        <h3>Top</h3>
+        <div class="item-slot top-slot">{% hanger_item_large hanger "TOP" 0 %}</div>
+        <div class="item-slot top-slot">{% hanger_item_large hanger "TOP" 1 %}</div>
+      </div>
+      <div id="bottom-slots" class="item-slots">
+        <h3>Bottom</h3>
+        <div class="item-slot bottom-slot">{% hanger_item_large hanger "BOTTOM" 0 %}</div>
+      </div>
+      <div id="shoe-slots" class="item-slots">
+        <h3>Shoes</h3>
+        <div class="item-slot shoes-slot">{% hanger_item_large hanger "SHOE" 0 %}</div>
+      </div>
+      <div style="clear: both;"></div>
+    </div>
+  </div>
+</div>

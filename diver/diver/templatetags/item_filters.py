@@ -20,7 +20,6 @@ def item_card(item, score, class_names):
 def match_card(match, score, class_names):
     return {'match': match, 'score': score, 'class_names': class_names}
 
-@register.inclusion_tag('hanger_item_template.html')
 def hanger_item(item_ids, category1, slot_number):
     item = None
     if not item_ids == None:
@@ -33,6 +32,14 @@ def hanger_item(item_ids, category1, slot_number):
                 else:
                     slot_number -= 1
     return {'item': item}
+
+@register.inclusion_tag('hanger_item_small_template.html')
+def hanger_item_small(item_ids, category1, slot_number):
+    return hanger_item(item_ids, category1, slot_number)
+
+@register.inclusion_tag('hanger_item_large_template.html')
+def hanger_item_large(item_ids, category1, slot_number):
+    return hanger_item(item_ids, category1, slot_number)
 
 @register.inclusion_tag('match_item_template.html')
 def match_item(cat1, num):

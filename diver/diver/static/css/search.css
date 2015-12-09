@@ -79,6 +79,46 @@
   margin: 0 !important;
 }
 
+#hanger-large {
+  width: 1130px;
+}
+
+#hanger-large .item-slots {
+  float: left;
+  margin: 15px;
+  padding: 5px;
+  border: solid 1px gray;
+}
+
+#hanger-large .item-slots h3 {
+  text-align: center;
+  font-size: 15pt;
+}
+
+#hanger-large .item-slot {
+  margin: 10px;
+}
+
+#hanger-large img {
+  width: 200px;
+  cursor: pointer;
+}
+
+#hanger-large .hanger-item a {
+  display: block;
+  text-align: center;
+  width: 200px;
+}
+
+#hanger-large .hanger-item p {
+  width: 200px;
+  height: 250px;
+  border: solid 1px gray;
+  text-align: center;
+  font-size: 12pt;
+  padding-top: 110px;
+}
+
 .search-form {
   margin-bottom: 2em;
 }
